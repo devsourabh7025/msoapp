@@ -1,0 +1,23 @@
+[00:00:19.121] Server  LOG     ✓ Ready in 12s
+[24:40:37.848] Server  LOG     ○ Compiling /admin ...
+[49:37:49.514] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:49.545] Server  LOG     ○ Compiling /api/superadmin/posts ...
+[49:37:49.835] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:49.933] Server  ERROR   Auth check error: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:49.945] Browser ERROR   ❌ Error fetching posts: {"error":"Not authenticated"}
+[49:37:52.993] Server  LOG     ○ Compiling /login ...
+[49:37:54.146] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:54.263] Server  ERROR   Auth check error: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:54.273] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[49:37:54.494] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:54.837] Server  ERROR   Auth check error: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.098] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.204] Server  ERROR   Error fetching header settings: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.383] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.510] Server  ERROR   Error fetching footer settings: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.617] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.707] Server  ERROR   Error fetching footer settings: MongoParseError: option serverselectionretrydelayms is not supported
+[49:37:55.714] Browser LOG     ✅ Footer content loaded from API: {"address":"Mumbai, Maharashtra, India","bottomLinks":[],"company":[],"copyright":"© {year} Maharashtra Startup Organisation. All rights reserved.","description":"Maharashtra Startup Organisation - Empowering entrepreneurs and startups across Maharashtra with resources, funding opportunities, mentorship, and a thriving ecosystem for innovation and growth.","email":"contact@maharashtrastartup.org","legal":[],"phone":"+91 123 456 7890","resources":[],"socialLinks":{"facebook":"https://facebook.com","instagram":"https://instagram.com","linkedin":"https://linkedin.com","twitter":"https://twitter.com","youtube":"https://youtube.com"},"tagline":"Empowering Maharashtra's startup ecosystem since 2024"}
+[49:37:55.823] Browser LOG     ✅ Footer content loaded from API: {"address":"Mumbai, Maharashtra, India","bottomLinks":[],"company":[],"copyright":"© {year} Maharashtra Startup Organisation. All rights reserved.","description":"Maharashtra Startup Organisation - Empowering entrepreneurs and startups across Maharashtra with resources, funding opportunities, mentorship, and a thriving ecosystem for innovation and growth.","email":"contact@maharashtrastartup.org","legal":[],"phone":"+91 123 456 7890","resources":[],"socialLinks":{"facebook":"https://facebook.com","instagram":"https://instagram.com","linkedin":"https://linkedin.com","twitter":"https://twitter.com","youtube":"https://youtube.com"},"tagline":"Empowering Maharashtra's startup ecosystem since 2024"}
+[49:41:31.009] Server  ERROR   Failed to connect to MongoDB: MongoParseError: option serverselectionretrydelayms is not supported
+[49:41:31.175] Server  ERROR   Login error: MongoParseError: option serverselectionretrydelayms is not supported

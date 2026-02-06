@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///F:/NNBlog/my-app/app/admin/theme/page.jsx"],"sourcesContent":["\"use client\";\r\n\r\nimport { useEffect } from \"react\";\r\nimport { useRouter } from \"next/navigation\";\r\n\r\nexport default function ThemeRedirect() {\r\n  const router = useRouter();\r\n\r\n  useEffect(() => {\r\n    router.replace(\"/admin/customise\");\r\n  }, [router]);\r\n\r\n  return (\r\n    <div className=\"flex items-center justify-center min-h-screen\">\r\n      <p className=\"text-gray-500\">Redirecting to Customise...</p>\r\n    </div>\r\n  );\r\n}\r\n"],"names":[],"mappings":";;;;;AAEA;AACA;AAHA;;;;AAKe,SAAS;IACtB,MAAM,SAAS,IAAA,+IAAS;IAExB,IAAA,kNAAS,EAAC;QACR,OAAO,OAAO,CAAC;IACjB,GAAG;QAAC;KAAO;IAEX,qBACE,8OAAC;QAAI,WAAU;kBACb,cAAA,8OAAC;YAAE,WAAU;sBAAgB;;;;;;;;;;;AAGnC"}}]
+}
