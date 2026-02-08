@@ -30,7 +30,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Login failed");
+        setError(data.error || "Login failed. Please check your credentials.");
+        setLoading(false);
+        return;
+      }
+
+      // Ensure cookie is set before redirecting
+      if (!data.user) {
+        setError("Login successful but user data not received. Please try again.");
         setLoading(false);
         return;
       }

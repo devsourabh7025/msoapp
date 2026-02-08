@@ -43,13 +43,21 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Registration failed");
+        setError(data.error || "Registration failed. Please try again.");
         setLoading(false);
         return;
       }
 
-      // Registration successful - redirect to login or user dashboard
-      router.push("/login");
+      // Registration successful - show success message briefly then redirect
+      if (data.user) {
+        // Small delay to show success state
+        setTimeout(() => {
+          router.push("/login");
+        }, 500);
+      } else {
+        setError("Registration successful but user data not received. Please try logging in.");
+        setLoading(false);
+      }
     } catch (error) {
       console.error("Registration error:", error);
       setError("An error occurred. Please try again.");

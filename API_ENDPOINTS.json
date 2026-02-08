@@ -1,0 +1,268 @@
+{
+  "baseUrls": {
+    "development": "http://localhost:3000",
+    "production": "https://msoapp.vercel.app"
+  },
+  "endpoints": [
+    {
+      "category": "Authentication",
+      "endpoints": [
+        {
+          "name": "Login",
+          "url": "/api/login",
+          "method": "POST",
+          "authRequired": false,
+          "description": "User login endpoint"
+        },
+        {
+          "name": "Register",
+          "url": "/api/register",
+          "method": "POST",
+          "authRequired": false,
+          "description": "User registration endpoint"
+        },
+        {
+          "name": "Logout",
+          "url": "/api/logout",
+          "method": "POST",
+          "authRequired": true,
+          "description": "User logout endpoint"
+        },
+        {
+          "name": "Get Current User",
+          "url": "/api/auth/me",
+          "method": "GET",
+          "authRequired": true,
+          "description": "Get authenticated user information"
+        }
+      ]
+    },
+    {
+      "category": "Public",
+      "endpoints": [
+        {
+          "name": "Get All Posts",
+          "url": "/api/public/posts",
+          "method": "GET",
+          "authRequired": false,
+          "description": "Get all published posts (public)"
+        },
+        {
+          "name": "Get Post by Slug",
+          "url": "/api/public/posts/[slug]",
+          "method": "GET",
+          "authRequired": false,
+          "description": "Get a single published post by slug"
+        },
+        {
+          "name": "Get All Categories",
+          "url": "/api/public/categories",
+          "method": "GET",
+          "authRequired": false,
+          "description": "Get all categories (public)"
+        }
+      ]
+    },
+    {
+      "category": "Posts",
+      "endpoints": [
+        {
+          "name": "Create Post",
+          "url": "/api/posts",
+          "method": "POST",
+          "authRequired": true,
+          "description": "Create a new post (NORMAL_USER or ADMIN)"
+        },
+        {
+          "name": "Get All Posts",
+          "url": "/api/posts",
+          "method": "GET",
+          "authRequired": true,
+          "description": "Get all posts (authenticated)"
+        },
+        {
+          "name": "Get Post Comments",
+          "url": "/api/posts/[slug]/comments",
+          "method": "GET",
+          "authRequired": false,
+          "description": "Get comments for a post"
+        },
+        {
+          "name": "Add Comment",
+          "url": "/api/posts/[slug]/comments",
+          "method": "POST",
+          "authRequired": true,
+          "description": "Add a comment to a post"
+        }
+      ]
+    },
+    {
+      "category": "Settings",
+      "endpoints": [
+        {
+          "name": "Homepage Settings",
+          "url": "/api/settings/homepage",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update homepage settings"
+        },
+        {
+          "name": "Header Settings",
+          "url": "/api/settings/header",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update header settings"
+        },
+        {
+          "name": "Footer Settings",
+          "url": "/api/settings/footer",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update footer settings"
+        },
+        {
+          "name": "Hero Settings",
+          "url": "/api/settings/hero",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update hero section settings"
+        },
+        {
+          "name": "Featured Settings",
+          "url": "/api/settings/featured",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update featured section settings"
+        },
+        {
+          "name": "Spotlight Settings",
+          "url": "/api/settings/spotlight",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update spotlight section settings"
+        },
+        {
+          "name": "Trending Settings",
+          "url": "/api/settings/trending",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update trending section settings"
+        },
+        {
+          "name": "Sidebar Settings",
+          "url": "/api/settings/sidebar",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update sidebar settings"
+        },
+        {
+          "name": "Post Settings",
+          "url": "/api/settings/post",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update post settings"
+        }
+      ]
+    },
+    {
+      "category": "Admin",
+      "endpoints": [
+        {
+          "name": "Categories Management",
+          "url": "/api/admin/categories",
+          "methods": ["GET", "POST", "PUT", "DELETE"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Manage categories (CRUD operations)"
+        },
+        {
+          "name": "Get Post by ID",
+          "url": "/api/admin/posts/[id]",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update a post by ID"
+        },
+        {
+          "name": "Post Requests",
+          "url": "/api/admin/post-requests",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update post requests"
+        },
+        {
+          "name": "Seed Posts",
+          "url": "/api/admin/seed-posts",
+          "method": "POST",
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Seed database with sample posts"
+        }
+      ]
+    },
+    {
+      "category": "Superadmin",
+      "endpoints": [
+        {
+          "name": "Create Superadmin",
+          "url": "/api/superadmin/create-superadmin",
+          "method": "POST",
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Create a new superadmin user (requires admin secret)"
+        },
+        {
+          "name": "Users Management",
+          "url": "/api/superadmin/users",
+          "methods": ["GET", "PUT", "DELETE"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Manage all users (CRUD operations)"
+        },
+        {
+          "name": "Get User by ID",
+          "url": "/api/superadmin/users/[userId]",
+          "methods": ["GET", "PUT"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Get or update a user by ID"
+        },
+        {
+          "name": "Posts Management",
+          "url": "/api/superadmin/posts",
+          "methods": ["GET", "PUT", "DELETE"],
+          "authRequired": true,
+          "roleRequired": "ADMIN",
+          "description": "Manage all posts (CRUD operations)"
+        }
+      ]
+    }
+  ],
+  "statistics": {
+    "totalEndpoints": 26,
+    "byMethod": {
+      "GET": 20,
+      "POST": 8,
+      "PUT": 12,
+      "DELETE": 3
+    },
+    "byCategory": {
+      "Authentication": 4,
+      "Public": 3,
+      "Posts": 4,
+      "Settings": 9,
+      "Admin": 4,
+      "Superadmin": 4
+    }
+  }
+}

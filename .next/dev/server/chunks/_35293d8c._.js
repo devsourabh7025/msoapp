@@ -6,11 +6,11 @@ __turbopack_context__.s([
     "default",
     ()=>__TURBOPACK__default__export__
 ]);
-var __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/mongoose [external] (mongoose, cjs)");
+var __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__ = __turbopack_context__.i("[externals]/mongoose [external] (mongoose, cjs, [project]/node_modules/mongoose)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/bcryptjs/index.js [app-route] (ecmascript)");
 ;
 ;
-const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].Schema({
+const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__["default"].Schema({
     name: {
         type: String,
         required: true,
@@ -41,34 +41,57 @@ const UserSchema = new __TURBOPACK__imported__module__$5b$externals$5d2f$mongoos
         default: false
     },
     socialMediaSettings: {
-        type: __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].Schema.Types.Mixed,
+        type: __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__["default"].Schema.Types.Mixed,
         default: {}
     }
 }, {
     timestamps: true
 });
-// Hash password before saving
-UserSchema.pre("save", async function(next) {
+// Hash password before saving (async hook: no next — return/throw only)
+UserSchema.pre("save", async function() {
     if (!this.isModified("password")) {
-        return next();
+        return;
     }
-    try {
-        const salt = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].genSalt(10);
-        this.password = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].hash(this.password, salt);
-        next();
-    } catch (error) {
-        next(error);
-    }
+    const salt = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].genSalt(10);
+    this.password = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].hash(this.password, salt);
 });
 // Method to compare password
 UserSchema.methods.comparePassword = async function(candidatePassword) {
     return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["default"].compare(candidatePassword, this.password);
 };
-const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].models.User || __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$29$__["default"].model("User", UserSchema);
+const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__["default"].models.User || __TURBOPACK__imported__module__$5b$externals$5d2f$mongoose__$5b$external$5d$__$28$mongoose$2c$__cjs$2c$__$5b$project$5d2f$node_modules$2f$mongoose$29$__["default"].model("User", UserSchema);
 }),
 "[project]/node_modules/bcryptjs/index.js [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
+__turbopack_context__.s([
+    "compare",
+    ()=>compare,
+    "compareSync",
+    ()=>compareSync,
+    "decodeBase64",
+    ()=>decodeBase64,
+    "default",
+    ()=>__TURBOPACK__default__export__,
+    "encodeBase64",
+    ()=>encodeBase64,
+    "genSalt",
+    ()=>genSalt,
+    "genSaltSync",
+    ()=>genSaltSync,
+    "getRounds",
+    ()=>getRounds,
+    "getSalt",
+    ()=>getSalt,
+    "hash",
+    ()=>hash,
+    "hashSync",
+    ()=>hashSync,
+    "setRandomFallback",
+    ()=>setRandomFallback,
+    "truncates",
+    ()=>truncates
+]);
 /*
  Copyright (c) 2012 Nevins Bartolomeo <nevins.bartolomeo@gmail.com>
  Copyright (c) 2012 Shane Girish <shaneGirish@gmail.com>
@@ -98,34 +121,6 @@ const __TURBOPACK__default__export__ = __TURBOPACK__imported__module__$5b$extern
  */ // The Node.js crypto module is used as a fallback for the Web Crypto API. When
 // building for the browser, inclusion of the crypto module should be disabled,
 // which the package hints at in its package.json for bundlers that support it.
-__turbopack_context__.s([
-    "compare",
-    ()=>compare,
-    "compareSync",
-    ()=>compareSync,
-    "decodeBase64",
-    ()=>decodeBase64,
-    "default",
-    ()=>__TURBOPACK__default__export__,
-    "encodeBase64",
-    ()=>encodeBase64,
-    "genSalt",
-    ()=>genSalt,
-    "genSaltSync",
-    ()=>genSaltSync,
-    "getRounds",
-    ()=>getRounds,
-    "getSalt",
-    ()=>getSalt,
-    "hash",
-    ()=>hash,
-    "hashSync",
-    ()=>hashSync,
-    "setRandomFallback",
-    ()=>setRandomFallback,
-    "truncates",
-    ()=>truncates
-]);
 var __TURBOPACK__imported__module__$5b$externals$5d2f$crypto__$5b$external$5d$__$28$crypto$2c$__cjs$29$__ = __turbopack_context__.i("[externals]/crypto [external] (crypto, cjs)");
 ;
 /**

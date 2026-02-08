@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
   Facebook,
@@ -26,13 +26,20 @@ export default function Navbar() {
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(null);
   const router = useRouter();
+  const pathname = usePathname();
   const userMenuRef = useRef(null);
   const { theme, toggleTheme, mounted } = useTheme();
   const headerLoadedRef = useRef(false);
 
   useEffect(() => {
+    // Skip auth check on login/register — no session yet; avoids 401 in console
+    if (pathname === "/login" || pathname === "/register") {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
     checkAuth();
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {

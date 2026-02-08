@@ -67,16 +67,17 @@ export async function POST(request) {
     });
 
     // Set HTTP-only cookie
-    // Vercel uses HTTPS by default, so secure should be true in production
-    // For other platforms, check if using HTTPS
+    // In development, secure should be false (localhost doesn't use HTTPS)
+    // In production (Vercel), secure should be true (HTTPS is used)
     const isProduction = process.env.NODE_ENV === "production";
     const protocol = request.headers.get("x-forwarded-proto") || 
-                     (process.env.VERCEL_URL ? "https" : "http");
+                     (request.headers.get("host")?.includes("localhost") ? "http" : "https");
     const isHTTPS = protocol === "https";
     
+    // Set cookie - secure only in production with HTTPS
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: isProduction && isHTTPS, // Secure in production with HTTPS
+      secure: isProduction && isHTTPS, // false in dev, true in production
       sameSite: "lax",
       maxAge: 60 * 60 * 24 * 7, // 7 days
       path: "/",
@@ -85,8 +86,12 @@ export async function POST(request) {
     return response;
   } catch (error) {
     console.error("Registration error:", error);
+    // Provide more detailed error message in development
+    const errorMessage = process.env.NODE_ENV === "development" 
+      ? `Registration failed: ${error.message}` 
+      : "Failed to register user";
     return NextResponse.json(
-      { error: "Failed to register user" },
+      { error: errorMessage },
       { status: 500 }
     );
   }
