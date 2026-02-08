@@ -78,20 +78,21 @@ export default function Recent() {
 
   if (loading) {
     return (
-      <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-4">
-            <div className="h-8 bg-gray-200 dark:bg-slate-700 rounded w-48 animate-pulse"></div>
+      <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50 py-10 sm:py-12">
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-500/[0.03] via-transparent to-amber-500/[0.03] dark:from-sky-400/[0.04] dark:to-amber-400/[0.04] pointer-events-none" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-6">
+            <div className="h-6 bg-gray-200/80 dark:bg-gray-800 rounded-full w-32 animate-pulse" />
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="flex gap-3 p-2">
-                <div className="w-16 h-16 bg-gray-200 dark:bg-slate-700 rounded animate-pulse flex-shrink-0"></div>
+              <div key={i} className="flex gap-4 p-4 rounded-xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 animate-pulse">
+                <div className="w-20 h-20 shrink-0 rounded-xl bg-gray-200/80 dark:bg-gray-800" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4 animate-pulse"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-full animate-pulse"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-2/3 animate-pulse"></div>
-                  <div className="h-3 bg-gray-200 dark:bg-slate-700 rounded w-1/2 animate-pulse"></div>
+                  <div className="h-4 bg-gray-200/80 dark:bg-gray-800 rounded w-3/4" />
+                  <div className="h-3 bg-gray-200/80 dark:bg-gray-800 rounded w-full" />
+                  <div className="h-3 bg-gray-200/80 dark:bg-gray-800 rounded w-2/3" />
+                  <div className="h-3 bg-gray-200/80 dark:bg-gray-800 rounded w-1/3" />
                 </div>
               </div>
             ))}
@@ -102,72 +103,72 @@ export default function Recent() {
   }
 
   if (normalizedPosts.length === 0) {
-    return null; // Don't show section if no posts
+    return null;
   }
 
+  // UI pattern: timeline / left-accent list
   return (
-    <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="mb-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            Recent Posts
+    <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50 py-10 sm:py-12">
+      <div className="absolute inset-0 bg-gradient-to-b from-sky-500/[0.03] via-transparent to-amber-500/[0.03] dark:from-sky-400/[0.04] dark:to-amber-400/[0.04] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Recent posts
           </h2>
+          <div className="mt-2 h-px w-12 rounded-full bg-gradient-to-r from-sky-500 to-amber-500 dark:from-sky-400 dark:to-amber-400" />
         </div>
 
-        {/* Recent Posts - 2 per row with Images */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="relative border-l-2 border-sky-200 dark:border-sky-900/80 pl-6 sm:pl-8 space-y-0">
           {normalizedPosts.map((post, index) => (
             <Link
               key={post._id || post.id || index}
               href={`/post?slug=${post.slug}`}
-              className="group flex gap-3 p-2 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors rounded"
+              className="group relative flex gap-4 py-6 border-b border-gray-200/60 dark:border-gray-800 last:border-0 last:pb-0"
             >
-              {/* Image */}
-              <div className="relative w-16 h-16 flex-shrink-0 rounded overflow-hidden bg-gray-100 dark:bg-slate-700">
+              <span className="absolute -left-[29px] sm:-left-[33px] top-8 w-3 h-3 rounded-full bg-sky-500 dark:bg-sky-400 ring-4 ring-gray-50 dark:ring-gray-950 group-hover:bg-amber-500 group-hover:ring-amber-100 dark:group-hover:ring-gray-900 transition-colors" />
+              <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-200 dark:bg-gray-800">
                 {post.featuredImage ? (
                   <Image
                     src={post.featuredImage}
                     alt={post.title}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="64px"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-600 dark:to-blue-700"></div>
+                  <div className="absolute inset-0 bg-gradient-to-br from-sky-400/50 to-amber-500/50" />
                 )}
               </div>
-              
-              {/* Content */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-1">
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
                   {post.title}
                 </h3>
                 {post.excerpt && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 mb-1.5 leading-relaxed">
-                    {post.excerpt.length > 120 ? post.excerpt.substring(0, 120) + '...' : post.excerpt}
+                  <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 mb-1">
+                    {post.excerpt.length > 100 ? post.excerpt.substring(0, 100) + "…" : post.excerpt}
                   </p>
                 )}
-                <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                   <span>{formatTimeAgo(post.publishedAt)}</span>
-                  <span className="text-gray-300 dark:text-gray-600">•</span>
-                  <span className="text-xs font-medium text-blue-500 dark:text-blue-400 uppercase tracking-wide truncate">
+                  <span>·</span>
+                  <span className="font-medium text-sky-600 dark:text-sky-400 uppercase tracking-wide truncate">
                     {post.category}
                   </span>
                 </div>
               </div>
+              <ArrowRight size={16} className="shrink-0 text-sky-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all self-center" />
             </Link>
           ))}
         </div>
 
-        {/* View All Link */}
         {normalizedPosts.length >= 6 && (
-          <div className="mt-4 text-center">
+          <div className="mt-8 text-center">
             <Link
               href="/explore"
-              className="inline-flex items-center gap-2 text-sm text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-sky-700 dark:text-sky-400 border border-sky-300 dark:border-sky-600/50 hover:bg-sky-50 dark:hover:bg-sky-500/10 transition-colors"
             >
-              View All Posts
+              View all posts
               <ArrowRight size={16} />
             </Link>
           </div>

@@ -107,189 +107,154 @@ export default function Featured() {
   }
 
   return (
-    <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Featured Header - More Attractive */}
-        <div className="flex items-center gap-6 mb-16">
-          <div className="flex-shrink-0 relative">
-            {/* Enhanced Silhouette of person pulling rope */}
-            
-          </div>
-          <div className="flex-1">
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white mb-2">
-              {featuredSettings?.title || "Featured"}
-            </h2>
-            <div className="h-1 w-32 bg-gradient-to-r from-blue-500 to-transparent"></div>
-          </div>
+    <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50 py-14 sm:py-16">
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.03] via-transparent to-orange-500/[0.04] dark:from-amber-400/[0.04] dark:to-orange-400/[0.05] pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Section header — 2026 style */}
+        <div className="mb-10">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {featuredSettings?.title || "Featured"}
+          </h2>
+          <div className="mt-3 h-px w-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400" />
         </div>
 
-        {/* Three Columns - Enhanced Design */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {/* Column 1: SMB Story */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10">
+          {/* Column 1: SMB — Dark block UI pattern */}
           {featuredSettings?.showSMBStory !== false && (
-            <div className="space-y-6">
-              <div className="bg-black dark:bg-white px-5 py-4 rounded-t-lg shadow-lg">
-                <h3 className="text-white dark:text-black font-bold text-lg uppercase tracking-wider">SMB Story</h3>
+            <div className="rounded-2xl overflow-hidden bg-gray-900 dark:bg-gray-950 border border-gray-700 dark:border-gray-800 shadow-xl">
+              <div className="px-5 py-4 border-b border-gray-700 dark:border-gray-800">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400">SMB Story</h3>
               </div>
-
-              {smbStories.length > 0 ? (
-              <>
-                {/* Main Article - Enhanced Black Box */}
-                <Link href={`/post?slug=${smbStories[0].slug}`} className="group block">
-                  <div className="bg-black dark:bg-slate-800 p-6 rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 relative overflow-hidden">
-                    {/* Decorative gradient overlay */}
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-600/10 rounded-full blur-2xl"></div>
-                    
-                    <h4 className="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors line-clamp-2 relative z-10 text-white dark:text-white">
-                      {smbStories[0].title}
-                    </h4>
-                    {smbStories[0].excerpt && (
-                      <p className="text-sm text-gray-300 dark:text-gray-300 mb-4 line-clamp-3 leading-relaxed relative z-10">
-                        {smbStories[0].excerpt}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between relative z-10">
-                      <div className="text-sm text-gray-400 dark:text-gray-400">
-                        {getAuthorName(smbStories[0].author)}
-                      </div>
-                      <ArrowRight size={16} className="text-blue-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Other Articles - Enhanced */}
-                {smbStories.slice(1).map((story, index) => (
-                  <Link
-                    key={story._id || story.id || index}
-                    href={`/post?slug=${story.slug}`}
-                    className="group block pb-6 border-b border-gray-200 dark:border-slate-700 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 p-3 rounded-lg transition-colors"
-                  >
-                    <h4 className="text-base font-bold text-black dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                      {story.title}
-                    </h4>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {getAuthorName(story.author)}
-                      </div>
-                      <ArrowRight size={14} className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-                    </div>
-                  </Link>
-                ))}
-              </>
-            ) : (
-              <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-lg border border-gray-200 dark:border-slate-700 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">No SMB stories selected</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Select posts in the admin panel to display them here</p>
-              </div>
-              )}
-            </div>
-          )}
-
-          {/* Column 2: Her Story - Enhanced */}
-          {featuredSettings?.showHerStory !== false && (
-          <div className="space-y-6">
-            <div className="bg-black dark:bg-white px-5 py-4 rounded-t-lg shadow-lg">
-              <h3 className="text-white dark:text-black font-bold text-lg uppercase tracking-wider">Her Story</h3>
-            </div>
-
-            {herStories.length > 0 ? (
-              herStories.map((story, index) => (
-                <Link
-                  key={story._id || story.id || index}
-                  href={`/post?slug=${story.slug}`}
-                  className="group flex gap-4 pb-6 border-b border-gray-200 dark:border-slate-700 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 p-3 rounded-lg transition-all duration-300"
-                >
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-base font-bold text-black dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                      {story.title}
-                    </h4>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                      <User size={14} />
-                      <span>{getAuthorName(story.author)}</span>
-                    </div>
-                  </div>
-                  <div className="flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-slate-800 shadow-md group-hover:shadow-lg transition-shadow">
-                    {story.featuredImage ? (
-                      <Image
-                        src={story.featuredImage}
-                        alt={story.title}
-                        width={80}
-                        height={80}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-pink-400 to-pink-500 dark:from-pink-600 dark:to-pink-700"></div>
-                    )}
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-lg border border-gray-200 dark:border-slate-700 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">No Her stories selected</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Select posts in the admin panel to display them here</p>
-              </div>
-              )}
-            </div>
-          )}
-
-          {/* Column 3: Social Story - Enhanced */}
-          {featuredSettings?.showSocialStory !== false && (
-          <div className="space-y-6">
-            <div className="bg-black dark:bg-white px-5 py-4 rounded-t-lg shadow-lg">
-              <h3 className="text-white dark:text-black font-bold text-lg uppercase tracking-wider">Social Story</h3>
-            </div>
-
-            {socialStories.length > 0 ? (
-              <>
-                {/* Main Article with Large Image - Enhanced */}
-                <Link href={`/post?slug=${socialStories[0].slug}`} className="group block">
-                  <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-slate-800 rounded-lg shadow-lg mb-3 group-hover:shadow-xl transition-shadow">
-                    {socialStories[0].featuredImage ? (
-                      <Image
-                        src={socialStories[0].featuredImage}
-                        alt={socialStories[0].title}
-                        fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-green-400 to-green-500 dark:from-green-600 dark:to-green-700"></div>
-                    )}
-                    <div className="absolute top-4 left-4">
-                      <span className="inline-flex items-center justify-center w-10 h-10 bg-red-600 dark:bg-red-500 text-white font-bold rounded-full text-sm shadow-lg">
-                        1
-                      </span>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-5">
-                      <h4 className="text-white font-bold text-lg line-clamp-2 group-hover:text-blue-300 transition-colors">
-                        {socialStories[0].title}
+              <div className="p-4 space-y-3">
+                {smbStories.length > 0 ? (
+                  <>
+                    <Link href={`/post?slug=${smbStories[0].slug}`} className="group block p-4 rounded-xl bg-gray-800/80 dark:bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/40 transition-colors">
+                      <h4 className="text-base font-bold text-white mb-2 line-clamp-2 group-hover:text-amber-300 transition-colors">
+                        {smbStories[0].title}
                       </h4>
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Other Articles with Numbers - Enhanced */}
-                {socialStories.slice(1).map((story, index) => (
-                  <Link
-                    key={story._id || story.id || index}
-                    href={`/post?slug=${story.slug}`}
-                    className="group flex gap-3 pb-6 border-b border-gray-200 dark:border-slate-700 last:border-0 hover:bg-gray-50 dark:hover:bg-slate-800/50 p-3 rounded-lg transition-all duration-300"
-                  >
-                    <span className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 bg-red-600 dark:bg-red-500 text-white font-bold rounded-full text-xs shadow-md group-hover:scale-110 transition-transform">
-                      {index + 2}
-                    </span>
-                    <h4 className="text-base font-bold text-black dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 flex-1">
-                      {story.title}
-                    </h4>
-                    <ArrowRight size={14} className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0" />
-                  </Link>
-                ))}
-              </>
-            ) : (
-              <div className="bg-gray-50 dark:bg-slate-800/50 p-6 rounded-lg border border-gray-200 dark:border-slate-700 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">No Social stories selected</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Select posts in the admin panel to display them here</p>
+                      {smbStories[0].excerpt && (
+                        <p className="text-sm text-gray-400 mb-3 line-clamp-2">{smbStories[0].excerpt}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">{getAuthorName(smbStories[0].author)}</span>
+                        <ArrowRight size={14} className="text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </Link>
+                    {smbStories.slice(1).map((story, index) => (
+                      <Link
+                        key={story._id || story.id || index}
+                        href={`/post?slug=${story.slug}`}
+                        className="group flex items-center gap-3 py-3 border-t border-gray-700/50 first:border-t-0"
+                      >
+                        <h4 className="text-sm font-medium text-gray-200 flex-1 min-w-0 line-clamp-1 group-hover:text-amber-300 transition-colors">
+                          {story.title}
+                        </h4>
+                        <ArrowRight size={12} className="text-gray-500 group-hover:text-amber-400 shrink-0 transition-colors" />
+                      </Link>
+                    ))}
+                  </>
+                ) : (
+                  <p className="text-sm text-gray-500 py-6 text-center">No SMB stories</p>
+                )}
               </div>
+            </div>
+          )}
+
+          {/* Column 2: Her Story — Soft card / avatar list UI pattern */}
+          {featuredSettings?.showHerStory !== false && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-500/15 dark:bg-rose-400/15 text-rose-800 dark:text-rose-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 dark:bg-rose-400" />
+                  Her Story
+                </span>
+              </div>
+              {herStories.length > 0 ? (
+                <div className="space-y-3">
+                  {herStories.map((story, index) => (
+                    <Link
+                      key={story._id || story.id || index}
+                      href={`/post?slug=${story.slug}`}
+                      className="group flex gap-4 p-4 rounded-2xl bg-white dark:bg-gray-900/80 border border-gray-200 dark:border-gray-700/50 shadow-sm hover:shadow-md hover:border-rose-300 dark:hover:border-rose-500/30 transition-all duration-300"
+                    >
+                      <div className="shrink-0 w-14 h-14 rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        {story.featuredImage ? (
+                          <Image
+                            src={story.featuredImage}
+                            alt={story.title}
+                            width={56}
+                            height={56}
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-rose-300 to-pink-400 dark:from-rose-600/50 dark:to-pink-600/50" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors">
+                          {story.title}
+                        </h4>
+                        <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                          <User size={12} className="shrink-0 text-rose-500" />
+                          <span className="truncate">{getAuthorName(story.author)}</span>
+                        </div>
+                      </div>
+                      <ArrowRight size={14} className="shrink-0 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 p-6 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No Her stories</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Column 3: Social Story — Ranked list / leaderboard UI pattern */}
+          {featuredSettings?.showSocialStory !== false && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 dark:bg-emerald-400/15 text-emerald-800 dark:text-emerald-200">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
+                  Social Story
+                </span>
+              </div>
+              {socialStories.length > 0 ? (
+                <ul className="space-y-0 divide-y divide-gray-200 dark:divide-gray-700/50 rounded-2xl border border-gray-200 dark:border-gray-700/50 bg-white dark:bg-gray-900/50 overflow-hidden">
+                  {socialStories.map((story, index) => (
+                    <li key={story._id || story.id || index}>
+                      <Link
+                        href={`/post?slug=${story.slug}`}
+                        className="group flex items-center gap-4 p-4 hover:bg-emerald-50/80 dark:hover:bg-emerald-500/10 transition-colors"
+                      >
+                        <span className="shrink-0 flex items-center justify-center w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-bold text-sm">
+                          {index + 1}
+                        </span>
+                        {index === 0 && story.featuredImage ? (
+                          <div className="shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+                            <Image
+                              src={story.featuredImage}
+                              alt=""
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ) : null}
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex-1 min-w-0 line-clamp-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
+                          {story.title}
+                        </h4>
+                        <ArrowRight size={14} className="shrink-0 text-gray-400 group-hover:text-emerald-500 transition-colors" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 p-6 text-center">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">No Social stories</p>
+                </div>
               )}
             </div>
           )}

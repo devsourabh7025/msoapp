@@ -135,206 +135,194 @@ export default function Navbar() {
     : [];
 
   return (
-    <header className="w-full sticky top-0 z-50 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 shadow-sm">
-      {/* Top Bar - Full Width */}
-      <div className="w-full bg-orange-600 dark:bg-orange-700 py-2 sm:py-2.5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="flex items-center justify-center">
-            <h1 className="text-sm sm:text-base md:text-lg lg:text-xl font-extrabold text-white text-center leading-tight">
+    <header className="w-full sticky top-0 z-50 isolate">
+      {/* 2026-style: single bar, glassmorphism, subtle gradient border */}
+      <div className="absolute inset-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-200/60 dark:border-white/10" />
+      <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-orange-500/5 dark:from-amber-400/5 dark:to-orange-400/5 pointer-events-none" />
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Brand — left */}
+          <Link
+            href="/"
+            className="flex items-center gap-3 min-w-0 group"
+          >
+            <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 text-white text-sm font-bold shadow-lg shadow-orange-500/25 transition duration-300 group-hover:shadow-orange-500/40 group-hover:scale-105">
+              MSO
+            </span>
+            <span className="hidden sm:block text-base font-semibold text-gray-900 dark:text-white truncate max-w-[180px] lg:max-w-none">
               {organizationName}
-            </h1>
+            </span>
           </Link>
-        </div>
-      </div>
 
-      {/* Navigation Bar - Full Width */}
-      <div className="w-full">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo - Left Side (Desktop) */}
-            {/* <Link href="/" className="hidden lg:flex flex-shrink-0 mr-6">
-              <div className="flex flex-col gap-0">
-                <span className="text-base font-extrabold text-orange-600 dark:text-orange-500">
-                  MSO
-                </span>
-              </div>
-            </Link> */}
-
-            {/* Logo - Left Side (Mobile) */}
-            <Link href="/" className="flex lg:hidden flex-shrink-0">
-              <div className="flex flex-col gap-0">
-                <span className="text-base font-extrabold text-orange-600 dark:text-orange-500">
-                  MSO
-                </span>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation - Left Aligned */}
-            <nav className="hidden lg:flex items-center gap-1 flex-1 justify-start">
-              {menuItems.map((item, index) => {
-                if (item.type === "link") {
-                  return (
-                    <Link
-                      key={item.id || index}
-                      href={item.href || "/"}
-                      className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      {item.label || "Menu Item"}
-                    </Link>
-                  );
-                } else if (item.type === "dropdown" && item.items) {
-                  return (
-                    <div key={item.id || index} className="relative group">
-                      <button className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors flex items-center gap-1">
-                        {item.label || "Dropdown"}
-                        <ChevronDown size={14} />
-                      </button>
-                      <div className="absolute left-0 top-full mt-1 hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg rounded-md border border-gray-200 dark:border-gray-700 min-w-[200px] z-50">
+          {/* Desktop nav — center */}
+          <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
+            {menuItems.map((item, index) => {
+              if (item.type === "link") {
+                return (
+                  <Link
+                    key={item.id || index}
+                    href={item.href || "/"}
+                    className="relative px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors rounded-lg hover:bg-gray-100/80 dark:hover:bg-white/5"
+                  >
+                    <span className="relative z-10">{item.label || "Menu Item"}</span>
+                    <span className="absolute inset-0 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 dark:from-amber-400/10 dark:to-orange-400/10 opacity-0 hover:opacity-100 transition-opacity" />
+                  </Link>
+                );
+              } else if (item.type === "dropdown" && item.items) {
+                return (
+                  <div key={item.id || index} className="relative group">
+                    <button className="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white transition-colors rounded-lg hover:bg-gray-100/80 dark:hover:bg-white/5">
+                      <span>{item.label || "Dropdown"}</span>
+                      <ChevronDown size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                    <div className="absolute left-1/2 -translate-x-1/2 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                      <div className="rounded-2xl bg-white/90 dark:bg-gray-900/95 backdrop-blur-xl shadow-xl shadow-gray-200/50 dark:shadow-black/30 border border-gray-200/80 dark:border-white/10 min-w-[200px] py-1.5">
                         {item.items.map((subitem, subIndex) => (
                           <Link
                             key={subitem.id || subIndex}
                             href={subitem.href || "/"}
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 hover:text-amber-700 dark:hover:text-amber-400 transition-colors first:rounded-t-xl last:rounded-b-xl"
                           >
                             {subitem.label || "Submenu"}
                           </Link>
                         ))}
                       </div>
                     </div>
-                  );
-                }
-                return null;
-              })}
-            </nav>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </nav>
 
-            {/* Right Side Actions */}
-            <div className="flex items-center gap-1 sm:gap-2">
-              {/* Search - Hidden on mobile */}
-              <button className="hidden sm:flex p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                <Search size={20} />
-              </button>
+          {/* Right: actions */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <button
+              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </button>
 
-              {/* Write Post Button - Hidden on mobile */}
-              <button
-                onClick={handleWritePost}
-                className="hidden md:flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-colors"
-              >
-                <Edit size={16} />
-                <span className="hidden lg:inline">Write</span>
-              </button>
+            <button
+              onClick={handleWritePost}
+              className="hidden md:flex items-center gap-2 h-9 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white text-sm font-medium shadow-lg shadow-orange-500/25 hover:shadow-orange-500/35 transition-all duration-300 hover:scale-[1.02]"
+            >
+              <Edit size={16} />
+              <span className="hidden lg:inline">Write</span>
+            </button>
 
-              {/* User Menu */}
-              {!loading && (
-                <>
-                  {user ? (
-                    <div className="relative" ref={userMenuRef}>
-                      <button
-                        onClick={() => setUserMenuOpen(!userMenuOpen)}
-                        className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                      >
-                        <User size={18} className="sm:w-5 sm:h-5" />
-                        <span className="hidden lg:inline">{user.name}</span>
-                        <ChevronDown size={14} className="hidden sm:block" />
-                      </button>
-                      {userMenuOpen && (
-                        <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
-                          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {user.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {user.email}
-                            </p>
-                          </div>
-                          <Link
-                            href={user.role === "ADMIN" ? "/admin" : "/user"}
-                            className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                            onClick={() => setUserMenuOpen(false)}
-                          >
-                            {user.role === "ADMIN"
-                              ? "Admin Panel"
-                              : "User Panel"}
-                          </Link>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                          >
-                            <LogOut size={16} />
-                            Logout
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link
-                      href="/login"
-                      className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+            {!loading && (
+              <>
+                {user ? (
+                  <div className="relative" ref={userMenuRef}>
+                    <button
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 h-9 pl-2 pr-2.5 rounded-xl border border-gray-200/80 dark:border-white/10 bg-gray-50/80 dark:bg-white/5 hover:bg-gray-100/80 dark:hover:bg-white/10 transition-colors"
                     >
-                      Login
-                    </Link>
-                  )}
-                </>
-              )}
+                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500/20 to-orange-500/20 dark:from-amber-400/20 dark:to-orange-400/20 text-amber-700 dark:text-amber-400 font-semibold text-xs">
+                        {user.name?.charAt(0)?.toUpperCase() || "U"}
+                      </span>
+                      <span className="hidden lg:inline text-sm font-medium text-gray-700 dark:text-gray-200 max-w-[100px] truncate">
+                        {user.name}
+                      </span>
+                      <ChevronDown size={14} className="text-gray-500 dark:text-gray-400 hidden sm:block" />
+                    </button>
+                    {userMenuOpen && (
+                      <div className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl shadow-xl shadow-gray-200/50 dark:shadow-black/30 border border-gray-200/80 dark:border-white/10 overflow-hidden z-50">
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-white/10 bg-gray-50/50 dark:bg-white/5">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                            {user.name}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+                            {user.email}
+                          </p>
+                        </div>
+                        <Link
+                          href={user.role === "ADMIN" ? "/admin" : "/user"}
+                          className="flex items-center gap-2 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                          onClick={() => setUserMenuOpen(false)}
+                        >
+                          {user.role === "ADMIN" ? "Admin Panel" : "User Panel"}
+                        </Link>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-500/10 transition-colors"
+                        >
+                          <LogOut size={16} />
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="flex items-center gap-2 h-9 px-4 rounded-xl border border-amber-500/30 dark:border-amber-400/30 text-amber-700 dark:text-amber-400 text-sm font-medium hover:bg-amber-50/80 dark:hover:bg-amber-500/10 transition-colors"
+                  >
+                    <User size={16} />
+                    Login
+                  </Link>
+                )}
+              </>
+            )}
 
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-label="Toggle theme"
-                suppressHydrationWarning
+            <button
+              onClick={toggleTheme}
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+              aria-label="Toggle theme"
+              suppressHydrationWarning
+            >
+              {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <Moon size={18} />}
+            </button>
+
+            <div className="hidden lg:flex items-center gap-1 ml-1 pl-2 border-l border-gray-200/80 dark:border-white/10">
+              <a
+                href={socialLinks.facebook || "https://facebook.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-[#1877F2] hover:bg-gray-100/80 dark:hover:bg-white/5 transition-all"
+                aria-label="Facebook"
               >
-                {mounted ? (theme === "dark" ? <Sun size={20} /> : <Moon size={20} />) : <Moon size={20} />}
-              </button>
-
-              {/* Social Icons - Hidden on mobile */}
-              <div className="hidden lg:flex items-center gap-2 ml-2 pl-2 border-l border-gray-200 dark:border-gray-700">
-                <a
-                  href={socialLinks.facebook || "https://facebook.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  aria-label="Facebook"
-                >
-                  <Facebook size={16} />
-                </a>
-                <a
-                  href={socialLinks.twitter || "https://twitter.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  aria-label="Twitter"
-                >
-                  <Twitter size={16} />
-                </a>
-                <a
-                  href={socialLinks.youtube || "https://youtube.com"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-1.5 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                  aria-label="YouTube"
-                >
-                  <Youtube size={16} />
-                </a>
-              </div>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setOpen(!open)}
-                className="lg:hidden p-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                aria-label="Toggle menu"
-                aria-expanded={open}
+                <Facebook size={16} />
+              </a>
+              <a
+                href={socialLinks.twitter || "https://twitter.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-[#1DA1F2] hover:bg-gray-100/80 dark:hover:bg-white/5 transition-all"
+                aria-label="Twitter"
               >
-                {open ? <X size={24} /> : <Menu size={24} />}
-              </button>
+                <Twitter size={16} />
+              </a>
+              <a
+                href={socialLinks.youtube || "https://youtube.com"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-500 dark:text-gray-400 hover:text-[#FF0000] hover:bg-gray-100/80 dark:hover:bg-white/5 transition-all"
+                aria-label="YouTube"
+              >
+                <Youtube size={16} />
+              </a>
             </div>
+
+            <button
+              onClick={() => setOpen(!open)}
+              className="lg:hidden flex h-9 w-9 items-center justify-center rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+              aria-label="Toggle menu"
+              aria-expanded={open}
+            >
+              {open ? <X size={22} /> : <Menu size={22} />}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu — 2026 full-bleed glass panel */}
       {open && (
-        <div className="lg:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 animate-in slide-in-from-top duration-200">
-          <div className="px-4 sm:px-6 py-4 space-y-2 max-h-[calc(100vh-72px)] overflow-y-auto">
+        <div className="lg:hidden relative border-t border-gray-200/60 dark:border-white/10 bg-white/95 dark:bg-gray-950/95 backdrop-blur-xl">
+          <div className="px-4 sm:px-6 py-5 space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto">
             {menuItems.map((item, index) => {
               if (item.type === "link") {
                 return (
@@ -342,7 +330,7 @@ export default function Navbar() {
                     key={item.id || index}
                     href={item.href || "/"}
                     onClick={() => setOpen(false)}
-                    className="block px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                    className="flex items-center px-4 py-3 rounded-xl text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 active:bg-gray-100 dark:active:bg-white/10 transition-colors"
                   >
                     {item.label || "Menu Item"}
                   </Link>
@@ -353,27 +341,20 @@ export default function Navbar() {
                 return (
                   <div key={item.id || index}>
                     <button
-                      onClick={() =>
-                        setMobileMenuOpen(isOpen ? null : menuKey)
-                      }
-                      className="w-full flex justify-between items-center px-4 py-3 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                      onClick={() => setMobileMenuOpen(isOpen ? null : menuKey)}
+                      className="w-full flex justify-between items-center px-4 py-3 rounded-xl text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
                     >
                       <span>{item.label || "Dropdown"}</span>
-                      <ChevronDown
-                        size={18}
-                        className={`transition-transform duration-200 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
+                      <ChevronDown size={18} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
                     </button>
                     {isOpen && (
-                      <div className="pl-4 space-y-1 mt-1 animate-in slide-in-from-top duration-200">
+                      <div className="pl-4 pr-2 pb-2 space-y-0.5">
                         {item.items.map((subitem, subIndex) => (
                           <Link
                             key={subitem.id || subIndex}
                             href={subitem.href || "/"}
                             onClick={() => setOpen(false)}
-                            className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                            className="block px-4 py-2.5 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100/80 dark:hover:bg-white/5 hover:text-amber-700 dark:hover:text-amber-400 transition-colors"
                           >
                             {subitem.label || "Submenu"}
                           </Link>
@@ -386,57 +367,51 @@ export default function Navbar() {
               return null;
             })}
 
-            <button
-              onClick={() => {
-                handleWritePost();
-                setOpen(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-md mt-4 transition-colors"
-            >
-              <Edit size={20} />
-              Write a Post
-            </button>
+            <div className="pt-4 mt-2 border-t border-gray-200/60 dark:border-white/10 space-y-2">
+              <button
+                onClick={() => { handleWritePost(); setOpen(false); }}
+                className="w-full flex items-center justify-center gap-2 h-11 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-white text-base font-medium shadow-lg shadow-orange-500/25 active:scale-[0.98] transition-transform"
+              >
+                <Edit size={20} />
+                Write a Post
+              </button>
 
-            {!loading && (
-              <>
-                {user ? (
-                  <>
-                    <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 mt-4">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                        {user.name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        {user.email}
-                      </p>
-                    </div>
+              {!loading && (
+                <>
+                  {user ? (
+                    <>
+                      <div className="px-4 py-3 rounded-xl bg-gray-50/80 dark:bg-white/5">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{user.name}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{user.email}</p>
+                      </div>
+                      <Link
+                        href={user.role === "ADMIN" ? "/admin" : "/user"}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center px-4 py-3 rounded-xl text-base text-gray-700 dark:text-gray-300 hover:bg-gray-100/80 dark:hover:bg-white/5 transition-colors"
+                      >
+                        {user.role === "ADMIN" ? "Admin Panel" : "User Panel"}
+                      </Link>
+                      <button
+                        onClick={() => { handleLogout(); setOpen(false); }}
+                        className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-base text-red-600 dark:text-red-400 hover:bg-red-50/80 dark:hover:bg-red-500/10 transition-colors"
+                      >
+                        <LogOut size={18} />
+                        Logout
+                      </button>
+                    </>
+                  ) : (
                     <Link
-                      href={user.role === "ADMIN" ? "/admin" : "/user"}
+                      href="/login"
                       onClick={() => setOpen(false)}
-                      className="block px-4 py-3 text-base text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
+                      className="flex items-center justify-center gap-2 h-11 rounded-xl border-2 border-amber-500/40 text-amber-700 dark:text-amber-400 font-medium hover:bg-amber-50/80 dark:hover:bg-amber-500/10 transition-colors"
                     >
-                      {user.role === "ADMIN" ? "Admin Panel" : "User Panel"}
+                      <User size={18} />
+                      Login
                     </Link>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setOpen(false);
-                      }}
-                      className="w-full text-left px-4 py-3 text-base text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    href="/login"
-                    onClick={() => setOpen(false)}
-                    className="block px-4 py-3 text-base font-medium text-blue-600 dark:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md mt-4 transition-colors"
-                  >
-                    Login
-                  </Link>
-                )}
-              </>
-            )}
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

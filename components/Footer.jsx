@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Facebook, Twitter, Youtube, Instagram, Linkedin, Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Facebook, Twitter, Youtube, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
 import axios from "axios";
 
 export default function Footer() {
@@ -50,108 +50,97 @@ export default function Footer() {
   
   const copyrightText = copyright.replace("{year}", new Date().getFullYear().toString());
 
+  // UI pattern: minimal footer with icon blocks (contact) + compact link columns
   return (
-    <footer className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-gray-300 border-t border-slate-700/50">
-      {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
-          {/* Company Info */}
-          <div className="lg:col-span-2">
-            <Link href="/" className="inline-block mb-6">
-              <h3 className="text-2xl font-bold text-white hover:text-red-400 transition-colors">
+    <footer className="bg-gray-100 dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-8">
+          {/* Brand + contact icon blocks */}
+          <div className="lg:col-span-5">
+            <Link href="/" className="inline-block mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 Maharashtra Startup Organisation
               </h3>
             </Link>
-            <p className="text-sm leading-relaxed text-gray-400 mb-6 max-w-md">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 max-w-sm leading-relaxed">
               {description}
             </p>
-            <div className="flex items-center gap-4 mb-6">
-              <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors group">
-                <Facebook size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+            <div className="flex flex-wrap gap-3 mb-6">
+              <a href={socialLinks.facebook} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#1877F2] hover:border-[#1877F2]/30 transition-colors" aria-label="Facebook">
+                <Facebook size={18} />
               </a>
-              <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors group">
-                <Twitter size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+              <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#1DA1F2] hover:border-[#1DA1F2]/30 transition-colors" aria-label="Twitter">
+                <Twitter size={18} />
               </a>
-              <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors group">
-                <Youtube size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+              <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#FF0000] hover:border-[#FF0000]/30 transition-colors" aria-label="YouTube">
+                <Youtube size={18} />
               </a>
-              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors group">
-                <Instagram size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+              <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#E4405F] hover:border-[#E4405F]/30 transition-colors" aria-label="Instagram">
+                <Instagram size={18} />
               </a>
-              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-red-500 flex items-center justify-center transition-colors group">
-                <Linkedin size={18} className="text-gray-400 group-hover:text-white transition-colors" />
+              <a href={socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#0A66C2] hover:border-[#0A66C2]/30 transition-colors" aria-label="LinkedIn">
+                <Linkedin size={18} />
               </a>
             </div>
             <div className="space-y-3">
-              <div className="flex items-start gap-3 text-sm">
-                <Mail size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
-                <a href={`mailto:${email}`} className="text-gray-400 hover:text-white transition-colors">
-                  {email}
-                </a>
-              </div>
-              <div className="flex items-start gap-3 text-sm">
-                <Phone size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
-                <a href={`tel:${phone.replace(/\s+/g, '')}`} className="text-gray-400 hover:text-white transition-colors">
-                  {phone}
-                </a>
-              </div>
-              <div className="flex items-start gap-3 text-sm">
-                <MapPin size={18} className="text-red-500 mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">{address}</span>
+              <a href={`mailto:${email}`} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <span className="w-9 h-9 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0">
+                  <Mail size={16} className="text-gray-500 dark:text-gray-400" />
+                </span>
+                {email}
+              </a>
+              <a href={`tel:${phone.replace(/\s+/g, "")}`} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                <span className="w-9 h-9 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0">
+                  <Phone size={16} className="text-gray-500 dark:text-gray-400" />
+                </span>
+                {phone}
+              </a>
+              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                <span className="w-9 h-9 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center shrink-0">
+                  <MapPin size={16} className="text-gray-500 dark:text-gray-400" />
+                </span>
+                {address}
               </div>
             </div>
           </div>
 
-          {/* Resources */}
+          {/* Link columns — minimal list style */}
           {resources.length > 0 && (
-            <div>
-              <h4 className="text-white font-bold text-base mb-6 uppercase tracking-wider">
-                Resources
-              </h4>
-              <ul className="space-y-3 text-sm">
+            <div className="lg:col-span-2">
+              <h4 className="text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-4">Resources</h4>
+              <ul className="space-y-2 text-sm">
                 {resources.map((link, index) => (
                   <li key={index}>
-                    <Link href={link.url || "/"} className="text-gray-400 hover:text-red-400 transition-colors flex items-center gap-2 group">
-                      <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span>{link.title}</span>
+                    <Link href={link.url || "/"} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                      {link.title}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
-          {/* Company */}
           {company.length > 0 && (
-            <div>
-              <h4 className="text-white font-bold text-base mb-6 uppercase tracking-wider">
-                Company
-              </h4>
-              <ul className="space-y-3 text-sm">
+            <div className="lg:col-span-2">
+              <h4 className="text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-4">Company</h4>
+              <ul className="space-y-2 text-sm">
                 {company.map((link, index) => (
                   <li key={index}>
-                    <Link href={link.url || "/"} className="text-gray-400 hover:text-red-400 transition-colors flex items-center gap-2 group">
-                      <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span>{link.title}</span>
+                    <Link href={link.url || "/"} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                      {link.title}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-
-          {/* Legal & Support */}
           {legal.length > 0 && (
-            <div>
-              <h4 className="text-white font-bold text-base mb-6 uppercase tracking-wider">
-                Legal & Support
-              </h4>
-              <ul className="space-y-3 text-sm">
+            <div className="lg:col-span-2">
+              <h4 className="text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-4">Legal & Support</h4>
+              <ul className="space-y-2 text-sm">
                 {legal.map((link, index) => (
                   <li key={index}>
-                    <Link href={link.url || "/"} className="text-gray-400 hover:text-red-400 transition-colors flex items-center gap-2 group">
-                      <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <span>{link.title}</span>
+                    <Link href={link.url || "/"} className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                      {link.title}
                     </Link>
                   </li>
                 ))}
@@ -161,18 +150,15 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-slate-700/50 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-gray-400">
-              <p>{copyrightText}</p>
-              {tagline && <p className="mt-1 text-xs text-gray-500">{tagline}</p>}
-            </div>
+      <div className="border-t border-gray-200 dark:border-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <p>{copyrightText}</p>
+            {tagline && <p className="hidden sm:block text-xs">{tagline}</p>}
             {bottomLinks.length > 0 && (
-              <div className="flex flex-wrap items-center gap-6 text-sm">
+              <div className="flex flex-wrap items-center justify-center gap-4">
                 {bottomLinks.map((link, index) => (
-                  <Link key={index} href={link.url || "/"} className="text-gray-400 hover:text-red-400 transition-colors">
+                  <Link key={index} href={link.url || "/"} className="hover:text-gray-900 dark:hover:text-white transition-colors">
                     {link.title}
                   </Link>
                 ))}

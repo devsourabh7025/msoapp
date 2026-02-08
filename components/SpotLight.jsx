@@ -79,200 +79,106 @@ export default function SpotLight() {
     return null;
   }
 
-  return (
-    <section className="relative bg-gray-100 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 py-16 overflow-hidden">
-      {/* Curved Decorative Lines */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Top curved line */}
-        <svg className="absolute top-0 left-0 w-full h-32 text-blue-200 dark:text-blue-900/30" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path
-            d="M0,60 Q300,20 600,60 T1200,60 L1200,0 L0,0 Z"
-            fill="currentColor"
-            opacity="0.3"
-          />
-        </svg>
-        
-        {/* Bottom curved line */}
-        <svg className="absolute bottom-0 left-0 w-full h-32 text-blue-200 dark:text-blue-900/30" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path
-            d="M0,60 Q300,100 600,60 T1200,60 L1200,120 L0,120 Z"
-            fill="currentColor"
-            opacity="0.3"
-          />
-        </svg>
+  const sectionTitle = spotlightSettings?.title || "Spotlight";
+  const sectionSubtitle = spotlightSettings?.subtitle;
 
-        {/* Side curved accent */}
-        <svg className="absolute left-0 top-1/2 -translate-y-1/2 w-64 h-full text-blue-200 dark:text-blue-900/20" viewBox="0 0 256 800" preserveAspectRatio="none">
-          <path
-            d="M0,400 Q128,200 256,400 T256,800 L0,800 Z"
-            fill="currentColor"
-            opacity="0.2"
-          />
-        </svg>
-      </div>
+  // Bento: first = large card, rest = small cards (different UI pattern)
+  const mainPost = spotlightPosts[0];
+  const sidePosts = spotlightPosts.slice(1, 4);
+
+  return (
+    <section className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-14 sm:py-16">
+      <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.03] via-transparent to-amber-500/[0.04] dark:from-orange-400/[0.04] dark:to-amber-400/[0.05] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Attractive Horizontal Header */}
-        <div className="mb-12">
-          <div className="flex items-center gap-6 mb-6">
-            {/* Decorative curved line before title */}
-            <svg className="hidden md:block w-24 h-1 text-blue-300 dark:text-blue-800" viewBox="0 0 96 4">
-              <path
-                d="M0,2 Q48,0 96,2"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-              />
-            </svg>
-            
-            <div className="relative inline-flex items-center gap-3">
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-black dark:text-white">
-                {spotlightSettings?.title || "Spot"}
-                {spotlightSettings?.title ? "" : (
-                  <span className="relative inline-block">
-                    Light
-                    <span className="absolute -top-1 -right-6 w-3 h-3 bg-red-600 dark:bg-red-500 rounded-full"></span>
-                  </span>
-                )}
-              </h2>
-              
-              {/* Decorative curved accent */}
-              <svg className="absolute -right-8 top-1/2 -translate-y-1/2 w-16 h-16 text-blue-300 dark:text-blue-800" viewBox="0 0 64 64">
-                <path
-                  d="M16,32 Q32,16 48,32"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  fill="none"
-                  opacity="0.6"
-                />
-              </svg>
-            </div>
-
-            {/* Decorative curved line after title */}
-            <div className="flex-1 relative">
-              <svg className="w-full h-1 text-blue-300 dark:text-blue-800" viewBox="0 0 400 4">
-                <path
-                  d="M0,2 Q200,0 400,2"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  fill="none"
-                  opacity="0.5"
-                />
-              </svg>
-            </div>
-          </div>
-          
-          {/* Subtitle with curved underline */}
-          {spotlightSettings?.subtitle && (
-            <div className="flex items-center gap-4">
-              <p className="text-gray-600 dark:text-gray-400 text-lg font-medium">
-                {spotlightSettings.subtitle}
+        <div className="mb-10">
+          <div className="flex flex-wrap items-baseline gap-3 gap-x-6">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {sectionTitle}
+            </h2>
+            {sectionSubtitle && (
+              <p className="text-base text-gray-600 dark:text-gray-400 font-medium">
+                {sectionSubtitle}
               </p>
-              <svg className="flex-1 h-px text-blue-200 dark:text-blue-900/50" viewBox="0 0 200 1">
-                <path
-                  d="M0,0.5 Q100,0.5 200,0.5"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  fill="none"
-                />
-              </svg>
-            </div>
-          )}
+            )}
+          </div>
+          <div className="mt-3 h-px w-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400" />
         </div>
 
-        {/* Article Cards Grid */}
         {spotlightPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {spotlightPosts.map((post, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+            {/* Bento: one large card (left), three small (right) */}
+            {mainPost && (
+              <Link
+                href={`/post?slug=${mainPost.slug}`}
+                className="group block lg:row-span-2"
+              >
+                <article className="relative h-full min-h-[280px] lg:min-h-[400px] overflow-hidden rounded-2xl bg-gray-900 dark:bg-gray-800 border border-gray-700 dark:border-gray-700 shadow-xl transition-all duration-300 group-hover:shadow-2xl group-hover:border-amber-500/30 hover:-translate-y-1">
+                  {mainPost.featuredImage ? (
+                    <Image
+                      src={mainPost.featuredImage}
+                      alt={mainPost.title}
+                      fill
+                      className="object-cover opacity-80 group-hover:opacity-90 group-hover:scale-105 transition-all duration-500"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-amber-600/80 to-orange-700/80" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                    <span className="inline-block px-2.5 py-1 rounded-lg text-xs font-medium bg-white/20 text-white/95 mb-3">
+                      {mainPost.category}
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-bold leading-tight mb-2 line-clamp-2 group-hover:text-amber-200 transition-colors">
+                      {mainPost.title}
+                    </h3>
+                    {mainPost.excerpt && (
+                      <p className="text-sm text-white/80 line-clamp-2 mb-3">{mainPost.excerpt}</p>
+                    )}
+                    <span className="text-sm text-white/70">{getAuthorName(mainPost.author)}</span>
+                  </div>
+                </article>
+              </Link>
+            )}
+            {sidePosts.map((post, index) => (
               <Link
                 key={post._id || post.id || index}
                 href={`/post?slug=${post.slug}`}
-                className="group relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2"
+                className="group flex gap-4 p-4 rounded-2xl bg-white/80 dark:bg-gray-900/80 border border-gray-200/60 dark:border-white/10 shadow-sm hover:shadow-lg hover:border-amber-500/20 dark:hover:border-amber-400/20 transition-all duration-300"
               >
-                {/* Decorative curved line on card */}
-                <svg className="absolute top-0 right-0 w-32 h-32 text-blue-100 dark:text-blue-900/50" viewBox="0 0 128 128">
-                  <path
-                    d="M0,64 Q32,32 64,64 T128,64 L128,0 L0,0 Z"
-                    fill="currentColor"
-                    opacity="0.4"
-                  />
-                </svg>
-
-                {/* Image */}
-                <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-slate-700">
+                <div className="w-24 h-24 shrink-0 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800">
                   {post.featuredImage ? (
                     <Image
                       src={post.featuredImage}
                       alt={post.title}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      width={96}
+                      height={96}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 flex items-center justify-center">
-                      <span className="text-white text-sm font-medium">No Image</span>
-                    </div>
+                    <div className="w-full h-full bg-gradient-to-br from-amber-400/40 to-orange-500/40" />
                   )}
-                  
-                  {/* Curved overlay on image */}
-                  <svg className="absolute bottom-0 left-0 w-full h-16 text-white dark:text-slate-900" viewBox="0 0 400 64" preserveAspectRatio="none">
-                    <path
-                      d="M0,64 Q200,32 400,64 L400,64 L0,64 Z"
-                      fill="currentColor"
-                      opacity="0.1"
-                    />
-                  </svg>
                 </div>
-
-                {/* Content */}
-                <div className="p-5 relative">
-                  {/* Category with curved accent */}
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2 h-2 bg-black dark:bg-white rounded-sm"></span>
-                    <span className="text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wide">
-                      {post.category}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-bold text-black dark:text-white leading-snug mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+                    {post.category}
+                  </span>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mt-0.5 line-clamp-2 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                     {post.title}
                   </h3>
-
-                  {/* Excerpt */}
-                  {post.excerpt && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 line-clamp-3">
-                      {post.excerpt}
-                    </p>
-                  )}
-
-                  {/* Author with arrow */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                      <User size={14} className="text-gray-500 dark:text-gray-400" />
-                      <span className="font-medium">{getAuthorName(post.author)}</span>
-                    </div>
-                    <ArrowRight size={16} className="text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-                  </div>
-
-                  {/* Bottom curved accent line */}
-                  <svg className="absolute bottom-0 left-0 w-full h-1 text-blue-200 dark:text-blue-800" viewBox="0 0 300 4" preserveAspectRatio="none">
-                    <path
-                      d="M0,2 Q150,0 300,2"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      fill="none"
-                      opacity="0.5"
-                    />
-                  </svg>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 truncate block">
+                    {getAuthorName(post.author)}
+                  </span>
                 </div>
+                <ArrowRight size={16} className="shrink-0 text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
               </Link>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 dark:text-gray-400 text-lg">No spotlight posts selected</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Select posts in the admin panel to display them here</p>
+          <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 py-14 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No spotlight posts selected</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Choose posts in the admin panel to show here</p>
           </div>
         )}
       </div>
