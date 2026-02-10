@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
@@ -19,14 +19,14 @@ export default function HeroFeatured() {
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const loadHeroContent = async () => {
       try {
         setLoading(true);
         // Fetch hero section data from dedicated hero API endpoint
         const response = await axios.get("/api/settings/hero");
         if (!isMounted) return;
-        
+
         if (response.data && response.data.hero) {
           // Hero section data comes from dedicated endpoint
           setHeroContent(response.data.hero);
@@ -54,7 +54,7 @@ export default function HeroFeatured() {
     };
 
     loadHeroContent();
-    
+
     return () => {
       isMounted = false;
     };
@@ -63,15 +63,18 @@ export default function HeroFeatured() {
   const { topPicks, mainArticle, discussionTableArticles } = useMemo(() => {
     // Only use admin-selected posts from database
     return {
-      topPicks: heroContent?.topPicks && heroContent.topPicks.length > 0
-        ? heroContent.topPicks
-        : [],
-      mainArticle: heroContent?.mainArticle && heroContent.mainArticle._id
-        ? heroContent.mainArticle
-        : null,
-      discussionTableArticles: heroContent?.discussionTable && heroContent.discussionTable.length > 0
-        ? heroContent.discussionTable.slice(0, 4) // Limit to 4 posts
-        : [],
+      topPicks:
+        heroContent?.topPicks && heroContent.topPicks.length > 0
+          ? heroContent.topPicks
+          : [],
+      mainArticle:
+        heroContent?.mainArticle && heroContent.mainArticle._id
+          ? heroContent.mainArticle
+          : null,
+      discussionTableArticles:
+        heroContent?.discussionTable && heroContent.discussionTable.length > 0
+          ? heroContent.discussionTable.slice(0, 4) // Limit to 4 posts
+          : [],
     };
   }, [heroContent]);
 
@@ -85,7 +88,10 @@ export default function HeroFeatured() {
               <div className="h-6 bg-gray-200/80 dark:bg-gray-800 rounded-full w-28" />
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="aspect-[4/3] bg-gray-200/80 dark:bg-gray-800 rounded-2xl" />
+                  <div
+                    key={i}
+                    className="aspect-[4/3] bg-gray-200/80 dark:bg-gray-800 rounded-2xl"
+                  />
                 ))}
               </div>
               <div className="aspect-[21/10] bg-gray-200/80 dark:bg-gray-800 rounded-2xl" />
@@ -158,8 +164,12 @@ export default function HeroFeatured() {
                 </div>
               ) : (
                 <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-8 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No top picks selected</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Choose posts in the admin panel to show here</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No top picks selected
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Choose posts in the admin panel to show here
+                  </p>
                 </div>
               )}
             </div>
@@ -167,7 +177,10 @@ export default function HeroFeatured() {
             {/* Main Article — hero card */}
             <div>
               {mainArticle ? (
-                <Link href={`/post?slug=${mainArticle.slug}`} className="group block">
+                <Link
+                  href={`/post?slug=${mainArticle.slug}`}
+                  className="group block"
+                >
                   <article className="relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 shadow-sm ring-1 ring-gray-200/40 dark:ring-white/5 transition-all duration-300 group-hover:shadow-xl group-hover:ring-amber-500/15 dark:group-hover:ring-amber-400/15">
                     {/* Optional hero image */}
                     {mainArticle.featuredImage && (
@@ -183,29 +196,48 @@ export default function HeroFeatured() {
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent" />
                       </div>
                     )}
-                    <div className={`relative z-10 ${mainArticle.featuredImage ? "absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white" : "p-6 sm:p-8"}`}>
-                      <span className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium mb-3 ${mainArticle.featuredImage ? "bg-white/20 text-white/95" : "bg-amber-500/15 dark:bg-amber-400/15 text-amber-800 dark:text-amber-200"}`}>
+                    <div
+                      className={`relative z-10 ${mainArticle.featuredImage ? "absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white" : "p-6 sm:p-8"}`}
+                    >
+                      <span
+                        className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium mb-3 ${mainArticle.featuredImage ? "bg-white/20 text-white/95" : "bg-amber-500/15 dark:bg-amber-400/15 text-amber-800 dark:text-amber-200"}`}
+                      >
                         {mainArticle.category || "Featured"}
                       </span>
-                      <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3 transition-colors ${mainArticle.featuredImage ? "text-white" : "text-gray-900 dark:text-white"} group-hover:text-amber-600 dark:group-hover:text-amber-400`}>
+                      <h1
+                        className={`text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3 transition-colors ${mainArticle.featuredImage ? "text-white" : "text-gray-900 dark:text-white"} group-hover:text-amber-600 dark:group-hover:text-amber-400`}
+                      >
                         {mainArticle.title}
                       </h1>
                       {mainArticle.excerpt && (
-                        <p className={`text-sm sm:text-base max-w-2xl leading-relaxed mb-4 ${mainArticle.featuredImage ? "text-white/90" : "text-gray-600 dark:text-gray-400"}`}>
+                        <p
+                          className={`text-sm sm:text-base max-w-2xl leading-relaxed mb-4 ${mainArticle.featuredImage ? "text-white/90" : "text-gray-600 dark:text-gray-400"}`}
+                        >
                           {mainArticle.excerpt}
                         </p>
                       )}
-                      <span className={`text-sm font-medium ${mainArticle.featuredImage ? "text-white/80" : "text-gray-500 dark:text-gray-400"}`}>
+                      <span
+                        className={`text-sm font-medium ${mainArticle.featuredImage ? "text-white/80" : "text-gray-500 dark:text-gray-400"}`}
+                      >
                         {getAuthorName(mainArticle.author)}
                       </span>
                     </div>
-                    {!mainArticle.featuredImage && <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 dark:from-amber-400/5 dark:to-orange-400/5 pointer-events-none -z-0" aria-hidden />}
+                    {!mainArticle.featuredImage && (
+                      <div
+                        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 dark:from-amber-400/5 dark:to-orange-400/5 pointer-events-none -z-0"
+                        aria-hidden
+                      />
+                    )}
                   </article>
                 </Link>
               ) : (
                 <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-10 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No main article selected</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Set one in the admin panel</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No main article selected
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Set one in the admin panel
+                  </p>
                 </div>
               )}
             </div>
@@ -246,15 +278,21 @@ export default function HeroFeatured() {
                         <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
                           {post.title}
                         </h3>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{getAuthorName(post.author)}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {getAuthorName(post.author)}
+                        </p>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
                 <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-6 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No discussion posts yet</p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Add them in the admin panel</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No discussion posts yet
+                  </p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Add them in the admin panel
+                  </p>
                 </div>
               )}
             </div>
