@@ -23,7 +23,7 @@ import {
 function PostContent() {
   const searchParams = useSearchParams();
   const slug = searchParams.get("slug");
-  
+
   const [post, setPost] = useState(null);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,8 +61,10 @@ function PostContent() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`/api/public/posts/${encodeURIComponent(slug)}`);
-        
+        const response = await fetch(
+          `/api/public/posts/${encodeURIComponent(slug)}`,
+        );
+
         if (!response.ok) {
           if (response.status === 404) {
             setError("Post not found");
@@ -102,7 +104,9 @@ function PostContent() {
   const fetchComments = async (postSlug) => {
     try {
       setCommentLoading(true);
-      const response = await fetch(`/api/posts/${encodeURIComponent(postSlug)}/comments`);
+      const response = await fetch(
+        `/api/posts/${encodeURIComponent(postSlug)}/comments`,
+      );
       if (response.ok) {
         const data = await response.json();
         setComments(data.comments || []);
@@ -127,15 +131,18 @@ function PostContent() {
 
     try {
       setSubmittingComment(true);
-      const response = await fetch(`/api/posts/${encodeURIComponent(slug)}/comments`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `/api/posts/${encodeURIComponent(slug)}/comments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: commentContent.trim(),
+          }),
         },
-        body: JSON.stringify({
-          content: commentContent.trim(),
-        }),
-      });
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -181,12 +188,14 @@ function PostContent() {
     if (post.content && post.content.trim() !== "") {
       // Check if content is HTML (contains HTML tags)
       const hasHtmlTags = /<[^>]+>/.test(post.content);
-      
+
       if (hasHtmlTags) {
         // Render HTML content directly
         return (
           <>
-            <style dangerouslySetInnerHTML={{__html: `
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
               .post-content {
                 font-size: 1.125rem;
                 line-height: 1.875;
@@ -376,7 +385,9 @@ function PostContent() {
                 background: #0f172a;
                 border-color: #1e293b;
               }
-            `}} />
+            `,
+              }}
+            />
             <div
               className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed prose prose-lg max-w-none post-content bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50"
               dangerouslySetInnerHTML={{ __html: post.content || "" }}
@@ -388,15 +399,25 @@ function PostContent() {
 
     // Fallback: If contentBlocks exist and have meaningful structure (not just wrapper), render them
     // Only use contentBlocks if content is empty or doesn't contain HTML
-    if ((!post.content || post.content.trim() === "" || !/<[^>]+>/.test(post.content)) && 
-        post.contentBlocks && Array.isArray(post.contentBlocks) && post.contentBlocks.length > 0) {
+    if (
+      (!post.content ||
+        post.content.trim() === "" ||
+        !/<[^>]+>/.test(post.content)) &&
+      post.contentBlocks &&
+      Array.isArray(post.contentBlocks) &&
+      post.contentBlocks.length > 0
+    ) {
       // Check if it's a real contentBlocks structure (has multiple blocks or complex structure)
       // vs just a wrapper [{ type: "text", content: html }]
       const firstBlock = post.contentBlocks[0];
-      const isRealContentBlocks = post.contentBlocks.length > 1 || 
+      const isRealContentBlocks =
+        post.contentBlocks.length > 1 ||
         (firstBlock && firstBlock.type !== "text") ||
-        (firstBlock && firstBlock.type === "text" && firstBlock.content && !/<[^>]+>/.test(firstBlock.content));
-      
+        (firstBlock &&
+          firstBlock.type === "text" &&
+          firstBlock.content &&
+          !/<[^>]+>/.test(firstBlock.content));
+
       if (isRealContentBlocks) {
         return (
           <div className="space-y-6 text-gray-700 leading-relaxed">
@@ -410,13 +431,17 @@ function PostContent() {
                   );
                 case "text":
                   const textStyle = {
-                    fontWeight: block.bold ? 'bold' : 'normal',
-                    fontStyle: block.italic ? 'italic' : 'normal',
-                    textDecoration: block.underline ? 'underline' : 'none',
+                    fontWeight: block.bold ? "bold" : "normal",
+                    fontStyle: block.italic ? "italic" : "normal",
+                    textDecoration: block.underline ? "underline" : "none",
                     color: block.color || undefined,
                   };
                   return (
-                    <p key={index} className="text-gray-700 dark:text-gray-300" style={textStyle}>
+                    <p
+                      key={index}
+                      className="text-gray-700 dark:text-gray-300"
+                      style={textStyle}
+                    >
                       {block.content}
                     </p>
                   );
@@ -467,21 +492,38 @@ function PostContent() {
                         } list-inside space-y-2 ml-4`}
                       >
                         {block.content?.map((item, itemIndex) => {
-                          const itemText = typeof item === 'string' ? item : item?.text || "";
-                          const itemBold = typeof item === 'string' ? false : item?.bold || false;
-                          const itemItalic = typeof item === 'string' ? false : item?.italic || false;
-                          const itemUnderline = typeof item === 'string' ? false : item?.underline || false;
-                          const itemColor = typeof item === 'string' ? "" : item?.color || "";
-                          
+                          const itemText =
+                            typeof item === "string" ? item : item?.text || "";
+                          const itemBold =
+                            typeof item === "string"
+                              ? false
+                              : item?.bold || false;
+                          const itemItalic =
+                            typeof item === "string"
+                              ? false
+                              : item?.italic || false;
+                          const itemUnderline =
+                            typeof item === "string"
+                              ? false
+                              : item?.underline || false;
+                          const itemColor =
+                            typeof item === "string" ? "" : item?.color || "";
+
                           const style = {
-                            fontWeight: itemBold ? 'bold' : 'normal',
-                            fontStyle: itemItalic ? 'italic' : 'normal',
-                            textDecoration: itemUnderline ? 'underline' : 'none',
+                            fontWeight: itemBold ? "bold" : "normal",
+                            fontStyle: itemItalic ? "italic" : "normal",
+                            textDecoration: itemUnderline
+                              ? "underline"
+                              : "none",
                             color: itemColor || undefined,
                           };
-                          
+
                           return (
-                            <li key={itemIndex} className="text-gray-700 dark:text-gray-300" style={style}>
+                            <li
+                              key={itemIndex}
+                              className="text-gray-700 dark:text-gray-300"
+                              style={style}
+                            >
                               {itemText}
                             </li>
                           );
@@ -523,12 +565,17 @@ function PostContent() {
           left={
             <div className="flex items-center justify-center min-h-[400px]">
               <div className="text-center">
-                <Loader2 className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
-                <p className="text-gray-600 dark:text-gray-400">Loading post...</p>
+                <Loader2
+                  className="animate-spin mx-auto mb-4 text-blue-600"
+                  size={48}
+                />
+                <p className="text-gray-600 dark:text-gray-400">
+                  Loading post...
+                </p>
               </div>
             </div>
           }
-          right={<Sidebar />}
+          right={<Sidebar location="post" />}
         />
         <Footer />
       </>
@@ -555,7 +602,7 @@ function PostContent() {
               </div>
             </div>
           }
-          right={<Sidebar />}
+          right={<Sidebar location="post" />}
         />
         <Footer />
       </>
@@ -571,8 +618,8 @@ function PostContent() {
           <article className="space-y-10">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-sm">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className="text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 font-medium"
               >
                 Home
@@ -605,7 +652,10 @@ function PostContent() {
                   </div>
                   <div>
                     <span className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-                      <User size={14} className="text-gray-500 dark:text-gray-400" />
+                      <User
+                        size={14}
+                        className="text-gray-500 dark:text-gray-400"
+                      />
                       {getAuthorName(post.author)}
                     </span>
                     {post.publishedAt && (
@@ -757,7 +807,9 @@ function PostContent() {
                       <p className="text-sm font-bold text-gray-900 dark:text-white">
                         {user.name}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Leave a comment</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Leave a comment
+                      </p>
                     </div>
                   </div>
                   <form onSubmit={handleSubmitComment} className="space-y-4">
@@ -782,7 +834,10 @@ function PostContent() {
                 </div>
               ) : (
                 <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 p-8 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 text-center">
-                  <MessageCircle size={48} className="mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+                  <MessageCircle
+                    size={48}
+                    className="mx-auto mb-4 text-gray-400 dark:text-gray-500"
+                  />
                   <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 font-medium">
                     Please login to leave a comment
                   </p>
@@ -835,15 +890,19 @@ function PostContent() {
                 </div>
               ) : (
                 <div className="text-center py-12 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-2xl">
-                  <MessageCircle size={48} className="mx-auto mb-4 text-gray-300 dark:text-gray-600" />
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">No comments yet. Be the first to comment!</p>
+                  <MessageCircle
+                    size={48}
+                    className="mx-auto mb-4 text-gray-300 dark:text-gray-600"
+                  />
+                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                    No comments yet. Be the first to comment!
+                  </p>
                 </div>
               )}
             </div>
-
           </article>
         }
-        right={<Sidebar />}
+        right={<Sidebar location="post" />}
       />
 
       <Footer />
@@ -861,12 +920,17 @@ export default function PostPage() {
             left={
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
-                  <Loader2 className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
-                  <p className="text-gray-600 dark:text-gray-400">Loading post...</p>
+                  <Loader2
+                    className="animate-spin mx-auto mb-4 text-blue-600"
+                    size={48}
+                  />
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Loading post...
+                  </p>
                 </div>
               </div>
             }
-            right={<Sidebar />}
+            right={<Sidebar location="post" />}
           />
           <Footer />
         </>
@@ -876,12 +940,3 @@ export default function PostPage() {
     </Suspense>
   );
 }
-
-
-
-
-
-
-
-
-

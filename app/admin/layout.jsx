@@ -20,13 +20,15 @@ import {
   Star,
   Compass,
   TrendingUp,
+  Megaphone,
 } from "lucide-react";
 
 function AdminLayoutContent({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(null);
   const [customiseExpanded, setCustomiseExpanded] = useState(false);
-  const [homepageSectionsExpanded, setHomepageSectionsExpanded] = useState(false);
+  const [homepageSectionsExpanded, setHomepageSectionsExpanded] =
+    useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -40,13 +42,15 @@ function AdminLayoutContent({ children }) {
     if (pathname.startsWith("/admin/customise")) {
       setCustomiseExpanded(true);
       // Auto-expand homepage sections submenu if on any homepage section page
-      if (pathname.startsWith("/admin/customise/hero") ||
-          pathname.startsWith("/admin/customise/spotlight") ||
-          pathname.startsWith("/admin/customise/featured") ||
-          pathname.startsWith("/admin/customise/explore") ||
-          pathname.startsWith("/admin/customise/trending") ||
-          pathname === "/admin/customise" ||
-          searchParams?.get("section")) {
+      if (
+        pathname.startsWith("/admin/customise/hero") ||
+        pathname.startsWith("/admin/customise/spotlight") ||
+        pathname.startsWith("/admin/customise/featured") ||
+        pathname.startsWith("/admin/customise/explore") ||
+        pathname.startsWith("/admin/customise/trending") ||
+        pathname === "/admin/customise" ||
+        searchParams?.get("section")
+      ) {
         setHomepageSectionsExpanded(true);
       }
     }
@@ -115,6 +119,11 @@ function AdminLayoutContent({ children }) {
       icon: Clock,
     },
     {
+      name: "Ads Setup",
+      href: "/admin/ads",
+      icon: Megaphone,
+    },
+    {
       name: "Customise",
       href: "/admin/customise",
       icon: Settings,
@@ -137,7 +146,9 @@ function AdminLayoutContent({ children }) {
                 <h1 className="text-lg font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
                   Admin Panel
                 </h1>
-                <p className="text-[10px] text-slate-400 mt-0.5">Administration</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">
+                  Administration
+                </p>
               </div>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -162,7 +173,9 @@ function AdminLayoutContent({ children }) {
                 isActive = pathname === "/admin/add-post";
               } else {
                 // Customise should be active on /admin/customise and its sub-routes
-                isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                isActive =
+                  pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
               }
               const isCustomise = item.href === "/admin/customise";
 
@@ -173,16 +186,24 @@ function AdminLayoutContent({ children }) {
                       <button
                         onClick={() => setCustomiseExpanded(!customiseExpanded)}
                         className={`group w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
-                          isActive && pathname !== "/admin/customise/homepage-order"
+                          isActive &&
+                          pathname !== "/admin/customise/homepage-order"
                             ? "bg-gradient-to-r from-red-500 to-red-600 text-white shadow-md shadow-red-500/30"
                             : "text-slate-300 hover:bg-slate-700/50 hover:text-white"
                         }`}
                       >
                         <Icon
                           size={18}
-                          className={isActive && pathname !== "/admin/customise/homepage-order" ? "text-white" : "text-slate-400 group-hover:text-white"}
+                          className={
+                            isActive &&
+                            pathname !== "/admin/customise/homepage-order"
+                              ? "text-white"
+                              : "text-slate-400 group-hover:text-white"
+                          }
                         />
-                        <span className="font-medium text-sm flex-1 text-left">{item.name}</span>
+                        <span className="font-medium text-sm flex-1 text-left">
+                          {item.name}
+                        </span>
                         <ChevronRight
                           size={14}
                           className={`transition-transform duration-200 ${
@@ -194,15 +215,22 @@ function AdminLayoutContent({ children }) {
                         <div className="ml-4 mt-0.5 space-y-0.5">
                           <div>
                             <button
-                              onClick={() => setHomepageSectionsExpanded(!homepageSectionsExpanded)}
+                              onClick={() =>
+                                setHomepageSectionsExpanded(
+                                  !homepageSectionsExpanded,
+                                )
+                              }
                               className={`group w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${
-                                pathname === "/admin/customise" || searchParams?.get("section")
+                                pathname === "/admin/customise" ||
+                                searchParams?.get("section")
                                   ? "bg-slate-700/50 text-white"
                                   : "text-slate-400 hover:bg-slate-700/30 hover:text-white"
                               }`}
                             >
                               <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                              <span className="flex-1 text-left">Homepage Sections</span>
+                              <span className="flex-1 text-left">
+                                Homepage Sections
+                              </span>
                               <ChevronRight
                                 size={12}
                                 className={`transition-transform duration-200 ${
@@ -214,7 +242,9 @@ function AdminLayoutContent({ children }) {
                               <div className="ml-4 mt-0.5 space-y-0.5">
                                 {homepageSections.map((section) => {
                                   const SectionIcon = section.icon;
-                                  const isSectionActive = pathname === `/admin/customise/${section.id}`;
+                                  const isSectionActive =
+                                    pathname ===
+                                    `/admin/customise/${section.id}`;
                                   return (
                                     <Link
                                       key={section.id}
@@ -302,7 +332,11 @@ function AdminLayoutContent({ children }) {
                     >
                       <Icon
                         size={18}
-                        className={isActive ? "text-white" : "text-slate-400 group-hover:text-white"}
+                        className={
+                          isActive
+                            ? "text-white"
+                            : "text-slate-400 group-hover:text-white"
+                        }
                       />
                       <span className="font-medium text-sm">{item.name}</span>
                       {isActive && (
@@ -328,17 +362,18 @@ function AdminLayoutContent({ children }) {
                   const isCustomise = item.href === "/admin/customise";
                   let isActive = false;
                   if (isCustomise) {
-                    isActive = pathname === item.href || 
-                               pathname.startsWith(item.href + "/homepage-order") ||
-                               pathname.startsWith(item.href + "/hero") ||
-                               pathname.startsWith(item.href + "/spotlight") ||
-                               pathname.startsWith(item.href + "/featured") ||
-                               pathname.startsWith(item.href + "/explore") ||
-                               pathname.startsWith(item.href + "/trending") ||
-                               pathname.startsWith(item.href + "/header") ||
-                               pathname.startsWith(item.href + "/footer") ||
-                               pathname.startsWith(item.href + "/post") ||
-                               pathname.startsWith(item.href + "/sidebar");
+                    isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(item.href + "/homepage-order") ||
+                      pathname.startsWith(item.href + "/hero") ||
+                      pathname.startsWith(item.href + "/spotlight") ||
+                      pathname.startsWith(item.href + "/featured") ||
+                      pathname.startsWith(item.href + "/explore") ||
+                      pathname.startsWith(item.href + "/trending") ||
+                      pathname.startsWith(item.href + "/header") ||
+                      pathname.startsWith(item.href + "/footer") ||
+                      pathname.startsWith(item.href + "/post") ||
+                      pathname.startsWith(item.href + "/sidebar");
                   } else {
                     isActive = pathname === item.href;
                   }
@@ -348,9 +383,11 @@ function AdminLayoutContent({ children }) {
                       {isCustomise ? (
                         <div>
                           <button
-                            onClick={() => setCustomiseExpanded(!customiseExpanded)}
+                            onClick={() =>
+                              setCustomiseExpanded(!customiseExpanded)
+                            }
                             className={`group w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
-                              isActive && 
+                              isActive &&
                               pathname !== "/admin/customise/homepage-order" &&
                               pathname !== "/admin/customise/header" &&
                               pathname !== "/admin/customise/footer" &&
@@ -362,9 +399,16 @@ function AdminLayoutContent({ children }) {
                           >
                             <Icon
                               size={18}
-                              className={isActive && pathname !== "/admin/customise/homepage-order" ? "text-white" : "text-slate-400 group-hover:text-white"}
+                              className={
+                                isActive &&
+                                pathname !== "/admin/customise/homepage-order"
+                                  ? "text-white"
+                                  : "text-slate-400 group-hover:text-white"
+                              }
                             />
-                            <span className="font-medium text-sm flex-1 text-left">{item.name}</span>
+                            <span className="font-medium text-sm flex-1 text-left">
+                              {item.name}
+                            </span>
                             <ChevronRight
                               size={14}
                               className={`transition-transform duration-200 ${
@@ -376,25 +420,43 @@ function AdminLayoutContent({ children }) {
                             <div className="ml-4 mt-0.5 space-y-0.5">
                               <div>
                                 <button
-                                  onClick={() => setHomepageSectionsExpanded(!homepageSectionsExpanded)}
+                                  onClick={() =>
+                                    setHomepageSectionsExpanded(
+                                      !homepageSectionsExpanded,
+                                    )
+                                  }
                                   className={`group w-full flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${
                                     pathname === "/admin/customise" ||
-                                    pathname.startsWith("/admin/customise/hero") ||
-                                    pathname.startsWith("/admin/customise/spotlight") ||
-                                    pathname.startsWith("/admin/customise/featured") ||
-                                    pathname.startsWith("/admin/customise/explore") ||
-                                    pathname.startsWith("/admin/customise/trending") ||
+                                    pathname.startsWith(
+                                      "/admin/customise/hero",
+                                    ) ||
+                                    pathname.startsWith(
+                                      "/admin/customise/spotlight",
+                                    ) ||
+                                    pathname.startsWith(
+                                      "/admin/customise/featured",
+                                    ) ||
+                                    pathname.startsWith(
+                                      "/admin/customise/explore",
+                                    ) ||
+                                    pathname.startsWith(
+                                      "/admin/customise/trending",
+                                    ) ||
                                     searchParams?.get("section")
                                       ? "bg-slate-700/50 text-white"
                                       : "text-slate-400 hover:bg-slate-700/30 hover:text-white"
                                   }`}
                                 >
                                   <span className="w-1.5 h-1.5 rounded-full bg-current"></span>
-                                  <span className="flex-1 text-left">Homepage Sections</span>
+                                  <span className="flex-1 text-left">
+                                    Homepage Sections
+                                  </span>
                                   <ChevronRight
                                     size={12}
                                     className={`transition-transform duration-200 ${
-                                      homepageSectionsExpanded ? "rotate-90" : ""
+                                      homepageSectionsExpanded
+                                        ? "rotate-90"
+                                        : ""
                                     }`}
                                   />
                                 </button>
@@ -402,7 +464,9 @@ function AdminLayoutContent({ children }) {
                                   <div className="ml-4 mt-0.5 space-y-0.5">
                                     {homepageSections.map((section) => {
                                       const SectionIcon = section.icon;
-                                      const isSectionActive = pathname === `/admin/customise/${section.id}`;
+                                      const isSectionActive =
+                                        pathname ===
+                                        `/admin/customise/${section.id}`;
                                       return (
                                         <Link
                                           key={section.id}
@@ -490,9 +554,15 @@ function AdminLayoutContent({ children }) {
                         >
                           <Icon
                             size={18}
-                            className={isActive ? "text-white" : "text-slate-400 group-hover:text-white"}
+                            className={
+                              isActive
+                                ? "text-white"
+                                : "text-slate-400 group-hover:text-white"
+                            }
                           />
-                          <span className="font-medium text-sm">{item.name}</span>
+                          <span className="font-medium text-sm">
+                            {item.name}
+                          </span>
                           {isActive && (
                             <div className="ml-auto w-1 h-1 rounded-full bg-white"></div>
                           )}
@@ -523,7 +593,9 @@ function AdminLayoutContent({ children }) {
       )}
 
       {/* Main Content */}
-      <div className={`transition-all duration-300 ${sidebarOpen ? "md:ml-56" : "md:ml-0"}`}>
+      <div
+        className={`transition-all duration-300 ${sidebarOpen ? "md:ml-56" : "md:ml-0"}`}
+      >
         {/* Top Bar */}
         <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200/50 sticky top-0 z-20 shadow-sm">
           <div className="px-4 py-2 flex items-center justify-between">
@@ -553,11 +625,13 @@ function AdminLayoutContent({ children }) {
 
 export default function AdminLayout({ children }) {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
-        <div className="text-gray-500">Loading admin panel...</div>
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex items-center justify-center">
+          <div className="text-gray-500">Loading admin panel...</div>
+        </div>
+      }
+    >
       <AdminLayoutContent>{children}</AdminLayoutContent>
     </Suspense>
   );
