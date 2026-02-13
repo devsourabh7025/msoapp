@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import MainLayout from "@/components/MainLayout";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
+import PostAdBlock from "@/components/PostAdBlock";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -18,6 +19,7 @@ import {
   Twitter,
   User,
   Loader2,
+  Eye,
 } from "lucide-react";
 
 function PostContent() {
@@ -33,6 +35,7 @@ function PostContent() {
   const [user, setUser] = useState(null);
   const [commentContent, setCommentContent] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
+  const [views, setViews] = useState(0);
 
   useEffect(() => {
     // Check if user is logged in
@@ -80,6 +83,7 @@ function PostContent() {
         if (data.post) {
           setPost(data.post);
           setRelatedPosts(data.relatedPosts || []);
+          setViews(data.post.views ?? 0);
         } else {
           setError("Post not found");
         }
@@ -666,6 +670,12 @@ function PostContent() {
                     )}
                   </div>
                 </div>
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="flex items-center gap-1.5">
+                    <Eye size={14} />
+                    {views.toLocaleString()} {views === 1 ? "view" : "views"}
+                  </span>
+                </div>
                 <div className="flex items-center gap-2 ml-auto">
                   <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-200 text-sm font-medium hover:scale-105 active:scale-95">
                     <Share2 size={16} /> Share
@@ -694,6 +704,9 @@ function PostContent() {
                 </div>
               </div>
             )}
+
+            {/* Top Ad */}
+            <PostAdBlock position="top" />
 
             {/* Content */}
             {renderContent()}

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { ensureConnected } from "@/lib/moongoose";
 import Settings from "@/models/Settings";
+import Post from "@/models/Post";
 import jwt from "jsonwebtoken";
 import User from "@/models/User";
 
@@ -38,31 +39,19 @@ function optimizePostData(post) {
 // GET - Fetch trending section data
 export async function GET() {
   try {
-    const dbOperation = async () => {
-      await ensureConnected();
+    await ensureConnected();
 
-      const [trendingContentData, trendingSettingsData] = await Promise.all([
-        Settings.findOne({ key: "homepageTrendingContent" }).maxTimeMS(5000),
-        Settings.findOne({ key: "homepageSectionSettings" }).maxTimeMS(5000),
-      ]);
+    // Fetch top 6 published posts by views (descending), then by publishedAt
+    const trendingPosts = await Post.find({ status: "published" })
+      .sort({ views: -1, publishedAt: -1 })
+      .limit(6)
+      .populate("author", "name email")
+      .select("title slug excerpt category featuredImage publishedAt author views")
+      .lean();
 
-      return { trendingContentData, trendingSettingsData };
-    };
+    const trendingContent = trendingPosts.map((p) => optimizePostData(p));
 
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Database operation timeout")), 8000);
-    });
-
-    const { trendingContentData, trendingSettingsData } = await Promise.race([
-      dbOperation(),
-      timeoutPromise,
-    ]);
-
-    // Get trending content
-    let trendingContent = [];
-    if (trendingContentData?.value && Array.isArray(trendingContentData.value)) {
-      trendingContent = trendingContentData.value.map(optimizePostData);
-    }
+    const trendingSettingsData = await Settings.findOne({ key: "homepageSectionSettings" }).maxTimeMS(5000);
 
     // Get trending settings
     let trendingSettings = {

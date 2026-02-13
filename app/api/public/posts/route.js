@@ -23,6 +23,10 @@ export async function GET(request) {
       sortObj = { publishedAt: -1, createdAt: -1 };
     } else if (sort === "createdAt") {
       sortObj = { createdAt: -1 };
+    } else if (sort === "viewsAsc") {
+      sortObj = { views: 1, publishedAt: -1 };
+    } else if (sort === "viewsDesc") {
+      sortObj = { views: -1, publishedAt: -1 };
     }
     
     // Add timeout wrapper for database operations

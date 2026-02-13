@@ -6,37 +6,21 @@ import { ChevronRight } from "lucide-react";
 import axios from "axios";
 
 export default function DiscoverMore() {
-  const [categoriesWithPosts, setCategoriesWithPosts] = useState([]);
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadDiscoverPosts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/public/posts?limit=100");
-        const posts = response.data.posts || [];
-        if (posts.length === 0) {
-          setCategoriesWithPosts([]);
-          setLoading(false);
-          return;
-        }
-        const categoryMap = {};
-        posts.forEach((post) => {
-          if (post.category) {
-            if (!categoryMap[post.category]) categoryMap[post.category] = [];
-            categoryMap[post.category].push(post);
-          }
-        });
-        const validCategories = Object.keys(categoryMap).filter((cat) => categoryMap[cat].length >= 3);
-        const selectedCategories = validCategories.sort(() => Math.random() - 0.5).slice(0, 9);
-        const categoriesData = selectedCategories.map((categoryName) => ({
-          name: categoryName,
-          posts: categoryMap[categoryName].sort(() => Math.random() - 0.5).slice(0, 3),
-        }));
-        setCategoriesWithPosts(categoriesData);
+        const response = await axios.get(
+          "/api/public/posts?limit=9&sort=viewsAsc"
+        );
+        const data = response.data.posts || [];
+        setPosts(data);
       } catch (error) {
         console.error("Error loading discover posts:", error);
-        setCategoriesWithPosts([]);
+        setPosts([]);
       } finally {
         setLoading(false);
       }
@@ -57,53 +41,40 @@ export default function DiscoverMore() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 p-4 animate-pulse">
-                <div className="h-5 bg-gray-200/80 dark:bg-gray-800 rounded w-24 mb-3" />
-                <div className="space-y-2">
-                  {[1, 2, 3].map((j) => (
-                    <div key={j} className="h-4 bg-gray-200/80 dark:bg-gray-800 rounded w-full" />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : categoriesWithPosts.length > 0 ? (
-          <div className="flex flex-wrap gap-6">
-            {categoriesWithPosts.map((category, index) => (
+          <div className="space-y-2">
+            {[...Array(9)].map((_, i) => (
               <div
-                key={category.name || index}
-                className="flex flex-col items-start"
-              >
-                <span className="inline-block px-4 py-2 rounded-full text-sm font-semibold bg-violet-100 dark:bg-violet-500/20 text-violet-800 dark:text-violet-200 border border-violet-200/60 dark:border-violet-500/30 mb-3">
-                  {category.name}
-                </span>
-                {category.posts?.length > 0 ? (
-                  <ul className="flex flex-col gap-1.5">
-                    {category.posts.map((post, postIndex) => (
-                      <li key={post._id || post.slug || postIndex}>
-                        <Link
-                          href={`/post?slug=${post.slug}`}
-                          className="group/link flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors line-clamp-1"
-                        >
-                          <span className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-500 shrink-0 opacity-0 group-hover/link:opacity-100 transition-opacity" />
-                          <span className="min-w-0 truncate">{post.title}</span>
-                          <ChevronRight size={12} className="shrink-0 opacity-0 group-hover/link:opacity-100 transition-opacity text-violet-500" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-xs text-gray-400 dark:text-gray-500">No posts</p>
-                )}
-              </div>
+                key={i}
+                className="h-5 bg-gray-200/80 dark:bg-gray-800 rounded animate-pulse"
+              />
             ))}
           </div>
+        ) : posts.length > 0 ? (
+          <ul className="flex flex-col gap-2">
+            {posts.map((post, index) => (
+              <li key={post._id || post.slug || index}>
+                <Link
+                  href={`/post?slug=${post.slug}`}
+                  className="group flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="min-w-0 truncate">{post.title}</span>
+                  <ChevronRight
+                    size={14}
+                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-violet-500"
+                  />
+                </Link>
+              </li>
+            ))}
+          </ul>
         ) : (
           <div className="rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 py-8 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">No posts yet</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Publish posts to see them here</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No posts yet
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Publish posts to see them here
+            </p>
           </div>
         )}
       </div>

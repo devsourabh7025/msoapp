@@ -8,25 +8,33 @@ export async function GET(request, { params }) {
     await ensureConnected();
     
     const { slug } = await params;
-    
-    if (!slug) {
+    const slugTrimmed = typeof slug === "string" ? slug.trim() : slug;
+
+    if (!slugTrimmed) {
       return NextResponse.json(
         { error: "Slug is required" },
         { status: 400 }
       );
     }
-    
-    // Get published post by slug
-    const post = await Post.findOne({ 
-      slug: slug,
-      status: "published" 
-    })
+
+    // Increment views in DB (use native collection to ensure write)
+    const collection = Post.collection;
+    await collection.updateOne(
+      { slug: slugTrimmed, status: "published" },
+      { $inc: { views: 1 } }
+    );
+
+    // Second: fetch the post (with updated views)
+    const post = await Post.findOne(
+      { slug: slugTrimmed, status: "published" }
+    )
       .populate("author", "name email")
-      .select("-__v");
+      .select("-__v")
+      .lean();
 
     if (!post) {
       // Check if post exists with different status for better error message
-      const postExists = await Post.findOne({ slug: slug }).select("status title");
+      const postExists = await Post.findOne({ slug: slugTrimmed }).select("status title");
       if (postExists) {
         console.log(`Post found but status is "${postExists.status}", not "published"`);
         return NextResponse.json(
@@ -41,7 +49,7 @@ export async function GET(request, { params }) {
       return NextResponse.json(
         { 
           error: "Post not found",
-          message: `No post found with slug: ${slug}`
+          message: `No post found with slug: ${slugTrimmed}`
         },
         { status: 404 }
       );
@@ -58,8 +66,10 @@ export async function GET(request, { params }) {
       .limit(3)
       .select("title slug excerpt category featuredImage publishedAt author createdAt");
 
-    // Convert Mongoose document to plain object to ensure proper serialization
-    const postData = post.toObject ? post.toObject() : post;
+    const postData = post;
+    if (postData.views === undefined || postData.views === null) {
+      postData.views = 0;
+    }
     
     return NextResponse.json({ 
       post: postData,

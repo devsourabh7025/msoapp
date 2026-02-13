@@ -24,6 +24,7 @@ const PostSchema = new mongoose.Schema(
       default: false,
     },
     publishedAt: { type: Date },
+    views: { type: Number, default: 0 },
     // SEO Fields
     seo: {
       metaTitle: { type: String },

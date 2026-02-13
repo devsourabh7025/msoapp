@@ -1,11 +1,11 @@
 import SidebarPosts from "./sidebar/SidebarPosts";
-import Advertisement from "./sidebar/Advertisement";
+import PostAdBlock from "@/components/PostAdBlock";
 
 export default function Sidebar({ location = "post" }) {
   return (
     <aside className="space-y-8 sticky top-8 self-start">
       <SidebarPosts title="You May Like" />
-      <Advertisement location={location} />
+      <PostAdBlock position="sidebar" />
     </aside>
   );
 }
