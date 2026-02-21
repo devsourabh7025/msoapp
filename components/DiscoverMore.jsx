@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
 import axios from "axios";
 
 export default function DiscoverMore() {
@@ -14,67 +13,71 @@ export default function DiscoverMore() {
       try {
         setLoading(true);
         const response = await axios.get(
-          "/api/public/posts?limit=9&sort=viewsAsc"
+          "/api/public/posts?limit=12&sort=viewsAsc",
         );
-        const data = response.data.posts || [];
-        setPosts(data);
+
+        setPosts(
+          Array.isArray(response.data?.posts) ? response.data.posts : [],
+        );
       } catch (error) {
-        console.error("Error loading discover posts:", error);
         setPosts([]);
       } finally {
         setLoading(false);
       }
     };
+
     loadDiscoverPosts();
   }, []);
 
-  return (
-    <section id="more-insights" className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-10 sm:py-12">
-      <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.03] via-transparent to-amber-500/[0.03] dark:from-violet-400/[0.04] dark:to-amber-400/[0.04] pointer-events-none" />
+  const columns = useMemo(() => {
+    const colCount = 3;
+    const perCol = Math.ceil(posts.length / colCount);
+    const result = [];
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-6 sm:mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            More Insights
-          </h2>
-          <div className="mt-2 h-px w-12 rounded-full bg-gradient-to-r from-violet-500 to-amber-500 dark:from-violet-400 dark:to-amber-400" />
-        </div>
+    for (let i = 0; i < colCount; i++) {
+      result.push(posts.slice(i * perCol, (i + 1) * perCol));
+    }
+
+    return result;
+  }, [posts]);
+
+  if (!loading && posts.length === 0) return null;
+
+  return (
+    <section className="bg-white py-24">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Big Title */}
+        <h2 className="text-6xl md:text-7xl font-extrabold tracking-tight mb-4">
+          Discover More
+        </h2>
+        <div className="h-px bg-black w-24 mb-16" />
 
         {loading ? (
-          <div className="space-y-2">
-            {[...Array(9)].map((_, i) => (
-              <div
-                key={i}
-                className="h-5 bg-gray-200/80 dark:bg-gray-800 rounded animate-pulse"
-              />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="space-y-4">
+                {[...Array(4)].map((_, j) => (
+                  <div key={j} className="h-4 bg-gray-200 animate-pulse" />
+                ))}
+              </div>
             ))}
           </div>
-        ) : posts.length > 0 ? (
-          <ul className="flex flex-col gap-2">
-            {posts.map((post, index) => (
-              <li key={post._id || post.slug || index}>
-                <Link
-                  href={`/post?slug=${post.slug}`}
-                  className="group flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 dark:bg-violet-500 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <span className="min-w-0 truncate">{post.title}</span>
-                  <ChevronRight
-                    size={14}
-                    className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-violet-500"
-                  />
-                </Link>
-              </li>
-            ))}
-          </ul>
         ) : (
-          <div className="rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 py-8 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              No posts yet
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Publish posts to see them here
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-16">
+            {columns.map((colPosts, colIndex) => (
+              <ul key={colIndex} className="space-y-6">
+                {colPosts.map((post, index) => (
+                  <li key={post._id || post.slug || index}>
+                    <Link
+                      href={`/post?slug=${post.slug}`}
+                      className="block text-lg font-medium leading-snug hover:underline"
+                    >
+                      {post.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ))}
           </div>
         )}
       </div>
