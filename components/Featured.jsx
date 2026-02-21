@@ -28,7 +28,11 @@ export default function Featured() {
         if (featuredData) {
           setFeaturedContent(featuredData);
         } else {
-          setFeaturedContent({ smbStories: [], herStories: [], socialStories: [] });
+          setFeaturedContent({
+            smbStories: [],
+            herStories: [],
+            socialStories: [],
+          });
         }
 
         // Get featured settings
@@ -38,7 +42,11 @@ export default function Featured() {
       } catch (error) {
         console.error("Error loading featured content from API:", error);
         if (isMounted) {
-          setFeaturedContent({ smbStories: [], herStories: [], socialStories: [] });
+          setFeaturedContent({
+            smbStories: [],
+            herStories: [],
+            socialStories: [],
+          });
         }
       }
     };
@@ -70,7 +78,8 @@ export default function Featured() {
         // Old format: single array - distribute automatically for backward compatibility
         const normalizedPosts = featuredContent.map((post) => ({
           ...post,
-          slug: post.slug || (post._id ? `post-${post._id}` : `post-${post.id}`),
+          slug:
+            post.slug || (post._id ? `post-${post._id}` : `post-${post.id}`),
           featuredImage: post.featuredImage || "/demo.png",
           author: post.author || { name: "Editorial Team" },
           excerpt: post.excerpt || "",
@@ -78,11 +87,12 @@ export default function Featured() {
         smb = normalizedPosts.slice(0, 3);
         her = normalizedPosts.slice(3, 8);
         social = normalizedPosts.slice(8);
-      } else if (typeof featuredContent === 'object') {
+      } else if (typeof featuredContent === "object") {
         // New format: object with subsections
         const normalizePost = (post) => ({
           ...post,
-          slug: post.slug || (post._id ? `post-${post._id}` : `post-${post.id}`),
+          slug:
+            post.slug || (post._id ? `post-${post._id}` : `post-${post.id}`),
           featuredImage: post.featuredImage || "/demo.png",
           author: post.author || { name: "Editorial Team" },
           excerpt: post.excerpt || "",
@@ -107,14 +117,14 @@ export default function Featured() {
   }
 
   return (
-    <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50 py-14 sm:py-16">
+    <section id="the-front-page" className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50 py-14 sm:py-16">
       <div className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.03] via-transparent to-orange-500/[0.04] dark:from-amber-400/[0.04] dark:to-orange-400/[0.05] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header — 2026 style */}
         <div className="mb-10">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {featuredSettings?.title || "Featured"}
+            {featuredSettings?.title || "The Front Page"}
           </h2>
           <div className="mt-3 h-px w-16 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-400 dark:to-orange-400" />
         </div>
@@ -124,21 +134,33 @@ export default function Featured() {
           {featuredSettings?.showSMBStory !== false && (
             <div className="rounded-2xl overflow-hidden bg-gray-900 dark:bg-gray-950 border border-gray-700 dark:border-gray-800 shadow-xl">
               <div className="px-5 py-4 border-b border-gray-700 dark:border-gray-800">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400">SMB Story</h3>
+                <h3 className="text-sm font-bold uppercase tracking-wider text-amber-400">
+                  SMB Story
+                </h3>
               </div>
               <div className="p-4 space-y-3">
                 {smbStories.length > 0 ? (
                   <>
-                    <Link href={`/post?slug=${smbStories[0].slug}`} className="group block p-4 rounded-xl bg-gray-800/80 dark:bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/40 transition-colors">
+                    <Link
+                      href={`/post?slug=${smbStories[0].slug}`}
+                      className="group block p-4 rounded-xl bg-gray-800/80 dark:bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/40 transition-colors"
+                    >
                       <h4 className="text-base font-bold text-white mb-2 line-clamp-2 group-hover:text-amber-300 transition-colors">
                         {smbStories[0].title}
                       </h4>
                       {smbStories[0].excerpt && (
-                        <p className="text-sm text-gray-400 mb-3 line-clamp-2">{smbStories[0].excerpt}</p>
+                        <p className="text-sm text-gray-400 mb-3 line-clamp-2">
+                          {smbStories[0].excerpt}
+                        </p>
                       )}
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-gray-500">{getAuthorName(smbStories[0].author)}</span>
-                        <ArrowRight size={14} className="text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <span className="text-xs text-gray-500">
+                          {getAuthorName(smbStories[0].author)}
+                        </span>
+                        <ArrowRight
+                          size={14}
+                          className="text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        />
                       </div>
                     </Link>
                     {smbStories.slice(1).map((story, index) => (
@@ -150,12 +172,17 @@ export default function Featured() {
                         <h4 className="text-sm font-medium text-gray-200 flex-1 min-w-0 line-clamp-1 group-hover:text-amber-300 transition-colors">
                           {story.title}
                         </h4>
-                        <ArrowRight size={12} className="text-gray-500 group-hover:text-amber-400 shrink-0 transition-colors" />
+                        <ArrowRight
+                          size={12}
+                          className="text-gray-500 group-hover:text-amber-400 shrink-0 transition-colors"
+                        />
                       </Link>
                     ))}
                   </>
                 ) : (
-                  <p className="text-sm text-gray-500 py-6 text-center">No SMB stories</p>
+                  <p className="text-sm text-gray-500 py-6 text-center">
+                    No SMB stories
+                  </p>
                 )}
               </div>
             </div>
@@ -197,16 +224,23 @@ export default function Featured() {
                         </h4>
                         <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500 dark:text-gray-400">
                           <User size={12} className="shrink-0 text-rose-500" />
-                          <span className="truncate">{getAuthorName(story.author)}</span>
+                          <span className="truncate">
+                            {getAuthorName(story.author)}
+                          </span>
                         </div>
                       </div>
-                      <ArrowRight size={14} className="shrink-0 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
+                      <ArrowRight
+                        size={14}
+                        className="shrink-0 text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity self-center"
+                      />
                     </Link>
                   ))}
                 </div>
               ) : (
                 <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 p-6 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No Her stories</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No Her stories
+                  </p>
                 </div>
               )}
             </div>
@@ -246,14 +280,19 @@ export default function Featured() {
                         <h4 className="text-sm font-semibold text-gray-900 dark:text-white flex-1 min-w-0 line-clamp-2 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors">
                           {story.title}
                         </h4>
-                        <ArrowRight size={14} className="shrink-0 text-gray-400 group-hover:text-emerald-500 transition-colors" />
+                        <ArrowRight
+                          size={14}
+                          className="shrink-0 text-gray-400 group-hover:text-emerald-500 transition-colors"
+                        />
                       </Link>
                     </li>
                   ))}
                 </ul>
               ) : (
                 <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 border border-gray-200/60 dark:border-white/10 p-6 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">No Social stories</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    No Social stories
+                  </p>
                 </div>
               )}
             </div>

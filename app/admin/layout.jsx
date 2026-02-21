@@ -18,9 +18,9 @@ import {
   Tag,
   Sparkles,
   Star,
-  Compass,
   TrendingUp,
   Megaphone,
+  Globe,
 } from "lucide-react";
 
 function AdminLayoutContent({ children }) {
@@ -46,7 +46,6 @@ function AdminLayoutContent({ children }) {
         pathname.startsWith("/admin/customise/hero") ||
         pathname.startsWith("/admin/customise/spotlight") ||
         pathname.startsWith("/admin/customise/featured") ||
-        pathname.startsWith("/admin/customise/explore") ||
         pathname.startsWith("/admin/customise/trending") ||
         pathname === "/admin/customise" ||
         searchParams?.get("section")
@@ -61,7 +60,6 @@ function AdminLayoutContent({ children }) {
     { id: "hero", name: "Hero", icon: Layout },
     { id: "spotlight", name: "Spotlight", icon: Sparkles },
     { id: "featured", name: "Featured", icon: Star },
-    { id: "explore", name: "Explore", icon: Compass },
     { id: "trending", name: "Trending", icon: TrendingUp },
   ];
 
@@ -318,6 +316,17 @@ function AdminLayoutContent({ children }) {
                             <Layout size={12} />
                             <span>Sidebar</span>
                           </Link>
+                          <Link
+                            href="/admin/customise/site"
+                            className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${
+                              pathname === "/admin/customise/site"
+                                ? "bg-slate-700/50 text-white"
+                                : "text-slate-400 hover:bg-slate-700/30 hover:text-white"
+                            }`}
+                          >
+                            <Globe size={12} />
+                            <span>Language</span>
+                          </Link>
                         </div>
                       )}
                     </div>
@@ -368,12 +377,12 @@ function AdminLayoutContent({ children }) {
                       pathname.startsWith(item.href + "/hero") ||
                       pathname.startsWith(item.href + "/spotlight") ||
                       pathname.startsWith(item.href + "/featured") ||
-                      pathname.startsWith(item.href + "/explore") ||
                       pathname.startsWith(item.href + "/trending") ||
                       pathname.startsWith(item.href + "/header") ||
                       pathname.startsWith(item.href + "/footer") ||
                       pathname.startsWith(item.href + "/post") ||
-                      pathname.startsWith(item.href + "/sidebar");
+                      pathname.startsWith(item.href + "/sidebar") ||
+                      pathname.startsWith(item.href + "/site");
                   } else {
                     isActive = pathname === item.href;
                   }
@@ -435,9 +444,6 @@ function AdminLayoutContent({ children }) {
                                     ) ||
                                     pathname.startsWith(
                                       "/admin/customise/featured",
-                                    ) ||
-                                    pathname.startsWith(
-                                      "/admin/customise/explore",
                                     ) ||
                                     pathname.startsWith(
                                       "/admin/customise/trending",
@@ -539,6 +545,17 @@ function AdminLayoutContent({ children }) {
                               >
                                 <Layout size={12} />
                                 <span>Sidebar</span>
+                              </Link>
+                              <Link
+                                href="/admin/customise/site"
+                                className={`group flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-200 text-sm ${
+                                  pathname === "/admin/customise/site"
+                                    ? "bg-slate-700/50 text-white"
+                                    : "text-slate-400 hover:bg-slate-700/30 hover:text-white"
+                                }`}
+                              >
+                                <Globe size={12} />
+                                <span>Language</span>
                               </Link>
                             </div>
                           )}

@@ -5,9 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
 
-export default function HeroFeatured() {
-  const [heroContent, setHeroContent] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
+  const [heroContent, setHeroContent] = useState(initialHeroData ?? null);
+  const [heroSettings, setHeroSettings] = useState(initialHeroSettings ?? null);
+  const [loading, setLoading] = useState(!initialHeroData);
 
   const getAuthorName = (author) => {
     if (!author) return "Editorial Team";
@@ -18,23 +19,32 @@ export default function HeroFeatured() {
   };
 
   useEffect(() => {
+    if (initialHeroData) return;
     let isMounted = true;
 
     const loadHeroContent = async () => {
       try {
         setLoading(true);
-        // Fetch hero section data from dedicated hero API endpoint
         const response = await axios.get("/api/settings/hero");
         if (!isMounted) return;
 
-        if (response.data && response.data.hero) {
-          // Hero section data comes from dedicated endpoint
+        if (response.data?.hero) {
           setHeroContent(response.data.hero);
         } else {
           setHeroContent({
             mainArticle: null,
             topPicks: [],
             discussionTable: [],
+          });
+        }
+        if (response.data?.settings) {
+          setHeroSettings(response.data.settings);
+        } else {
+          setHeroSettings({
+            title: "The Big Edit",
+            showNewsletter: true,
+            newsletterTitle: "Newsletter",
+            newsletterPlaceholder: "Enter your Email",
           });
         }
       } catch (error) {
@@ -45,36 +55,35 @@ export default function HeroFeatured() {
             topPicks: [],
             discussionTable: [],
           });
+          setHeroSettings({
+            showNewsletter: true,
+            newsletterTitle: "Newsletter",
+            newsletterPlaceholder: "Enter your Email",
+          });
         }
       } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
+        if (isMounted) setLoading(false);
       }
     };
 
     loadHeroContent();
-
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [initialHeroData]);
 
   const { topPicks, mainArticle, discussionTableArticles } = useMemo(() => {
-    // Only use admin-selected posts from database
+    // Use admin-selected posts from database (accept by _id, slug, or title)
+    const main = heroContent?.mainArticle;
+    const hasMain = main && (main._id || main.slug || main.title);
     return {
-      topPicks:
-        heroContent?.topPicks && heroContent.topPicks.length > 0
-          ? heroContent.topPicks
-          : [],
-      mainArticle:
-        heroContent?.mainArticle && heroContent.mainArticle._id
-          ? heroContent.mainArticle
-          : null,
-      discussionTableArticles:
-        heroContent?.discussionTable && heroContent.discussionTable.length > 0
-          ? heroContent.discussionTable.slice(0, 4) // Limit to 4 posts
-          : [],
+      topPicks: Array.isArray(heroContent?.topPicks)
+        ? heroContent.topPicks
+        : [],
+      mainArticle: hasMain ? main : null,
+      discussionTableArticles: Array.isArray(heroContent?.discussionTable)
+        ? heroContent.discussionTable.slice(0, 4)
+        : [],
     };
   }, [heroContent]);
 
@@ -116,168 +125,151 @@ export default function HeroFeatured() {
     );
   }
 
+  const sectionTitle = heroSettings?.title || "The Big Edit";
+  const showNewsletter = heroSettings?.showNewsletter !== false;
+  const newsletterTitle = heroSettings?.newsletterTitle || "Newsletter";
+  const newsletterPlaceholder =
+    heroSettings?.newsletterPlaceholder || "Enter your Email";
+  const equityIntelPosts = discussionTableArticles.slice(0, 3);
+
   return (
-    <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50">
-      {/* Subtle gradient wash */}
-      <div className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.04] via-transparent to-orange-500/[0.04] dark:from-amber-400/[0.05] dark:to-orange-400/[0.05] pointer-events-none" />
+    <section className="bg-white dark:bg-gray-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+        {/* ================= TOP ROW (Title + Horizontal Posts) ================= */}
+        <div className="grid grid-cols-12 gap-6 items-start">
+          {/* Big Title */}
+          <div className="col-span-12 lg:col-span-3">
+            <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight">
+              {sectionTitle}
+            </h2>
+          </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10">
-          {/* Left — Top Picks + Main Article */}
-          <div className="lg:col-span-8 space-y-8">
-            {/* Top Picks — 2026 pill + card grid */}
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/15 dark:bg-amber-400/15 text-amber-800 dark:text-amber-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400" />
-                  Top Picks
-                </span>
+          {/* Horizontal Posts */}
+          <div className="col-span-12 lg:col-span-9">
+            {topPicks.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {topPicks.slice(0, 4).map((post, index) => (
+                  <Link
+                    key={post._id || index}
+                    href={`/post?slug=${post.slug}`}
+                    className="group block"
+                  >
+                    <div className="relative w-full h-[110px] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                      {post.featuredImage ? (
+                        <Image
+                          src={post.featuredImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="300px"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                      )}
+                    </div>
+
+                    <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:underline">
+                      {post.title}
+                    </h3>
+                  </Link>
+                ))}
               </div>
+            ) : null}
+          </div>
+        </div>
 
-              {topPicks.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                  {topPicks.map((post, index) => (
+        {/* ================= BOTTOM ROW (Main Article + Equity Intel) ================= */}
+        <div className="grid grid-cols-12 gap-8 mt-8">
+          {/* Main Article (Left) */}
+          <div className="col-span-12 lg:col-span-8">
+            {mainArticle ? (
+              <Link
+                href={`/post?slug=${mainArticle.slug}`}
+                className="group block"
+              >
+                <article className="bg-white dark:bg-gray-950">
+                  <div className="relative w-full h-[360px] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    {mainArticle.featuredImage ? (
+                      <Image
+                        src={mainArticle.featuredImage}
+                        alt={mainArticle.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        sizes="(max-width: 1024px) 100vw, 70vw"
+                        priority
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                    )}
+                  </div>
+
+                  <div className="mt-4">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                      Insight
+                    </p>
+
+                    <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight group-hover:underline">
+                      {mainArticle.title}
+                    </h1>
+
+                    {mainArticle.excerpt && (
+                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+                        {mainArticle.excerpt}
+                      </p>
+                    )}
+
+                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                      {getAuthorName(mainArticle.author)}
+                    </p>
+                  </div>
+                </article>
+              </Link>
+            ) : (
+              <div className="border border-gray-200 dark:border-white/10 p-10 text-center bg-gray-50 dark:bg-gray-900/30">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No main article selected
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Set one in the admin panel
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Equity Intel + Newsletter (Right) */}
+          <div className="col-span-12 lg:col-span-4 space-y-6">
+            {/* Equity Intel */}
+            <div>
+              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">
+                Equity Intel
+              </h3>
+
+              {equityIntelPosts.length > 0 ? (
+                <div className="space-y-4">
+                  {equityIntelPosts.map((post, index) => (
                     <Link
                       key={post._id || index}
                       href={`/post?slug=${post.slug}`}
-                      className="group group/card block"
+                      className="group flex gap-3"
                     >
-                      <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800/80 shadow-sm ring-1 ring-gray-200/60 dark:ring-white/5 transition-all duration-300 group-hover/card:shadow-lg group-hover/card:ring-amber-500/20 dark:group-hover/card:ring-amber-400/20 group-hover/card:-translate-y-0.5">
+                      <div className="relative shrink-0 w-16 h-16 overflow-hidden bg-gray-100 dark:bg-gray-800">
                         {post.featuredImage ? (
                           <Image
                             src={post.featuredImage}
                             alt={post.title}
                             fill
-                            className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                            sizes="(max-width: 768px) 50vw, 25vw"
+                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            sizes="80px"
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-amber-400/30 to-orange-500/30 dark:from-amber-500/20 dark:to-orange-600/20" />
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity duration-300" />
-                      </div>
-                      <h3 className="mt-2.5 text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover/card:text-amber-700 dark:group-hover/card:text-amber-400 transition-colors">
-                        {post.title}
-                      </h3>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-8 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    No top picks selected
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Choose posts in the admin panel to show here
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Main Article — hero card */}
-            <div>
-              {mainArticle ? (
-                <Link
-                  href={`/post?slug=${mainArticle.slug}`}
-                  className="group block"
-                >
-                  <article className="relative overflow-hidden rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 shadow-sm ring-1 ring-gray-200/40 dark:ring-white/5 transition-all duration-300 group-hover:shadow-xl group-hover:ring-amber-500/15 dark:group-hover:ring-amber-400/15">
-                    {/* Optional hero image */}
-                    {mainArticle.featuredImage && (
-                      <div className="relative aspect-[21/9] sm:aspect-[3/1] overflow-hidden">
-                        <Image
-                          src={mainArticle.featuredImage}
-                          alt={mainArticle.title}
-                          fill
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
-                          sizes="(max-width: 1024px) 100vw, 66vw"
-                          priority
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent" />
-                      </div>
-                    )}
-                    <div
-                      className={`relative z-10 ${mainArticle.featuredImage ? "absolute bottom-0 left-0 right-0 p-6 sm:p-8 text-white" : "p-6 sm:p-8"}`}
-                    >
-                      <span
-                        className={`inline-block px-2.5 py-1 rounded-lg text-xs font-medium mb-3 ${mainArticle.featuredImage ? "bg-white/20 text-white/95" : "bg-amber-500/15 dark:bg-amber-400/15 text-amber-800 dark:text-amber-200"}`}
-                      >
-                        {mainArticle.category || "Featured"}
-                      </span>
-                      <h1
-                        className={`text-2xl sm:text-3xl md:text-4xl font-bold leading-tight mb-3 transition-colors ${mainArticle.featuredImage ? "text-white" : "text-gray-900 dark:text-white"} group-hover:text-amber-600 dark:group-hover:text-amber-400`}
-                      >
-                        {mainArticle.title}
-                      </h1>
-                      {mainArticle.excerpt && (
-                        <p
-                          className={`text-sm sm:text-base max-w-2xl leading-relaxed mb-4 ${mainArticle.featuredImage ? "text-white/90" : "text-gray-600 dark:text-gray-400"}`}
-                        >
-                          {mainArticle.excerpt}
-                        </p>
-                      )}
-                      <span
-                        className={`text-sm font-medium ${mainArticle.featuredImage ? "text-white/80" : "text-gray-500 dark:text-gray-400"}`}
-                      >
-                        {getAuthorName(mainArticle.author)}
-                      </span>
-                    </div>
-                    {!mainArticle.featuredImage && (
-                      <div
-                        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-amber-500/5 to-orange-500/5 dark:from-amber-400/5 dark:to-orange-400/5 pointer-events-none -z-0"
-                        aria-hidden
-                      />
-                    )}
-                  </article>
-                </Link>
-              ) : (
-                <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-10 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    No main article selected
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Set one in the admin panel
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Right — Discussion Table */}
-          <div className="lg:col-span-4">
-            <div className="sticky top-24">
-              <div className="flex items-center gap-2 mb-5">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 dark:bg-emerald-400/15 text-emerald-800 dark:text-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-                  Discussion
-                </span>
-              </div>
-
-              {discussionTableArticles.length > 0 ? (
-                <div className="space-y-3">
-                  {discussionTableArticles.map((post, index) => (
-                    <Link
-                      key={post._id || index}
-                      href={`/post?slug=${post.slug}`}
-                      className="group flex gap-4 p-3 sm:p-4 rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 hover:border-amber-500/20 dark:hover:border-amber-400/20 hover:bg-white/80 dark:hover:bg-gray-900/80 transition-all duration-300"
-                    >
-                      <div className="shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 ring-1 ring-gray-200/50 dark:ring-white/5">
-                        {post.featuredImage ? (
-                          <Image
-                            src={post.featuredImage}
-                            alt={post.title}
-                            width={80}
-                            height={80}
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-emerald-400/40 to-teal-500/40 dark:from-emerald-500/30 dark:to-teal-600/30" />
+                          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
                         )}
                       </div>
+
                       <div className="min-w-0 flex-1">
-                        <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:text-amber-700 dark:group-hover:text-amber-400 transition-colors">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:underline">
                           {post.title}
-                        </h3>
+                        </h4>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {getAuthorName(post.author)}
                         </p>
@@ -286,19 +278,43 @@ export default function HeroFeatured() {
                   ))}
                 </div>
               ) : (
-                <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 p-6 text-center">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    No discussion posts yet
-                  </p>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Add them in the admin panel
-                  </p>
-                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No stories yet
+                </p>
               )}
             </div>
+
+            {/* Newsletter */}
+            {showNewsletter && (
+              <div className="border border-gray-200 dark:border-white/10 p-4 bg-white dark:bg-gray-950">
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3">
+                  Sign Up For YourStory Newsletter
+                </h4>
+
+                <form
+                  className="flex gap-2"
+                  onSubmit={(e) => e.preventDefault()}
+                >
+                  <input
+                    type="email"
+                    placeholder={newsletterPlaceholder}
+                    className="flex-1 min-w-0 h-10 px-3 border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none"
+                  />
+
+                  <button
+                    type="submit"
+                    className="h-10 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold"
+                  >
+                    Sign Up
+                  </button>
+                </form>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </section>
   );
 }
+
+

@@ -14,7 +14,7 @@ export default function HeroCustomise() {
 
   // Hero settings state
   const [heroSettings, setHeroSettings] = useState({
-    title: "Top Picks",
+    title: "The Big Edit",
     showNewsletter: true,
     newsletterTitle: "Newsletter",
     newsletterPlaceholder: "Enter your Email",
@@ -29,6 +29,9 @@ export default function HeroCustomise() {
 
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
+
+  const getAuthorLabel = (author) =>
+    typeof author === "object" ? author?.name : author || "Unknown";
 
   // Show post selection UI
   const [showPostSelector, setShowPostSelector] = useState({
@@ -51,26 +54,31 @@ export default function HeroCustomise() {
     }
   };
 
-  // Load hero section data from API
+  // Load hero section data from API (with credentials so auth works if ever required)
   useEffect(() => {
     const loadHeroData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("/api/settings/hero");
-        if (response.data) {
-          if (response.data.hero) {
+        const response = await axios.get("/api/settings/hero", {
+          withCredentials: true,
+          headers: { "Cache-Control": "no-cache" },
+        });
+        const data = response.data;
+        if (data && typeof data === "object") {
+          if (data.hero && typeof data.hero === "object") {
             setHeroContent({
-              mainArticle: response.data.hero.mainArticle || null,
-              topPicks: Array.isArray(response.data.hero.topPicks) ? response.data.hero.topPicks : [],
-              discussionTable: Array.isArray(response.data.hero.discussionTable) ? response.data.hero.discussionTable : [],
+              mainArticle: data.hero.mainArticle ?? null,
+              topPicks: Array.isArray(data.hero.topPicks) ? data.hero.topPicks : [],
+              discussionTable: Array.isArray(data.hero.discussionTable) ? data.hero.discussionTable : [],
             });
           }
-          if (response.data.settings) {
-            setHeroSettings(response.data.settings);
+          if (data.settings && typeof data.settings === "object") {
+            setHeroSettings((prev) => ({ ...prev, ...data.settings }));
           }
         }
       } catch (error) {
         console.error("Error loading hero section:", error);
+        // Keep initial state on error so form is still usable
       } finally {
         setLoading(false);
       }
@@ -248,23 +256,19 @@ export default function HeroCustomise() {
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Primary hero post</p>
                     </div>
                     <div className="flex items-center gap-2">
-                      {!heroContent.mainArticle && (
-                        <button
-                          type="button"
-                          onClick={() => setShowPostSelector((prev) => ({ ...prev, heroMain: !prev.heroMain }))}
-                          className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
-                        >
-                          {showPostSelector.heroMain ? "Cancel" : "Select Post"}
-                        </button>
-                      )}
+                      <button
+                        type="button"
+                        onClick={() => setShowPostSelector((prev) => ({ ...prev, heroMain: !prev.heroMain }))}
+                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                      >
+                        {showPostSelector.heroMain ? "Cancel" : heroContent.mainArticle ? "Change Post" : "Select Post"}
+                      </button>
                       {heroContent.mainArticle && (
                         <button
                           type="button"
                           onClick={() => {
-                            setHeroContent((prev) => ({
-                              ...prev,
-                              mainArticle: null,
-                            }));
+                            setHeroContent((prev) => ({ ...prev, mainArticle: null }));
+                            setShowPostSelector((prev) => ({ ...prev, heroMain: false }));
                           }}
                           className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
                         >
@@ -287,7 +291,7 @@ export default function HeroCustomise() {
                               {heroContent.mainArticle.category || "Uncategorized"}
                             </span>
                             <span>•</span>
-                            <span>{heroContent.mainArticle.author?.name || "Unknown"}</span>
+                            <span>{getAuthorLabel(heroContent.mainArticle.author)}</span>
                           </div>
                         </div>
                       </div>
@@ -299,7 +303,7 @@ export default function HeroCustomise() {
                     </div>
                   )}
 
-                  {showPostSelector.heroMain && !heroContent.mainArticle && (
+                  {showPostSelector.heroMain && (
                     <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
@@ -364,7 +368,7 @@ export default function HeroCustomise() {
                                             {post.category || "Uncategorized"}
                                           </span>
                                           <span>•</span>
-                                          <span>{post.author?.name || "Unknown"}</span>
+                                          <span>{getAuthorLabel(post.author)}</span>
                                           <span>•</span>
                                           <span>{formattedDate}</span>
                                         </div>
@@ -618,7 +622,7 @@ export default function HeroCustomise() {
                                   {post.title}
                                 </div>
                                 <div className="text-xs text-gray-600 dark:text-gray-400">
-                                  <span>{post.author?.name || "Unknown Author"}</span>
+                                  <span>{getAuthorLabel(post.author)}</span>
                                 </div>
                               </div>
                             </div>
@@ -721,7 +725,7 @@ export default function HeroCustomise() {
                                           {post.title}
                                         </div>
                                         <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                          <span>{post.author?.name || "Unknown Author"}</span>
+                                          <span>{getAuthorLabel(post.author)}</span>
                                           <span>•</span>
                                           <span>{formattedDate}</span>
                                         </div>

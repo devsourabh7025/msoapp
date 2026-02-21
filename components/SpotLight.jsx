@@ -52,7 +52,11 @@ export default function SpotLight() {
 
   // Use admin-selected posts from database only
   const spotlightPosts = useMemo(() => {
-    if (spotlightContent && Array.isArray(spotlightContent) && spotlightContent.length > 0) {
+    if (
+      spotlightContent &&
+      Array.isArray(spotlightContent) &&
+      spotlightContent.length > 0
+    ) {
       // Ensure all posts have required fields
       return spotlightContent.map((post) => ({
         ...post,
@@ -79,7 +83,7 @@ export default function SpotLight() {
     return null;
   }
 
-  const sectionTitle = spotlightSettings?.title || "Spotlight";
+  const sectionTitle = spotlightSettings?.title || "Center Stage";
   const sectionSubtitle = spotlightSettings?.subtitle;
 
   // Bento: first = large card, rest = small cards (different UI pattern)
@@ -87,7 +91,7 @@ export default function SpotLight() {
   const sidePosts = spotlightPosts.slice(1, 4);
 
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-14 sm:py-16">
+    <section id="center-stage" className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-14 sm:py-16">
       <div className="absolute inset-0 bg-gradient-to-b from-orange-500/[0.03] via-transparent to-amber-500/[0.04] dark:from-orange-400/[0.04] dark:to-amber-400/[0.05] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -134,9 +138,13 @@ export default function SpotLight() {
                       {mainPost.title}
                     </h3>
                     {mainPost.excerpt && (
-                      <p className="text-sm text-white/80 line-clamp-2 mb-3">{mainPost.excerpt}</p>
+                      <p className="text-sm text-white/80 line-clamp-2 mb-3">
+                        {mainPost.excerpt}
+                      </p>
                     )}
-                    <span className="text-sm text-white/70">{getAuthorName(mainPost.author)}</span>
+                    <span className="text-sm text-white/70">
+                      {getAuthorName(mainPost.author)}
+                    </span>
                   </div>
                 </article>
               </Link>
@@ -171,14 +179,21 @@ export default function SpotLight() {
                     {getAuthorName(post.author)}
                   </span>
                 </div>
-                <ArrowRight size={16} className="shrink-0 text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity self-center" />
+                <ArrowRight
+                  size={16}
+                  className="shrink-0 text-amber-600 dark:text-amber-400 opacity-0 group-hover:opacity-100 transition-opacity self-center"
+                />
               </Link>
             ))}
           </div>
         ) : (
           <div className="rounded-2xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200/60 dark:border-white/10 py-14 text-center">
-            <p className="text-sm text-gray-500 dark:text-gray-400">No spotlight posts selected</p>
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Choose posts in the admin panel to show here</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No spotlight posts selected
+            </p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              Choose posts in the admin panel to show here
+            </p>
           </div>
         )}
       </div>

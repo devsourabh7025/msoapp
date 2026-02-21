@@ -63,17 +63,24 @@ export default function TrendingNow() {
     const now = new Date();
     const postDate = new Date(date);
     const diffInSeconds = Math.floor((now - postDate) / 1000);
-    
+
     if (diffInSeconds < 60) return "Just now";
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    if (diffInSeconds < 3600)
+      return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 604800)
+      return `${Math.floor(diffInSeconds / 86400)} days ago`;
     return postDate.toLocaleDateString();
   };
 
   // Normalize and prepare trending articles
   const trendingArticles = useMemo(() => {
-    if (!trendingContent || !Array.isArray(trendingContent) || trendingContent.length === 0) {
+    if (
+      !trendingContent ||
+      !Array.isArray(trendingContent) ||
+      trendingContent.length === 0
+    ) {
       return [];
     }
 
@@ -84,7 +91,8 @@ export default function TrendingNow() {
       author: post.author || { name: "Editorial Team" },
       excerpt: post.excerpt || "",
       category: post.category || "Uncategorized",
-      publishedAt: post.publishedAt || post.createdAt || new Date().toISOString(),
+      publishedAt:
+        post.publishedAt || post.createdAt || new Date().toISOString(),
     }));
   }, [trendingContent]);
 
@@ -106,7 +114,9 @@ export default function TrendingNow() {
               {trendingSettings?.title || "Trending now"}
             </h2>
             {trendingSettings?.subtitle && (
-              <p className="text-sm text-gray-500 dark:text-gray-400">{trendingSettings.subtitle}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {trendingSettings.subtitle}
+              </p>
             )}
           </div>
         </div>
@@ -114,7 +124,10 @@ export default function TrendingNow() {
 
       {trendingArticles.length > 0 ? (
         <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
-          <div className="flex gap-4 pb-2 min-w-max" style={{ scrollSnapType: "x mandatory" }}>
+          <div
+            className="flex gap-4 pb-2 min-w-max"
+            style={{ scrollSnapType: "x mandatory" }}
+          >
             {trendingArticles.map((article, index) => (
               <Link
                 key={article._id || article.id || index}
@@ -140,7 +153,9 @@ export default function TrendingNow() {
                     </span>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                    <span className="text-xs text-white/90 uppercase tracking-wide">{article.category}</span>
+                    <span className="text-xs text-white/90 uppercase tracking-wide">
+                      {article.category}
+                    </span>
                     <h3 className="text-base font-bold text-white line-clamp-2 mt-0.5 group-hover:text-orange-200 transition-colors">
                       {article.title}
                     </h3>
@@ -151,7 +166,10 @@ export default function TrendingNow() {
                     <Clock size={12} />
                     <span>{formatTimeAgo(article.publishedAt)}</span>
                   </div>
-                  <ArrowRight size={16} className="text-orange-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+                  <ArrowRight
+                    size={16}
+                    className="text-orange-500 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all"
+                  />
                 </div>
               </Link>
             ))}
@@ -159,8 +177,12 @@ export default function TrendingNow() {
         </div>
       ) : (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center rounded-2xl bg-white/60 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400">No trending posts selected</p>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Choose posts in the admin panel</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            No trending posts selected
+          </p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+            Choose posts in the admin panel
+          </p>
         </div>
       )}
     </section>

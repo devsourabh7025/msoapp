@@ -14,7 +14,7 @@ export default function Explore() {
       try {
         setLoading(true);
         const response = await axios.get("/api/public/categories");
-        
+
         if (response.data && Array.isArray(response.data.categories)) {
           setCategories(response.data.categories);
         } else {
@@ -37,20 +37,25 @@ export default function Explore() {
   }, []);
 
   const getCategorySlug = (categoryName) => {
-    return categoryName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    return categoryName
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
   };
 
   return (
-    <section className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 py-16">
+    <section id="discover" className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <div className="relative inline-block mb-4">
             <h2 className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white relative">
-              EXPLO
+              DISC
               <span className="relative inline-block mx-1">
-                <span className="relative z-10 text-orange-500 dark:text-orange-400">R</span>
-                {/* Circular text around R */}
+                <span className="relative z-10 text-orange-500 dark:text-orange-400">
+                  O
+                </span>
+                {/* Circular text around O */}
                 <span className="absolute -top-6 -left-16 text-[10px] md:text-xs font-normal text-orange-500 dark:text-orange-400 whitespace-nowrap transform -rotate-12">
                   MSO PREDICTS
                 </span>
@@ -58,11 +63,12 @@ export default function Explore() {
                   MSO
                 </span>
               </span>
-              E
+              VER
             </h2>
           </div>
           <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl mt-4 font-medium">
-            Discover emerging startups from Maharashtra and explore the innovation ecosystem
+            Discover emerging startups from Maharashtra and explore the
+            innovation ecosystem
           </p>
         </div>
 
@@ -106,8 +112,12 @@ export default function Explore() {
           </div>
         ) : (
           <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-gray-200 dark:border-slate-700 mb-12">
-            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No categories available</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500">Categories will appear here once posts are published</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
+              No categories available
+            </p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              Categories will appear here once posts are published
+            </p>
           </div>
         )}
       </div>

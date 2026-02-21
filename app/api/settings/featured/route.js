@@ -92,7 +92,7 @@ export async function GET() {
 
     // Get featured settings
     let featuredSettings = {
-      title: "Featured",
+      title: "The Front Page",
       showSMBStory: true,
       showHerStory: true,
       showSocialStory: true,
@@ -120,7 +120,7 @@ export async function GET() {
           socialStories: [],
         },
         settings: {
-          title: "Featured",
+          title: "The Front Page",
           showSMBStory: true,
           showHerStory: true,
           showSocialStory: true,
@@ -220,7 +220,7 @@ export async function PUT(request) {
       message: "Featured section saved successfully",
       featured: featuredToSave,
       settings: settings || {
-        title: "Featured",
+        title: "The Front Page",
         showSMBStory: true,
         showHerStory: true,
         showSocialStory: true,

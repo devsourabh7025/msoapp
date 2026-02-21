@@ -29,13 +29,13 @@ export default function DiscoverMore() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-10 sm:py-12">
+    <section id="more-insights" className="relative overflow-hidden bg-white dark:bg-gray-950/50 py-10 sm:py-12">
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.03] via-transparent to-amber-500/[0.03] dark:from-violet-400/[0.04] dark:to-amber-400/[0.04] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 sm:mb-8">
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Discover more
+            More Insights
           </h2>
           <div className="mt-2 h-px w-12 rounded-full bg-gradient-to-r from-violet-500 to-amber-500 dark:from-violet-400 dark:to-amber-400" />
         </div>

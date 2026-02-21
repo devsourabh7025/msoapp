@@ -1,25 +1,34 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
+import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
   GripVertical,
-  Save
+  Save,
 } from "lucide-react";
 
 export default function HomepageOrder() {
   const [saving, setSaving] = useState(false);
-  
+
   // Default section order (header and footer are always fixed, not in order)
   // Recent section is not included here as it's always shown and not customizable
   const [sectionOrder, setSectionOrder] = useState([
     { id: "hero", name: "Hero", component: "HeroFeatured", enabled: true },
-    { id: "spotlight", name: "Spotlight", component: "SpotLight", enabled: true },
+    {
+      id: "spotlight",
+      name: "Spotlight",
+      component: "SpotLight",
+      enabled: true,
+    },
     { id: "featured", name: "Featured", component: "Featured", enabled: true },
-    { id: "explore", name: "Explore", component: "Explore", enabled: true },
-    { id: "trending", name: "Trending Now", component: "TrendingNow", enabled: true },
+    {
+      id: "trending",
+      name: "Trending Now",
+      component: "TrendingNow",
+      enabled: true,
+    },
   ]);
 
   // Load saved order from database on mount (no localStorage)
@@ -31,12 +40,14 @@ export default function HomepageOrder() {
         if (response.ok) {
           const data = await response.json();
           if (data.order && Array.isArray(data.order)) {
-            const filtered = data.order.filter((s) => 
-              s.id !== "discover" && 
-              s.id !== "ecosystem" && 
-              s.id !== "header" && 
-              s.id !== "footer" &&
-              s.id !== "recent"
+            const filtered = data.order.filter(
+              (s) =>
+                s.id !== "discover" &&
+                s.id !== "ecosystem" &&
+                s.id !== "explore" &&
+                s.id !== "header" &&
+                s.id !== "footer" &&
+                s.id !== "recent",
             );
             setSectionOrder(filtered);
             return;
@@ -54,10 +65,16 @@ export default function HomepageOrder() {
   const moveSection = (index, direction) => {
     const newOrder = [...sectionOrder];
     if (direction === "up" && index > 0) {
-      [newOrder[index], newOrder[index - 1]] = [newOrder[index - 1], newOrder[index]];
+      [newOrder[index], newOrder[index - 1]] = [
+        newOrder[index - 1],
+        newOrder[index],
+      ];
       setSectionOrder(newOrder);
     } else if (direction === "down" && index < newOrder.length - 1) {
-      [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+      [newOrder[index], newOrder[index + 1]] = [
+        newOrder[index + 1],
+        newOrder[index],
+      ];
       setSectionOrder(newOrder);
     }
   };
@@ -71,7 +88,7 @@ export default function HomepageOrder() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       // Save to database only (no localStorage)
       // Section order is saved to MongoDB under key "homepageSectionOrder"
@@ -87,7 +104,10 @@ export default function HomepageOrder() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || errorData.message || "Failed to save homepage order";
+        const errorMessage =
+          errorData.error ||
+          errorData.message ||
+          "Failed to save homepage order";
         alert(`Error: ${errorMessage}`);
         setSaving(false);
         return;
@@ -101,7 +121,9 @@ export default function HomepageOrder() {
       }
     } catch (error) {
       console.error("Error saving homepage order:", error);
-      alert(`Failed to save homepage order: ${error.message || "Network error. Please check your connection and try again."}`);
+      alert(
+        `Failed to save homepage order: ${error.message || "Network error. Please check your connection and try again."}`,
+      );
       setSaving(false);
     }
   };
@@ -109,7 +131,9 @@ export default function HomepageOrder() {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Homepage Order</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+          Homepage Order
+        </h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           Reorder and manage homepage sections
         </p>
@@ -119,10 +143,11 @@ export default function HomepageOrder() {
         <form onSubmit={handleSubmit} className="p-4">
           <div className="mb-4">
             <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-              Use the up/down buttons to reorder sections. Uncheck to hide a section from the homepage.
+              Use the up/down buttons to reorder sections. Uncheck to hide a
+              section from the homepage.
             </p>
           </div>
-          
+
           <div className="space-y-2 mb-6">
             {sectionOrder.map((section, index) => (
               <div
@@ -182,7 +207,9 @@ export default function HomepageOrder() {
 
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 mb-4">
             <p className="text-xs text-blue-700 dark:text-blue-300">
-              <strong>Note:</strong> Only enabled sections will be displayed on the homepage. The order shown above is the order they will appear from top to bottom.
+              <strong>Note:</strong> Only enabled sections will be displayed on
+              the homepage. The order shown above is the order they will appear
+              from top to bottom.
             </p>
           </div>
 

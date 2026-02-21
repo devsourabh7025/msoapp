@@ -66,8 +66,8 @@ export async function GET() {
 
     // Get spotlight settings
     let spotlightSettings = {
-      title: "Spotlight",
-      subtitle: "Featured Stories & Insights",
+      title: "Center Stage",
+      subtitle: "Stories & Insights",
       showSection: true,
     };
 
@@ -88,8 +88,8 @@ export async function GET() {
       {
         spotlight: [],
         settings: {
-          title: "Spotlight",
-          subtitle: "Featured Stories & Insights",
+          title: "Center Stage",
+          subtitle: "Stories & Insights",
           showSection: true,
         },
       },
@@ -163,8 +163,8 @@ export async function PUT(request) {
       message: "Spotlight section saved successfully",
       spotlight: spotlightToSave,
       settings: settings || {
-        title: "Spotlight",
-        subtitle: "Featured Stories & Insights",
+        title: "Center Stage",
+        subtitle: "Stories & Insights",
         showSection: true,
       },
     });

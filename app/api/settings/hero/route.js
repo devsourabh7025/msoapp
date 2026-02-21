@@ -8,12 +8,12 @@ function getJWTSecret() {
   return process.env.JWT_SECRET || "your-super-secret-jwt-key-change-this-in-production";
 }
 
-// Helper function to optimize post data
+// Helper function to optimize post data (keeps _id as string for consistent API response)
 function optimizePostData(post) {
   if (!post || typeof post !== 'object') return post;
-  
+  const id = post._id != null ? String(post._id) : post._id;
   const optimized = {
-    _id: post._id,
+    _id: id,
     slug: post.slug,
     title: post.title,
     featuredImage: post.featuredImage,
@@ -21,7 +21,6 @@ function optimizePostData(post) {
     category: post.category,
     publishedAt: post.publishedAt,
   };
-  
   if (post.author) {
     if (typeof post.author === 'object' && post.author.name) {
       optimized.author = { name: post.author.name };
@@ -31,7 +30,6 @@ function optimizePostData(post) {
       optimized.author = { name: 'Editorial Team' };
     }
   }
-  
   return optimized;
 }
 
@@ -58,17 +56,14 @@ export async function GET() {
       timeoutPromise,
     ]);
 
-    // Get hero content
-    let heroContent = null;
+    // Get hero content (normalize so _id is always string for admin/frontend)
+    let heroContent;
     if (heroContentData?.value) {
+      const v = heroContentData.value;
       heroContent = {
-        mainArticle: heroContentData.value.mainArticle ? optimizePostData(heroContentData.value.mainArticle) : null,
-        topPicks: Array.isArray(heroContentData.value.topPicks)
-          ? heroContentData.value.topPicks.map(optimizePostData)
-          : [],
-        discussionTable: Array.isArray(heroContentData.value.discussionTable)
-          ? heroContentData.value.discussionTable.map(optimizePostData)
-          : [],
+        mainArticle: v.mainArticle ? optimizePostData(v.mainArticle) : null,
+        topPicks: Array.isArray(v.topPicks) ? v.topPicks.map(optimizePostData) : [],
+        discussionTable: Array.isArray(v.discussionTable) ? v.discussionTable.map(optimizePostData) : [],
       };
     } else {
       heroContent = {
@@ -80,7 +75,7 @@ export async function GET() {
 
     // Get hero settings
     const heroSettings = heroSettingsData?.value?.hero || {
-      title: "Top Picks",
+      title: "The Big Edit",
       showNewsletter: true,
       newsletterTitle: "Newsletter",
       newsletterPlaceholder: "Enter your Email",
@@ -101,7 +96,7 @@ export async function GET() {
           discussionTable: [],
         },
         settings: {
-          title: "Top Picks",
+          title: "The Big Edit",
           showNewsletter: true,
           newsletterTitle: "Newsletter",
           newsletterPlaceholder: "Enter your Email",
