@@ -124,12 +124,12 @@ export default function CategoryPage() {
       <Navbar />
       <div className="min-h-screen bg-white dark:bg-slate-900">
         {/* Header */}
-        <div className="bg-gradient-to-br from-orange-50 via-white to-orange-50/30 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 border-b border-gray-200 dark:border-slate-700">
+        <div className="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back Button */}
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors mb-6"
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-6"
           >
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Back to Explore</span>
@@ -154,7 +154,7 @@ export default function CategoryPage() {
                 placeholder="Search posts..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
               />
             </div>
             <div className="relative">
@@ -162,7 +162,7 @@ export default function CategoryPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="pl-10 pr-8 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 dark:focus:ring-orange-400 appearance-none"
+                className="pl-10 pr-8 py-3 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-gray-900 dark:focus:ring-white appearance-none"
               >
                 <option value="publishedAt">Newest First</option>
                 <option value="createdAt">Oldest First</option>
@@ -175,52 +175,49 @@ export default function CategoryPage() {
       {/* Posts Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="animate-pulse bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-md border border-gray-200 dark:border-slate-700"
-              >
-                <div className="aspect-video bg-gray-200 dark:bg-slate-700"></div>
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-slate-700 rounded w-2/3"></div>
+              <div key={i} className="animate-pulse">
+                <div className="aspect-square bg-gray-200 dark:bg-slate-700"></div>
+                <div className="mt-4 space-y-3">
+                  <div className="h-4 bg-gray-200 dark:bg-slate-700 w-3/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-slate-700 w-full"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-slate-700 w-2/3"></div>
                 </div>
               </div>
             ))}
           </div>
         ) : filteredPosts.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <Link
                 key={post._id || post.id}
                 href={`/post?slug=${post.slug || (post._id ? `post-${post._id}` : `post-${post.id}`)}`}
-                className="group bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-200 dark:border-slate-700"
+                className="group block"
               >
-                <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-slate-700">
+                <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-slate-800">
                   {post.featuredImage ? (
                     <Image
                       src={post.featuredImage}
                       alt={post.title}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="object-cover group-hover:scale-110 transition-transform duration-500 grayscale"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-600 dark:from-orange-600 dark:to-orange-700"></div>
+                    <div className="w-full h-full bg-gray-300 dark:bg-slate-600"></div>
                   )}
                 </div>
-                <div className="p-5">
+                <div className="mt-4">
                   <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mb-3">
                     <Clock size={12} />
                     <span>{formatTimeAgo(post.publishedAt || post.createdAt)}</span>
                     <span className="text-gray-300 dark:text-gray-600">•</span>
-                    <span className="text-xs font-medium text-orange-500 dark:text-orange-400 uppercase tracking-wide">
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">
                       {post.category}
                     </span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-orange-500 dark:group-hover:text-orange-400 transition-colors line-clamp-2">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors line-clamp-2">
                     {post.title}
                   </h3>
                   {post.excerpt && (
@@ -232,7 +229,7 @@ export default function CategoryPage() {
                     <span className="text-xs text-gray-500 dark:text-gray-400">
                       {getAuthorName(post.author)}
                     </span>
-                    <span className="text-orange-500 dark:text-orange-400 opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
+                    <span className="text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity text-sm font-medium">
                       Read more →
                     </span>
                   </div>
@@ -241,7 +238,7 @@ export default function CategoryPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-gray-200 dark:border-slate-700">
+          <div className="p-12 text-center">
             <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">
               {searchQuery ? "No posts found matching your search" : "No posts found in this category"}
             </p>

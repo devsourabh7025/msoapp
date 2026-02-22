@@ -10,16 +10,13 @@ import PostAdBlock from "@/components/PostAdBlock";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  Bookmark,
   Clock,
-  Facebook,
   MessageCircle,
-  Share2,
   ThumbsUp,
-  Twitter,
   User,
   Loader2,
   Eye,
+  Share2,
 } from "lucide-react";
 
 function PostContent() {
@@ -36,6 +33,11 @@ function PostContent() {
   const [commentContent, setCommentContent] = useState("");
   const [submittingComment, setSubmittingComment] = useState(false);
   const [views, setViews] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
+  const [userLiked, setUserLiked] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in
@@ -66,6 +68,7 @@ function PostContent() {
         setError(null);
         const response = await fetch(
           `/api/public/posts/${encodeURIComponent(slug)}`,
+          { credentials: "include", cache: "no-store" }
         );
 
         if (!response.ok) {
@@ -84,6 +87,8 @@ function PostContent() {
           setPost(data.post);
           setRelatedPosts(data.relatedPosts || []);
           setViews(data.post.views ?? 0);
+          setLikesCount(data.post.likesCount ?? 0);
+          setUserLiked(data.post.userLiked ?? false);
         } else {
           setError("Post not found");
         }
@@ -97,6 +102,27 @@ function PostContent() {
 
     fetchPost();
   }, [slug]);
+
+  // When user is logged in, fetch like status so it stays correct after refresh (cookie may not be sent on main post request)
+  useEffect(() => {
+    if (!user || !slug || !post) return;
+    const fetchLikeStatus = async () => {
+      try {
+        const res = await fetch(`/api/posts/${encodeURIComponent(slug)}/like`, {
+          credentials: "include",
+          cache: "no-store",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUserLiked(data.userLiked ?? false);
+          setLikesCount(data.likesCount ?? 0);
+        }
+      } catch (err) {
+        console.error("Failed to fetch like status:", err);
+      }
+    };
+    fetchLikeStatus();
+  }, [user, slug, post]);
 
   useEffect(() => {
     if (post && post.slug) {
@@ -393,7 +419,7 @@ function PostContent() {
               }}
             />
             <div
-              className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed prose prose-lg max-w-none post-content bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50"
+              className="space-y-6 text-gray-700 dark:text-gray-300 leading-relaxed prose prose-lg max-w-none post-content bg-white dark:bg-gray-900 p-8"
               dangerouslySetInnerHTML={{ __html: post.content || "" }}
             />
           </>
@@ -471,7 +497,7 @@ function PostContent() {
                   );
                 case "image":
                   return (
-                    <div key={index} className="border rounded overflow-hidden">
+                    <div key={index} className="border overflow-hidden">
                       <Image
                         src={block.image || "/demo.png"}
                         alt={block.alt || "Post image"}
@@ -646,7 +672,7 @@ function PostContent() {
               )}
               <div className="flex flex-wrap items-center gap-6 pt-4 pb-6 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
+                  <div className="h-10 w-10  bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm shadow-lg">
                     {getAuthorName(post.author)
                       .split(" ")
                       .map((n) => n[0])
@@ -670,26 +696,123 @@ function PostContent() {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 ml-auto">
                   <span className="flex items-center gap-1.5">
                     <Eye size={14} />
                     {views.toLocaleString()} {views === 1 ? "view" : "views"}
                   </span>
-                </div>
-                <div className="flex items-center gap-2 ml-auto">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-200 text-sm font-medium hover:scale-105 active:scale-95">
-                    <Share2 size={16} /> Share
-                  </button>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl transition-all duration-200 text-sm font-medium hover:scale-105 active:scale-95">
-                    <Bookmark size={16} /> Save
-                  </button>
+                  <div className="flex items-center gap-3 p-2 bg-white dark:bg-black">
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={async () => {
+                          if (!user) {
+                            alert("Please login to like");
+                            return;
+                          }
+                          if (likeLoading) return;
+                          setLikeLoading(true);
+                          try {
+                            const res = await fetch(`/api/posts/${encodeURIComponent(slug)}/like`, {
+                              method: "POST",
+                              credentials: "include",
+                            });
+                            if (res.ok) {
+                              const data = await res.json();
+                              setLikesCount(data.likesCount);
+                              setUserLiked(data.liked);
+                            }
+                          } catch (err) {
+                            console.error("Like failed:", err);
+                          } finally {
+                            setLikeLoading(false);
+                          }
+                        }}
+                        disabled={likeLoading}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border transition-all ${
+                          userLiked
+                            ? "bg-black dark:bg-white text-white dark:text-black border-black dark:border-white"
+                            : "border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                        }`}
+                      >
+                        <ThumbsUp size={14} fill={userLiked ? "currentColor" : "none"} />
+                        {userLiked ? "Liked" : "Like"}
+                      </button>
+                      <span className="inline-flex items-center justify-center min-w-[2.25rem] px-2.5 py-1.5 text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-black dark:text-white">
+                        {likesCount} {likesCount === 1 ? "like" : "likes"}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShareModalOpen(true)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                    >
+                      <Share2 size={14} />
+                      Share
+                    </button>
+                  </div>
+                  {(userLiked || likesCount > 0) && (
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {userLiked ? "You liked this" : `${likesCount} ${likesCount === 1 ? "person" : "people"} liked this`}
+                    </span>
+                  )}
                 </div>
               </div>
             </header>
 
+            {/* Share modal */}
+            {shareModalOpen && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                onClick={() => setShareModalOpen(false)}
+                role="dialog"
+                aria-modal="true"
+                aria-label="Share post"
+              >
+                <div
+                  className="bg-white dark:bg-black p-6 max-w-md w-full mx-4 shadow-lg"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <h3 className="text-lg font-bold text-black dark:text-white mb-3">Share this post</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 break-all">
+                    {typeof window !== "undefined" ? window.location.href : ""}
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const url = typeof window !== "undefined" ? window.location.href : "";
+                        try {
+                          if (navigator.clipboard?.writeText) {
+                            await navigator.clipboard.writeText(url);
+                            setShareCopied(true);
+                            setTimeout(() => setShareCopied(false), 2000);
+                          } else {
+                            alert("Link: " + url);
+                          }
+                        } catch (err) {
+                          alert("Copy failed. URL: " + url);
+                        }
+                      }}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-medium bg-black dark:bg-white text-white dark:text-black hover:opacity-90"
+                    >
+                      <Share2 size={16} />
+                      {shareCopied ? "Copied!" : "Copy link"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShareModalOpen(false)}
+                      className="px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Hero Image */}
             {post.featuredImage && (
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-gray-200/50 dark:shadow-gray-900/50 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
+              <div className="relative  overflow-hidden shadow-2xl shadow-gray-200/50 dark:shadow-gray-900/50 ring-1 ring-gray-200/50 dark:ring-gray-700/50">
                 <div className="aspect-video w-full relative">
                   <Image
                     src={post.featuredImage}
@@ -711,43 +834,6 @@ function PostContent() {
             {/* Content */}
             {renderContent()}
 
-            {/* Share / Reactions */}
-            <div className="flex flex-wrap items-center gap-3 border-y border-gray-200 dark:border-gray-700 py-6">
-              <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-800 hover:from-blue-100 hover:to-purple-100 dark:hover:from-gray-700 dark:hover:to-gray-700 text-blue-700 dark:text-blue-400 rounded-xl transition-all duration-200 text-sm font-semibold hover:scale-105 active:scale-95 shadow-sm">
-                <ThumbsUp size={18} /> Like
-              </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-gray-800 dark:to-gray-800 hover:from-purple-100 hover:to-pink-100 dark:hover:from-gray-700 dark:hover:to-gray-700 text-purple-700 dark:text-purple-400 rounded-xl transition-all duration-200 text-sm font-semibold hover:scale-105 active:scale-95 shadow-sm">
-                <Bookmark size={18} /> Save
-              </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-pink-50 to-red-50 dark:from-gray-800 dark:to-gray-800 hover:from-pink-100 hover:to-red-100 dark:hover:from-gray-700 dark:hover:to-gray-700 text-pink-700 dark:text-pink-400 rounded-xl transition-all duration-200 text-sm font-semibold hover:scale-105 active:scale-95 shadow-sm">
-                <Share2 size={18} /> Share
-              </button>
-            </div>
-
-            {/* Author Box */}
-            {post.author && (
-              <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-2xl p-6 flex gap-5 items-center shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 backdrop-blur-sm">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg flex-shrink-0">
-                  {getAuthorName(post.author)
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                    .slice(0, 2) || "ED"}
-                </div>
-                <div className="flex-1">
-                  <h4 className="font-bold text-lg text-gray-900 dark:text-white mb-1">
-                    {getAuthorName(post.author)}
-                  </h4>
-                  {post.author?.bio && (
-                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                      {post.author.bio}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
             {/* You Might Also Like */}
             {relatedPosts.length > 0 && (
               <div className="space-y-6">
@@ -759,14 +845,14 @@ function PostContent() {
                     <Link
                       key={item._id}
                       href={`/post?slug=${item.slug}`}
-                      className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-2xl overflow-hidden group shadow-md shadow-gray-200/50 dark:shadow-gray-900/50 hover:shadow-xl hover:shadow-gray-300/50 dark:hover:shadow-gray-800/50 transition-all duration-300 hover:scale-[1.02]"
+                      className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 overflow-hidden group hover:border-gray-300 dark:hover:border-gray-600 transition-all duration-300"
                     >
-                      <div className="relative h-48 w-full overflow-hidden">
+                      <div className="relative aspect-square w-full overflow-hidden">
                         <Image
                           src={item.featuredImage || "/demo.png"}
                           alt={item.title}
                           fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="object-cover group-hover:scale-110 transition-transform duration-500 grayscale"
                           onError={(e) => {
                             e.target.src = "/demo.png";
                           }}
@@ -774,7 +860,7 @@ function PostContent() {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                       </div>
                       <div className="p-4 space-y-3">
-                        <p className="text-sm font-bold leading-snug text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 line-clamp-2">
+                        <p className="text-sm font-bold leading-snug text-gray-900 dark:text-gray-100 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors duration-200 line-clamp-2">
                           {item.title}
                         </p>
                         <div className="flex items-center justify-between text-xs">
@@ -784,7 +870,7 @@ function PostContent() {
                               : formatDate(item.createdAt)}
                           </span>
                           {item.category && (
-                            <span className="px-2.5 py-1 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-blue-700 dark:text-blue-300 rounded-lg text-xs font-semibold">
+                            <span className="px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300  text-xs font-semibold">
                               {item.category}
                             </span>
                           )}
@@ -798,17 +884,17 @@ function PostContent() {
 
             {/* Comments Section */}
             <div className="space-y-6">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="flex items-center justify-between pb-2 border-b border-gray-300 dark:border-gray-600">
+                <h3 className="text-2xl font-bold text-black dark:text-white">
                   Comments ({comments.length})
                 </h3>
               </div>
 
               {/* Comment Form - Only for logged-in users */}
               {user ? (
-                <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 p-6 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 space-y-4">
+                <div className="bg-white dark:bg-black border border-gray-300 dark:border-gray-600 p-6 space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                    <div className="h-12 w-12 bg-black dark:bg-white flex items-center justify-center text-white dark:text-black font-bold text-sm">
                       {user.name
                         .split(" ")
                         .map((n) => n[0])
@@ -831,14 +917,14 @@ function PostContent() {
                       onChange={(e) => setCommentContent(e.target.value)}
                       placeholder="Share your thoughts..."
                       rows={5}
-                      className="w-full px-5 py-4 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all duration-200 shadow-sm"
+                      className="w-full px-5 py-4 border border-gray-300 dark:border-gray-600 bg-white dark:bg-black text-black dark:text-white focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500 resize-none"
                       required
                     />
                     <div className="flex justify-end">
                       <button
                         type="submit"
                         disabled={submittingComment || !commentContent.trim()}
-                        className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105 active:scale-95"
+                        className="px-8 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {submittingComment ? "Posting..." : "Post Comment"}
                       </button>
@@ -846,17 +932,17 @@ function PostContent() {
                   </form>
                 </div>
               ) : (
-                <div className="bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 p-8 rounded-2xl shadow-lg shadow-gray-200/50 dark:shadow-gray-900/50 text-center">
+                <div className="bg-white dark:bg-black border border-gray-300 dark:border-gray-600 p-8 text-center">
                   <MessageCircle
                     size={48}
-                    className="mx-auto mb-4 text-gray-400 dark:text-gray-500"
+                    className="mx-auto mb-4 text-gray-600 dark:text-gray-400"
                   />
-                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 font-medium">
+                  <p className="text-sm text-black dark:text-white mb-4 font-medium">
                     Please login to leave a comment
                   </p>
                   <Link
                     href="/login"
-                    className="inline-block px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-105 active:scale-95"
+                    className="inline-block px-8 py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 text-sm font-semibold transition-all duration-200"
                   >
                     Login
                   </Link>
@@ -866,17 +952,17 @@ function PostContent() {
               {/* Comments List */}
               {commentLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="animate-spin text-blue-600" size={32} />
+                  <Loader2 className="animate-spin text-black dark:text-white" size={32} />
                 </div>
               ) : comments.length > 0 ? (
                 <div className="space-y-5">
                   {comments.map((comment) => (
                     <div
                       key={comment._id}
-                      className="bg-white dark:bg-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow duration-200"
+                      className="bg-white dark:bg-black border border-gray-300 dark:border-gray-600 p-5"
                     >
                       <div className="flex gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg flex-shrink-0">
+                        <div className="h-12 w-12 bg-black dark:bg-white flex items-center justify-center text-white dark:text-black font-bold text-sm flex-shrink-0">
                           {getAuthorName(comment.author)
                             .split(" ")
                             .map((n) => n[0])
@@ -902,12 +988,12 @@ function PostContent() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-2xl">
+                <div className="text-center py-12 bg-white dark:bg-black border border-gray-300 dark:border-gray-600">
                   <MessageCircle
                     size={48}
-                    className="mx-auto mb-4 text-gray-300 dark:text-gray-600"
+                    className="mx-auto mb-4 text-gray-600 dark:text-gray-400"
                   />
-                  <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                  <p className="text-sm text-black dark:text-white font-medium">
                     No comments yet. Be the first to comment!
                   </p>
                 </div>
@@ -934,7 +1020,7 @@ export default function PostPage() {
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
                   <Loader2
-                    className="animate-spin mx-auto mb-4 text-blue-600"
+                    className="animate-spin mx-auto mb-4 text-black dark:text-white"
                     size={48}
                   />
                   <p className="text-gray-600 dark:text-gray-400">

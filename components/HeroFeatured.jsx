@@ -94,26 +94,26 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
           <div className="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8 space-y-6">
-              <div className="h-6 bg-gray-200/80 dark:bg-gray-800 rounded-full w-28" />
+              <div className="h-6 bg-gray-200/80 dark:bg-gray-800  w-28" />
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="aspect-[4/3] bg-gray-200/80 dark:bg-gray-800 rounded-2xl"
+                    className="aspect-[4/3] bg-gray-200/80 dark:bg-gray-800 "
                   />
                 ))}
               </div>
-              <div className="aspect-[21/10] bg-gray-200/80 dark:bg-gray-800 rounded-2xl" />
+              <div className="aspect-[21/10] bg-gray-200/80 dark:bg-gray-800 " />
             </div>
             <div className="lg:col-span-4 space-y-6">
-              <div className="h-6 bg-gray-200/80 dark:bg-gray-800 rounded-full w-36" />
+              <div className="h-6 bg-gray-200/80 dark:bg-gray-800  w-36" />
               <div className="space-y-3">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="w-20 h-20 shrink-0 bg-gray-200/80 dark:bg-gray-800 rounded-xl" />
+                    <div className="w-20 h-20 shrink-0 bg-gray-200/80 dark:bg-gray-800 " />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200/80 dark:bg-gray-800 rounded w-full" />
-                      <div className="h-3 bg-gray-200/80 dark:bg-gray-800 rounded w-24" />
+                      <div className="h-4 bg-gray-200/80 dark:bg-gray-800 w-full" />
+                      <div className="h-3 bg-gray-200/80 dark:bg-gray-800 w-24" />
                     </div>
                   </div>
                 ))}

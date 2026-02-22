@@ -97,12 +97,12 @@ export default function SpotLight() {
                   className="block"
                 >
                   {/* Image */}
-                  <div className="relative w-full h-48 mb-4">
+                  <div className="relative w-full aspect-square mb-4 overflow-hidden">
                     <Image
                       src={post.featuredImage}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover grayscale"
                       sizes="(max-width: 1024px) 100vw, 25vw"
                     />
                   </div>

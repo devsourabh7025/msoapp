@@ -1,6 +1,25 @@
 import { NextResponse } from "next/server";
 import { ensureConnected } from "@/lib/moongoose";
 import Post from "@/models/Post";
+import User from "@/models/User";
+import jwt from "jsonwebtoken";
+
+function getJWTSecret() {
+  return process.env.JWT_SECRET || "your-super-secret-jwt-key-change-this-in-production";
+}
+
+async function getOptionalUser(request) {
+  try {
+    const token = request.cookies.get("token")?.value;
+    if (!token) return null;
+    const decoded = jwt.verify(token, getJWTSecret());
+    await ensureConnected();
+    const user = await User.findById(decoded.userId).select("_id");
+    return user;
+  } catch {
+    return null;
+  }
+}
 
 // Public endpoint to fetch a single published post by slug
 export async function GET(request, { params }) {
@@ -31,6 +50,8 @@ export async function GET(request, { params }) {
       .populate("author", "name email")
       .select("-__v")
       .lean();
+
+    const currentUser = await getOptionalUser(request);
 
     if (!post) {
       // Check if post exists with different status for better error message
@@ -66,15 +87,27 @@ export async function GET(request, { params }) {
       .limit(3)
       .select("title slug excerpt category featuredImage publishedAt author createdAt");
 
-    const postData = post;
+    const postData = { ...post };
     if (postData.views === undefined || postData.views === null) {
       postData.views = 0;
     }
-    
-    return NextResponse.json({ 
-      post: postData,
-      relatedPosts: relatedPosts || []
-    });
+    const likedBy = postData.likedBy || [];
+    postData.likesCount = likedBy.length;
+    const currentUserId = currentUser?._id?.toString?.();
+    postData.userLiked = !!(
+      currentUserId &&
+      likedBy.some((id) => (id && id.toString?.()) === currentUserId)
+    );
+    delete postData.likedBy;
+
+    return NextResponse.json(
+      { post: postData, relatedPosts: relatedPosts || [] },
+      {
+        headers: {
+          "Cache-Control": "private, no-store, max-age=0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching post:", error);
     return NextResponse.json(

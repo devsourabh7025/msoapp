@@ -67,17 +67,17 @@ export default function TrendingNow() {
                 className="group  p-5"
               >
                 {/* Ranking Number */}
-                <div className="text-red-600 font-bold text-2xl mb-4">
+                <div className="text-gray-900 dark:text-white font-bold text-2xl mb-4">
                   {index + 1}
                 </div>
 
                 {/* Image */}
-                <div className="relative w-full h-48 mb-4">
+                <div className="relative w-full aspect-square mb-4 overflow-hidden">
                   <Image
                     src={article.featuredImage}
                     alt={article.title}
                     fill
-                    className="object-cover"
+                    className="object-cover grayscale"
                   />
                 </div>
 

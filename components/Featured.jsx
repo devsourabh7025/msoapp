@@ -144,12 +144,12 @@ export default function Featured() {
                 </div>
 
                 {story.featuredImage && (
-                  <div className="w-16 h-16 relative shrink-0">
+                  <div className="w-16 h-16 relative shrink-0 overflow-hidden">
                     <Image
                       src={story.featuredImage}
                       alt=""
                       fill
-                      className="object-cover"
+                      className="object-cover grayscale"
                     />
                   </div>
                 )}
@@ -171,12 +171,12 @@ export default function Featured() {
                   className="block mb-6"
                 >
                   {socialStories[0].featuredImage && (
-                    <div className="relative w-full h-40 mb-4">
+                    <div className="relative w-full aspect-square mb-4 overflow-hidden">
                       <Image
                         src={socialStories[0].featuredImage}
                         alt=""
                         fill
-                        className="object-cover"
+                        className="object-cover grayscale"
                       />
                     </div>
                   )}
@@ -193,7 +193,7 @@ export default function Featured() {
                     href={`/post?slug=${story.slug}`}
                     className="flex gap-4 mb-5"
                   >
-                    <span className="text-red-600 font-bold text-lg">
+                    <span className="text-gray-900 font-bold text-lg">
                       {i + 2}
                     </span>
                     <h4 className="text-sm font-medium">{story.title}</h4>

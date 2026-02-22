@@ -33,7 +33,7 @@ export default function CategoryBlock({ title, posts }) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
           {/* Badge */}
-          <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-3 py-1 rounded">
+          <span className="absolute top-4 left-4 bg-red-500 text-white text-xs font-semibold px-3 py-1 ">
             Learn
           </span>
 

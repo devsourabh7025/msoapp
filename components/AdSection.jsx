@@ -27,7 +27,7 @@ export default function AdSection({ space }) {
           Ad Space {space.spaceNumber}
         </div>
         {space.type === "image" ? (
-          <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-4 text-center">
+          <div className="bg-white dark:bg-slate-900  border border-gray-200 dark:border-slate-700 p-4 text-center">
             {space.link ? (
               <Link
                 href={space.link}
@@ -35,7 +35,7 @@ export default function AdSection({ space }) {
                 rel="noopener noreferrer"
                 className="block"
               >
-                <div className="relative w-full max-w-4xl mx-auto aspect-[728/90] rounded-lg overflow-hidden">
+                <div className="relative w-full max-w-4xl mx-auto aspect-[728/90]  overflow-hidden">
                   <Image
                     src={space.imageUrl}
                     alt={space.alt || "Advertisement"}
@@ -48,7 +48,7 @@ export default function AdSection({ space }) {
                 </div>
               </Link>
             ) : (
-              <div className="relative w-full max-w-4xl mx-auto aspect-[728/90] rounded-lg overflow-hidden">
+              <div className="relative w-full max-w-4xl mx-auto aspect-[728/90]  overflow-hidden">
                 <Image
                   src={space.imageUrl}
                   alt={space.alt || "Advertisement"}
@@ -62,7 +62,7 @@ export default function AdSection({ space }) {
             )}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-4">
+          <div className="bg-white dark:bg-slate-900  border border-gray-200 dark:border-slate-700 p-4">
             <div
               dangerouslySetInnerHTML={{ __html: space.code }}
               className="ad-code-container"

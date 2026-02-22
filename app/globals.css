@@ -141,8 +141,8 @@ body {
 }
 
 /* -----------------------------
-   Admin panel - black/white, square
+   Square corners - site-wide (no rounded corners anywhere)
 ------------------------------ */
-.admin-panel [class*="rounded"] {
+[class*="rounded"] {
   border-radius: 0 !important;
 }

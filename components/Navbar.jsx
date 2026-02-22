@@ -301,7 +301,7 @@ export default function Navbar() {
             <div className="mb-10">
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center"
+                className="bg-red-500 text-white w-8 h-8  flex items-center justify-center"
               >
                 <X size={18} />
               </button>

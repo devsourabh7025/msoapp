@@ -62,12 +62,12 @@ export default function Recent() {
               className="group flex gap-6 border-b pb-10"
             >
               {/* Image */}
-              <div className="relative w-32 h-24 shrink-0">
+              <div className="relative w-24 h-24 shrink-0 overflow-hidden">
                 <Image
                   src={post.featuredImage}
                   alt={post.title}
                   fill
-                  className="object-cover"
+                  className="object-cover grayscale"
                 />
               </div>
 

@@ -36,8 +36,8 @@ export default function PostAdBlock({ position = "sidebar" }) {
 
   const wrapperClass =
     position === "top"
-      ? "mb-8 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
-      : "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50 rounded-2xl shadow-lg overflow-hidden";
+      ? "mb-8  overflow-hidden border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+      : "bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border border-gray-200/50 dark:border-gray-700/50  shadow-lg overflow-hidden";
 
   const innerClass =
     position === "top"
