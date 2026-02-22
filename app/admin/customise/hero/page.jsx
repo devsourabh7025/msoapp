@@ -151,12 +151,12 @@ export default function HeroCustomise() {
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-slate-800  border border-gray-200 dark:border-gray-700">
           <div className="p-6">
             {/* Section Header */}
             <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
-                <Layout size={18} className="text-red-600 dark:text-red-400" />
+                <Layout size={18} className="text-black" />
                 <h2 className="text-lg font-bold text-gray-900 dark:text-white">Hero Section</h2>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -173,7 +173,7 @@ export default function HeroCustomise() {
                   id="hero-showSection"
                   checked={heroSettings.showSection}
                   onChange={handleSettingChange}
-                  className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
                 />
                 <label htmlFor="hero-showSection" className="text-xs font-medium text-gray-700 dark:text-gray-300">
                   Show this section on homepage
@@ -190,7 +190,7 @@ export default function HeroCustomise() {
                   name="title"
                   value={heroSettings.title}
                   onChange={handleSettingChange}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black"
                 />
               </div>
 
@@ -201,7 +201,7 @@ export default function HeroCustomise() {
                   id="hero-showNewsletter"
                   checked={heroSettings.showNewsletter}
                   onChange={handleSettingChange}
-                  className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                  className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
                 />
                 <label htmlFor="hero-showNewsletter" className="text-xs font-medium text-gray-700 dark:text-gray-300">
                   Show Newsletter
@@ -220,7 +220,7 @@ export default function HeroCustomise() {
                       name="newsletterTitle"
                       value={heroSettings.newsletterTitle}
                       onChange={handleSettingChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
 
@@ -234,7 +234,7 @@ export default function HeroCustomise() {
                       name="newsletterPlaceholder"
                       value={heroSettings.newsletterPlaceholder}
                       onChange={handleSettingChange}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
                 </>
@@ -247,7 +247,7 @@ export default function HeroCustomise() {
             ) : (
               <div className="space-y-6">
                 {/* Main Featured Article */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -259,7 +259,7 @@ export default function HeroCustomise() {
                       <button
                         type="button"
                         onClick={() => setShowPostSelector((prev) => ({ ...prev, heroMain: !prev.heroMain }))}
-                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white rounded transition-colors"
                       >
                         {showPostSelector.heroMain ? "Cancel" : heroContent.mainArticle ? "Change Post" : "Select Post"}
                       </button>
@@ -281,7 +281,7 @@ export default function HeroCustomise() {
                   {heroContent.mainArticle ? (
                     <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded border border-gray-200 dark:border-gray-700">
                       <div className="flex items-start gap-3">
-                        <div className="w-1 h-full bg-blue-600 rounded-full shrink-0"></div>
+                        <div className="w-1 h-full bg-black  shrink-0"></div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-2">
                             {heroContent.mainArticle.title}
@@ -304,7 +304,7 @@ export default function HeroCustomise() {
                   )}
 
                   {showPostSelector.heroMain && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                           Search Posts
@@ -316,7 +316,7 @@ export default function HeroCustomise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -355,10 +355,10 @@ export default function HeroCustomise() {
                                       }));
                                       setShowPostSelector((prev) => ({ ...prev, heroMain: false }));
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black  shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
@@ -396,7 +396,7 @@ export default function HeroCustomise() {
                 </div>
 
                 {/* Top Picks Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Top Picks Articles</h4>
@@ -407,7 +407,7 @@ export default function HeroCustomise() {
                         <button
                           type="button"
                           onClick={() => setShowPostSelector((prev) => ({ ...prev, heroTopPicks: !prev.heroTopPicks }))}
-                          className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white rounded transition-colors"
                         >
                           {showPostSelector.heroTopPicks ? "Cancel" : "Add Post"}
                         </button>
@@ -435,7 +435,7 @@ export default function HeroCustomise() {
                         <div key={post._id} className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+                              <div className="w-6 h-6 rounded bg-black text-white flex items-center justify-center shrink-0 text-xs font-semibold">
                                 {index + 1}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -481,7 +481,7 @@ export default function HeroCustomise() {
                   )}
 
                   {showPostSelector.heroTopPicks && heroContent.topPicks.length < 4 && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">Search Posts</label>
                         <div className="relative">
@@ -491,7 +491,7 @@ export default function HeroCustomise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -536,10 +536,10 @@ export default function HeroCustomise() {
                                         setShowPostSelector((prev) => ({ ...prev, heroTopPicks: false }));
                                       }
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black  shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
@@ -579,7 +579,7 @@ export default function HeroCustomise() {
                 </div>
 
                 {/* Discussion Table Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Discussion Table Articles</h4>
@@ -589,7 +589,7 @@ export default function HeroCustomise() {
                       <button
                         type="button"
                         onClick={() => setShowPostSelector((prev) => ({ ...prev, heroDiscussionTable: !prev.heroDiscussionTable }))}
-                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white rounded transition-colors"
                       >
                         {showPostSelector.heroDiscussionTable ? "Cancel" : "Add Post"}
                       </button>
@@ -616,7 +616,7 @@ export default function HeroCustomise() {
                         <div key={post._id} className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700">
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                              <div className="w-1 h-12 bg-black  shrink-0"></div>
                               <div className="flex-1 min-w-0">
                                 <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1 mb-1">
                                   {post.title}
@@ -658,7 +658,7 @@ export default function HeroCustomise() {
                   )}
 
                   {showPostSelector.heroDiscussionTable && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">Search Posts</label>
                         <div className="relative">
@@ -668,7 +668,7 @@ export default function HeroCustomise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -716,10 +716,10 @@ export default function HeroCustomise() {
                                         discussionTable: [...prev.discussionTable, post],
                                       }));
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black  shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
@@ -764,11 +764,11 @@ export default function HeroCustomise() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-1.5 text-xs rounded hover:from-red-600 hover:to-red-700 shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 bg-gradient-to-r from-black to-black text-white px-4 py-1.5 text-xs rounded hover:from-gray-800 hover:to-gray-800 shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <>
-                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
+                    <div className="animate-spin  h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
                     <span>Saving...</span>
                   </>
                 ) : (

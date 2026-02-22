@@ -12,34 +12,36 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(null);
-  const [activeCategory, setActiveCategory] = useState("Brands");
+  const [activeCategory, setActiveCategory] = useState("The Player");
 
   const drawerData = {
-    Brands: {
+    "The Player": {
       type: "list",
       items: [
-        "The Captable",
-        "AI Story",
-        "SMB Story",
-        "HerStory",
-        "Social Story",
-        "Enterprise Story",
-        "YS Life",
-        "YS Hindi",
-        "YS Tamil",
-        "YSTV",
+        "Equity Intel",
+        "The AI Index",
+        "Start-Up Narrative",
+        "Fearless & Fabulous",
+        "Social Impact",
+        "Corporate Intel Narrative",
+        "Beyond Work",
+        "संस्मरण (Sansmaran)",
+        "முன்னவர் (Munnavar)",
+        "झेप (Zhep)",
+        "ઉડાન (Udaan)",
+        "MSO Studio",
       ],
     },
-    Discover: {
+    Explore: {
       type: "list",
       items: [
-        "List Your Company",
-        "Partner with us",
-        "Pitchfest",
+        "Get Featured",
+        "Collaborate",
+        "Startup Showcase",
         "Bharat Project",
       ],
     },
-    Events: {
+    EVents: {
       type: "event",
       items: [
         {
@@ -47,15 +49,27 @@ export default function Navbar() {
           date: "28th February 2026",
           location: "Pune",
         },
+        {
+          title: "MSO Startup Summit 2026",
+          date: "15th March 2026",
+          location: "Mumbai",
+        },
       ],
     },
     Newsletter: {
-      type: "list",
-      items: ["Daily Newsletter", "Startup Digest", "Investor Updates"],
+      type: "newsletter",
+      items: [
+        {
+          title: "MSO Daily Brief",
+          description: "Your daily essential: A high-level briefing on startup breakthroughs, corporate strategy, and the market moves shaping the new economy. More to Visit More",
+        },
+        "Startup Digest",
+        "Investor Updates",
+      ],
     },
     More: {
       type: "list",
-      items: ["Glossary", "Everything AI", "Opinion", "Press Release"],
+      items: ["The Index", "The AI Index", "Perspectives", "Market News"],
     },
   };
 
@@ -278,11 +292,11 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* 50% DRAWER */}
+      {/* DRAWER: 100% on mobile, 50% on desktop */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex">
           {/* LEFT DRAWER PANEL */}
-          <div className="w-1/2 bg-gray-100 dark:bg-gray-950 h-full overflow-y-auto p-10 flex flex-col shadow-2xl">
+          <div className="w-full md:w-1/2 bg-gray-100 dark:bg-gray-950 h-full overflow-y-auto p-6 md:p-10 flex flex-col shadow-2xl">
             {/* Close Button */}
             <div className="mb-10">
               <button
@@ -294,9 +308,9 @@ export default function Navbar() {
             </div>
 
             {/* MAIN SECTION */}
-            <div className="flex flex-1">
+            <div className="flex flex-1 flex-col md:flex-row">
               {/* LEFT BIG CATEGORY MENU */}
-              <div className="w-1/2 space-y-6">
+              <div className="w-full md:w-1/2 space-y-6">
                 {Object.keys(drawerData).map((category) => (
                   <div
                     key={category}
@@ -314,7 +328,7 @@ export default function Navbar() {
               </div>
 
               {/* RIGHT CONTENT AREA */}
-              <div className="w-1/2 pl-10">
+              <div className="w-full md:w-1/2 pt-6 md:pt-0 md:pl-10">
                 {drawerData[activeCategory].type === "list" && (
                   <div className="space-y-4 text-lg font-medium">
                     {drawerData[activeCategory].items.map((item, i) => (
@@ -326,6 +340,31 @@ export default function Navbar() {
                         <span>{item}</span>
                       </div>
                     ))}
+                  </div>
+                )}
+
+                {drawerData[activeCategory].type === "newsletter" && (
+                  <div className="space-y-6">
+                    {drawerData[activeCategory].items.map((item, i) =>
+                      typeof item === "object" ? (
+                        <div key={i} className="space-y-1">
+                          <div className="font-semibold text-lg hover:text-red-600 cursor-pointer">
+                            {item.title}
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {item.description}
+                          </p>
+                        </div>
+                      ) : (
+                        <div
+                          key={i}
+                          className="flex items-center gap-3 hover:text-red-600 cursor-pointer"
+                        >
+                          <span>✸</span>
+                          <span>{item}</span>
+                        </div>
+                      )
+                    )}
                   </div>
                 )}
 
@@ -366,9 +405,9 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* RIGHT OVERLAY */}
+          {/* RIGHT OVERLAY - hidden on mobile (drawer is full width) */}
           <div
-            className="w-1/2 bg-black/40"
+            className="hidden md:block flex-1 bg-black/40"
             onClick={() => setDrawerOpen(false)}
           />
         </div>

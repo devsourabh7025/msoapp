@@ -98,9 +98,10 @@ export async function POST(request) {
       );
     }
 
-    // Check if category with same name already exists
+    // Check if category with same name already exists (escape regex special chars)
+    const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const existingCategory = await Category.findOne({
-      name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+      name: { $regex: new RegExp(`^${escapedName}$`, "i") },
     });
 
     if (existingCategory) {
@@ -110,8 +111,22 @@ export async function POST(request) {
       );
     }
 
+    // Generate slug from name
+    let baseSlug = name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "") || `category-${Date.now()}`;
+    let slug = baseSlug;
+    let slugCounter = 1;
+    while (await Category.findOne({ slug })) {
+      slug = `${baseSlug}-${slugCounter}`;
+      slugCounter++;
+    }
+
     const category = await Category.create({
       name: name.trim(),
+      slug,
       description: description || "",
     });
 
@@ -166,10 +181,13 @@ export async function PUT(request) {
       );
     }
 
+    const oldName = category.name;
+
     // If name is being changed, check for duplicates
-    if (name && name.trim() !== category.name) {
+    if (name && name.trim() !== oldName) {
+      const escapedName = name.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const existingCategory = await Category.findOne({
-        name: { $regex: new RegExp(`^${name.trim()}$`, "i") },
+        name: { $regex: new RegExp(`^${escapedName}$`, "i") },
         _id: { $ne: categoryId },
       });
 
@@ -182,15 +200,26 @@ export async function PUT(request) {
     }
 
     // Update category
-    if (name) category.name = name.trim();
+    if (name) {
+      category.name = name.trim();
+      // Regenerate slug when name changes
+      let baseSlug = name.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || `category-${Date.now()}`;
+      let slug = baseSlug;
+      let slugCounter = 1;
+      while (await Category.findOne({ slug, _id: { $ne: categoryId } })) {
+        slug = `${baseSlug}-${slugCounter}`;
+        slugCounter++;
+      }
+      category.slug = slug;
+    }
     if (description !== undefined) category.description = description;
 
     await category.save();
 
     // If name changed, update all posts with this category
-    if (name && name.trim() !== category.name) {
+    if (name && name.trim() !== oldName) {
       await Post.updateMany(
-        { category: category.name },
+        { category: oldName },
         { $set: { category: name.trim() } }
       );
     }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import RichTextEditor from "@/components/RichTextEditor";
+import CategorySearchDropdown from "@/components/CategorySearchDropdown";
 
 export default function AddPost() {
   const router = useRouter();
@@ -147,12 +148,12 @@ export default function AddPost() {
       </div>
 
       {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-3 py-2 rounded text-xs">
+        <div className="bg-gray-100 border border-gray-400 text-gray-800 px-3 py-2 text-xs">
           {error}
         </div>
       )}
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-gray-800  border border-gray-200 dark:border-gray-700">
         <div className="flex border-b border-gray-200 dark:border-gray-700">
           <button
             type="button"
@@ -196,14 +197,14 @@ export default function AddPost() {
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Post Title <span className="text-red-500">*</span>
+                  Post Title <span className="text-black">*</span>
                 </label>
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                   placeholder="Enter post title"
                   required
                 />
@@ -218,30 +219,20 @@ export default function AddPost() {
                   value={formData.excerpt}
                   onChange={handleChange}
                   rows={2}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500 resize-none"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black resize-none"
                   placeholder="Brief description of your post"
                 />
               </div>
 
               <div>
                 <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Category <span className="text-red-500">*</span>
+                  Category <span className="text-black">*</span>
                 </label>
-                <select
-                  name="category"
+                <CategorySearchDropdown
                   value={formData.category}
-                  onChange={handleChange}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  onChange={(val) => setFormData({ ...formData, category: val })}
                   required
-                >
-                  <option value="">Select a category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat.charAt(0).toUpperCase() +
-                        cat.slice(1).replace("-", " ")}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div>
@@ -254,7 +245,7 @@ export default function AddPost() {
                     name="featuredImage"
                     value={formData.featuredImage}
                     onChange={handleChange}
-                    className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                    className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                     placeholder="https://example.com/image.jpg"
                   />
                   <div className="flex items-center gap-2">
@@ -266,7 +257,7 @@ export default function AddPost() {
                         onChange={(e) => handleImageUpload(e, "featuredImage")}
                         className="hidden"
                       />
-                      <span className="inline-block w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-xs text-center">
+                      <span className="inline-block w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-xs text-center">
                         Upload Image
                       </span>
                     </label>
@@ -275,7 +266,7 @@ export default function AddPost() {
                     <img
                       src={formData.featuredImage}
                       alt="Preview"
-                      className="w-full max-w-md h-32 object-cover rounded border border-gray-200 dark:border-gray-700"
+                      className="w-full max-w-md h-32 object-cover border border-gray-200 dark:border-gray-700"
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}
@@ -286,7 +277,7 @@ export default function AddPost() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Content <span className="text-red-500">*</span>
+                  Content <span className="text-black">*</span>
                 </label>
                 <RichTextEditor
                   value={content}
@@ -303,7 +294,7 @@ export default function AddPost() {
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                 >
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
@@ -314,7 +305,7 @@ export default function AddPost() {
 
           {activeTab === "preview" && (
             <div className="p-4">
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 max-w-4xl mx-auto">
+              <div className="bg-gray-50 dark:bg-gray-900  p-6 max-w-4xl mx-auto">
                 {/* Preview Header */}
                 <div className="mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
                   <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -355,7 +346,7 @@ export default function AddPost() {
                     <img
                       src={formData.featuredImage}
                       alt={formData.title || "Featured"}
-                      className="w-full h-64 md:h-96 object-cover rounded-lg"
+                      className="w-full h-64 md:h-96 object-cover "
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}
@@ -456,8 +447,8 @@ export default function AddPost() {
 
           {activeTab === "seo" && (
             <div className="space-y-4">
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded p-3">
-                <p className="text-xs text-red-800 dark:text-red-200">
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
+                <p className="text-xs text-gray-800">
                   <strong>Tip:</strong> SEO fields are optional. If left empty,
                   they will automatically use your post title and excerpt.
                 </p>
@@ -472,7 +463,7 @@ export default function AddPost() {
                   name="metaTitle"
                   value={formData.metaTitle}
                   onChange={handleChange}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                   placeholder="SEO title for search engines"
                   maxLength={60}
                 />
@@ -490,7 +481,7 @@ export default function AddPost() {
                   value={formData.metaDescription}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                   placeholder="SEO description for search engines"
                   maxLength={160}
                 />
@@ -508,7 +499,7 @@ export default function AddPost() {
                   name="metaKeywords"
                   value={formData.metaKeywords}
                   onChange={handleChange}
-                  className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                   placeholder="Comma-separated keywords"
                 />
               </div>
@@ -528,7 +519,7 @@ export default function AddPost() {
                       name="ogTitle"
                       value={formData.ogTitle}
                       onChange={handleChange}
-                      className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                       placeholder="Title for social media sharing"
                     />
                   </div>
@@ -542,7 +533,7 @@ export default function AddPost() {
                       value={formData.ogDescription}
                       onChange={handleChange}
                       rows={3}
-                      className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                      className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                       placeholder="Description for social media sharing"
                     />
                   </div>
@@ -557,7 +548,7 @@ export default function AddPost() {
                         name="ogImage"
                         value={formData.ogImage}
                         onChange={handleChange}
-                        className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
+                        className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
                         placeholder="Image URL for social media"
                       />
                       <div className="flex items-center gap-2">
@@ -571,7 +562,7 @@ export default function AddPost() {
                             onChange={(e) => handleImageUpload(e, "ogImage")}
                             className="hidden"
                           />
-                          <span className="inline-block px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm">
+                          <span className="inline-block px-4 py-2 border border-gray-300 dark:border-gray-600  hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer text-sm">
                             Upload Image
                           </span>
                         </label>
@@ -580,7 +571,7 @@ export default function AddPost() {
                         <img
                           src={formData.ogImage}
                           alt="OG Preview"
-                          className="w-full h-48 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                          className="w-full h-48 object-cover  border border-gray-200 dark:border-gray-700"
                           onError={(e) => {
                             e.target.style.display = "none";
                           }}
@@ -597,7 +588,7 @@ export default function AddPost() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+              className="px-6 py-3  border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
             >
               Cancel
             </button>
@@ -610,14 +601,14 @@ export default function AddPost() {
                   handleSubmit(e, draftData);
                 }}
                 disabled={loading}
-                className="px-6 py-3 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
+                className="px-6 py-3  border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition disabled:opacity-50"
               >
                 Save Draft
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-red-700 shadow-lg shadow-red-500/25 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-black"
               >
                 {loading ? "Publishing..." : "Publish Post"}
               </button>

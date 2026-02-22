@@ -139,3 +139,10 @@ body {
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Chrome, Safari and Opera */
 }
+
+/* -----------------------------
+   Admin panel - black/white, square
+------------------------------ */
+.admin-panel [class*="rounded"] {
+  border-radius: 0 !important;
+}

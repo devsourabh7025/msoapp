@@ -598,7 +598,7 @@ export default function Customise() {
               id={`${section.id}-showSection`}
               checked={settings.showSection}
               onChange={(e) => handleSettingChange(section.id, e)}
-              className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              className="w-4 h-4 text-black border-gray-300  focus:ring-black"
             />
             <label
               htmlFor={`${section.id}-showSection`}
@@ -619,7 +619,7 @@ export default function Customise() {
             ) : (
               <div className="space-y-6">
                 {/* Main Featured Article */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -639,7 +639,7 @@ export default function Customise() {
                               heroMain: !prev.heroMain,
                             }))
                           }
-                          className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                         >
                           {showPostSelector.heroMain ? "Cancel" : "Select Post"}
                         </button>
@@ -656,7 +656,7 @@ export default function Customise() {
                               },
                             }));
                           }}
-                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                         >
                           Remove
                         </button>
@@ -665,15 +665,15 @@ export default function Customise() {
                   </div>
 
                   {sectionContent.hero?.mainArticle ? (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded border border-gray-200 dark:border-gray-700">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-4  border border-gray-200 dark:border-gray-700">
                       <div className="flex items-start gap-3">
-                        <div className="w-1 h-full bg-blue-600 rounded-full shrink-0"></div>
+                        <div className="w-1 h-full bg-black shrink-0"></div>
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-2">
                             {sectionContent.hero.mainArticle.title}
                           </div>
                           <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                            <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                            <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                               {sectionContent.hero.mainArticle.category ||
                                 "Uncategorized"}
                             </span>
@@ -687,7 +687,7 @@ export default function Customise() {
                       </div>
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         No post selected
                       </p>
@@ -699,7 +699,7 @@ export default function Customise() {
 
                   {showPostSelector.heroMain &&
                     !sectionContent.hero?.mainArticle && (
-                      <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                      <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                         <div className="mb-4">
                           <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                             Search Posts
@@ -714,7 +714,7 @@ export default function Customise() {
                               placeholder="Type to search posts..."
                               value={searchQuery}
                               onChange={(e) => setSearchQuery(e.target.value)}
-                              className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                              className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                             />
                             {searchQuery && (
                               <button
@@ -728,7 +728,7 @@ export default function Customise() {
                           </div>
                         </div>
 
-                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                           {searchQuery ? (
                             <>
                               {allPosts
@@ -768,16 +768,16 @@ export default function Customise() {
                                           heroMain: false,
                                         }));
                                       }}
-                                      className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                      className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                     >
                                       <div className="flex items-start gap-3">
-                                        <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                        <div className="w-1 h-12 bg-black shrink-0"></div>
                                         <div className="flex-1 min-w-0">
                                           <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                             {post.title}
                                           </div>
                                           <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                               {post.category || "Uncategorized"}
                                             </span>
                                             <span>•</span>
@@ -834,7 +834,7 @@ export default function Customise() {
                 </div>
 
                 {/* Top Picks Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -854,7 +854,7 @@ export default function Customise() {
                               heroTopPicks: !prev.heroTopPicks,
                             }))
                           }
-                          className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                         >
                           {showPostSelector.heroTopPicks
                             ? "Cancel"
@@ -873,7 +873,7 @@ export default function Customise() {
                               },
                             }));
                           }}
-                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                         >
                           Clear All
                         </button>
@@ -887,11 +887,11 @@ export default function Customise() {
                         (post, index) => (
                           <div
                             key={post._id}
-                            className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700"
+                            className="bg-gray-50 dark:bg-gray-800/50 p-3  border border-gray-200 dark:border-gray-700"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <div className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+                                <div className="w-6 h-6  bg-black text-white flex items-center justify-center shrink-0 text-xs font-semibold">
                                   {index + 1}
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -899,7 +899,7 @@ export default function Customise() {
                                     {post.title}
                                   </div>
                                   <div className="text-xs text-gray-600 dark:text-gray-400">
-                                    <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                    <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                       {post.category || "Uncategorized"}
                                     </span>
                                   </div>
@@ -919,7 +919,7 @@ export default function Customise() {
                                     },
                                   }));
                                 }}
-                                className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors shrink-0"
+                                className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800  transition-colors shrink-0"
                               >
                                 <X size={14} />
                               </button>
@@ -929,7 +929,7 @@ export default function Customise() {
                       )}
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center mb-4">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         No posts selected
                       </p>
@@ -952,7 +952,7 @@ export default function Customise() {
 
                   {showPostSelector.heroTopPicks &&
                     (sectionContent.hero?.topPicks || []).length < 4 && (
-                      <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                      <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                         <div className="mb-4">
                           <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                             Search Posts
@@ -967,7 +967,7 @@ export default function Customise() {
                               placeholder="Type to search posts..."
                               value={searchQuery}
                               onChange={(e) => setSearchQuery(e.target.value)}
-                              className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                              className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                             />
                             {searchQuery && (
                               <button
@@ -981,7 +981,7 @@ export default function Customise() {
                           </div>
                         </div>
 
-                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                        <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                           {searchQuery ? (
                             <>
                               {allPosts
@@ -1035,16 +1035,16 @@ export default function Customise() {
                                           }));
                                         }
                                       }}
-                                      className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                      className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                     >
                                       <div className="flex items-start gap-3">
-                                        <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                        <div className="w-1 h-12 bg-black shrink-0"></div>
                                         <div className="flex-1 min-w-0">
                                           <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                             {post.title}
                                           </div>
                                           <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                               {post.category || "Uncategorized"}
                                             </span>
                                             <span>•</span>
@@ -1106,7 +1106,7 @@ export default function Customise() {
                 </div>
 
                 {/* Discussion Table Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -1125,7 +1125,7 @@ export default function Customise() {
                             heroDiscussionTable: !prev.heroDiscussionTable,
                           }))
                         }
-                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                       >
                         {showPostSelector.heroDiscussionTable
                           ? "Cancel"
@@ -1144,7 +1144,7 @@ export default function Customise() {
                               },
                             }));
                           }}
-                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                         >
                           Clear All
                         </button>
@@ -1159,11 +1159,11 @@ export default function Customise() {
                         .map((post) => (
                           <div
                             key={post._id}
-                            className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700"
+                            className="bg-gray-50 dark:bg-gray-800/50 p-3  border border-gray-200 dark:border-gray-700"
                           >
                             <div className="flex items-center justify-between gap-3">
                               <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                <div className="w-1 h-12 bg-black shrink-0"></div>
                                 <div className="flex-1 min-w-0">
                                   <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1 mb-1">
                                     {post.title}
@@ -1189,7 +1189,7 @@ export default function Customise() {
                                     },
                                   }));
                                 }}
-                                className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors shrink-0"
+                                className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800  transition-colors shrink-0"
                               >
                                 <X size={14} />
                               </button>
@@ -1198,7 +1198,7 @@ export default function Customise() {
                         ))}
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center mb-4">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         No posts selected
                       </p>
@@ -1221,7 +1221,7 @@ export default function Customise() {
                   )}
 
                   {showPostSelector.heroDiscussionTable && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                           Search Posts
@@ -1236,7 +1236,7 @@ export default function Customise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -1250,7 +1250,7 @@ export default function Customise() {
                         </div>
                       </div>
 
-                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                         {searchQuery ? (
                           <>
                             {allPosts
@@ -1309,10 +1309,10 @@ export default function Customise() {
                                         },
                                       }));
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
@@ -1405,7 +1405,7 @@ export default function Customise() {
             ) : (
               <div className="space-y-6">
                 {/* Spotlight Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -1424,7 +1424,7 @@ export default function Customise() {
                             spotlight: !prev.spotlight,
                           }))
                         }
-                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                       >
                         {showPostSelector.spotlight ? "Cancel" : "Add Post"}
                       </button>
@@ -1437,7 +1437,7 @@ export default function Customise() {
                               spotlight: [],
                             }));
                           }}
-                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                         >
                           Clear All
                         </button>
@@ -1450,11 +1450,11 @@ export default function Customise() {
                       {(sectionContent.spotlight || []).map((post, index) => (
                         <div
                           key={post._id || index}
-                          className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700"
+                          className="bg-gray-50 dark:bg-gray-800/50 p-3  border border-gray-200 dark:border-gray-700"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+                              <div className="w-6 h-6  bg-black text-white flex items-center justify-center shrink-0 text-xs font-semibold">
                                 {index + 1}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -1462,7 +1462,7 @@ export default function Customise() {
                                   {post.title}
                                 </div>
                                 <div className="text-xs text-gray-600 dark:text-gray-400">
-                                  <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                  <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                     {post.category || "Uncategorized"}
                                   </span>
                                 </div>
@@ -1479,7 +1479,7 @@ export default function Customise() {
                                     ) || [],
                                 }));
                               }}
-                              className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors shrink-0"
+                              className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800  transition-colors shrink-0"
                             >
                               <X size={14} />
                             </button>
@@ -1488,7 +1488,7 @@ export default function Customise() {
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center mb-4">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         No posts selected
                       </p>
@@ -1510,7 +1510,7 @@ export default function Customise() {
                   )}
 
                   {showPostSelector.spotlight && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                           Search Posts
@@ -1525,7 +1525,7 @@ export default function Customise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -1539,7 +1539,7 @@ export default function Customise() {
                         </div>
                       </div>
 
-                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                         {searchQuery ? (
                           <>
                             {allPosts
@@ -1579,16 +1579,16 @@ export default function Customise() {
                                         ],
                                       }));
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
                                         </div>
                                         <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                             {post.category || "Uncategorized"}
                                           </span>
                                           <span>•</span>
@@ -1682,7 +1682,7 @@ export default function Customise() {
                     return (
                       <div
                         key={subsectionKey}
-                        className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800"
+                        className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800"
                       >
                         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                           <div>
@@ -1702,7 +1702,7 @@ export default function Customise() {
                                   [selectorKey]: !prev[selectorKey],
                                 }))
                               }
-                              className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                              className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                             >
                               {isSelectorOpen ? "Cancel" : "Add Post"}
                             </button>
@@ -1722,7 +1722,7 @@ export default function Customise() {
                                     },
                                   }));
                                 }}
-                                className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                                className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                               >
                                 Clear All
                               </button>
@@ -1735,11 +1735,11 @@ export default function Customise() {
                             {posts.map((post, index) => (
                               <div
                                 key={post._id || index}
-                                className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700"
+                                className="bg-gray-50 dark:bg-gray-800/50 p-3  border border-gray-200 dark:border-gray-700"
                               >
                                 <div className="flex items-center justify-between gap-3">
                                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                                    <div className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+                                    <div className="w-6 h-6  bg-black text-white flex items-center justify-center shrink-0 text-xs font-semibold">
                                       {index + 1}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -1747,7 +1747,7 @@ export default function Customise() {
                                         {post.title}
                                       </div>
                                       <div className="text-xs text-gray-600 dark:text-gray-400">
-                                        <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                        <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                           {post.category || "Uncategorized"}
                                         </span>
                                       </div>
@@ -1770,7 +1770,7 @@ export default function Customise() {
                                         },
                                       }));
                                     }}
-                                    className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors shrink-0"
+                                    className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800  transition-colors shrink-0"
                                   >
                                     <X size={14} />
                                   </button>
@@ -1779,7 +1779,7 @@ export default function Customise() {
                             ))}
                           </div>
                         ) : (
-                          <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center mb-4">
+                          <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center mb-4">
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                               No posts selected
                             </p>
@@ -1801,7 +1801,7 @@ export default function Customise() {
                         )}
 
                         {isSelectorOpen && (
-                          <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                          <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                             <div className="mb-4">
                               <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                                 Search Posts
@@ -1818,7 +1818,7 @@ export default function Customise() {
                                   onChange={(e) =>
                                     setSearchQuery(e.target.value)
                                   }
-                                  className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                                  className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                                 />
                                 {searchQuery && (
                                   <button
@@ -1832,7 +1832,7 @@ export default function Customise() {
                               </div>
                             </div>
 
-                            <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                            <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                               {searchQuery ? (
                                 <>
                                   {allPosts
@@ -1890,16 +1890,16 @@ export default function Customise() {
                                               },
                                             }));
                                           }}
-                                          className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                          className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                         >
                                           <div className="flex items-start gap-3">
-                                            <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                            <div className="w-1 h-12 bg-black shrink-0"></div>
                                             <div className="flex-1 min-w-0">
                                               <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                                 {post.title}
                                               </div>
                                               <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                                   {post.category ||
                                                     "Uncategorized"}
                                                 </span>
@@ -2020,7 +2020,7 @@ export default function Customise() {
             ) : (
               <div className="space-y-6">
                 {/* Trending Articles */}
-                <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
+                <div className="bg-white dark:bg-gray-900 p-5  border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
                     <div>
                       <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -2039,7 +2039,7 @@ export default function Customise() {
                             trending: !prev.trending,
                           }))
                         }
-                        className="px-4 py-2 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors"
+                        className="px-4 py-2 text-xs font-medium bg-black hover:bg-gray-800 text-white  transition-colors"
                       >
                         {showPostSelector.trending ? "Cancel" : "Add Post"}
                       </button>
@@ -2052,7 +2052,7 @@ export default function Customise() {
                               trending: [],
                             }));
                           }}
-                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors"
+                          className="px-4 py-2 text-xs font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800  transition-colors"
                         >
                           Clear All
                         </button>
@@ -2065,11 +2065,11 @@ export default function Customise() {
                       {(sectionContent.trending || []).map((post, index) => (
                         <div
                           key={post._id || index}
-                          className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded border border-gray-200 dark:border-gray-700"
+                          className="bg-gray-50 dark:bg-gray-800/50 p-3  border border-gray-200 dark:border-gray-700"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                              <div className="w-6 h-6 rounded bg-blue-600 text-white flex items-center justify-center shrink-0 text-xs font-semibold">
+                              <div className="w-6 h-6  bg-black text-white flex items-center justify-center shrink-0 text-xs font-semibold">
                                 {index + 1}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -2077,7 +2077,7 @@ export default function Customise() {
                                   {post.title}
                                 </div>
                                 <div className="text-xs text-gray-600 dark:text-gray-400">
-                                  <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                  <span className="px-2 py-0.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                     {post.category || "Uncategorized"}
                                   </span>
                                 </div>
@@ -2094,7 +2094,7 @@ export default function Customise() {
                                     ) || [],
                                 }));
                               }}
-                              className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors shrink-0"
+                              className="p-1.5 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800  transition-colors shrink-0"
                             >
                               <X size={14} />
                             </button>
@@ -2103,7 +2103,7 @@ export default function Customise() {
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded border border-gray-200 dark:border-gray-700 text-center mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 p-6  border border-gray-200 dark:border-gray-700 text-center mb-4">
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         No posts selected
                       </p>
@@ -2125,7 +2125,7 @@ export default function Customise() {
                   )}
 
                   {showPostSelector.trending && (
-                    <div className="mt-4 bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4">
+                    <div className="mt-4 bg-white dark:bg-gray-900  border border-gray-200 dark:border-gray-800 p-4">
                       <div className="mb-4">
                         <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
                           Search Posts
@@ -2140,7 +2140,7 @@ export default function Customise() {
                             placeholder="Type to search posts..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600"
+                            className="w-full pl-10 pr-9 py-2.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
                           />
                           {searchQuery && (
                             <button
@@ -2154,7 +2154,7 @@ export default function Customise() {
                         </div>
                       </div>
 
-                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800 rounded bg-white dark:bg-gray-900">
+                      <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
                         {searchQuery ? (
                           <>
                             {allPosts
@@ -2194,16 +2194,16 @@ export default function Customise() {
                                         ],
                                       }));
                                     }}
-                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-800 transition-colors"
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
-                                      <div className="w-1 h-12 bg-blue-600 rounded-full shrink-0"></div>
+                                      <div className="w-1 h-12 bg-black shrink-0"></div>
                                       <div className="flex-1 min-w-0">
                                         <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
                                           {post.title}
                                         </div>
                                         <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded">
+                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
                                             {post.category || "Uncategorized"}
                                           </span>
                                           <span>•</span>
@@ -2302,13 +2302,13 @@ export default function Customise() {
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
           {displaySection
             ? `Configure settings and content for the ${displaySection.name} section.`
-            : "Select a section from the admin sidebar to edit its settings."}
+            : "Select a section from the menu on the right to edit its settings."}
         </p>
       </div>
 
       {displaySection ? (
         <form onSubmit={handleSubmit}>
-          <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="bg-white dark:bg-slate-800  border border-gray-200 dark:border-gray-700">
             <div className="p-6">
               {/* Render Only Active Section Options */}
               <div>
@@ -2316,7 +2316,7 @@ export default function Customise() {
                   <div className="flex items-center gap-2">
                     {React.createElement(
                       sectionIcons[displaySection.id] || Layout,
-                      { size: 18, className: "text-red-600 dark:text-red-400" },
+                      { size: 18, className: "text-black" },
                     )}
                     <h2 className="text-lg font-bold text-gray-900 dark:text-white">
                       {displaySection.name}
@@ -2335,11 +2335,11 @@ export default function Customise() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-1.5 text-xs rounded hover:from-red-600 hover:to-red-700 shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center gap-1.5 bg-black text-white px-4 py-1.5 text-xs hover:bg-gray-800 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving ? (
                     <>
-                      <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
+                      <div className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
                       <span>Saving...</span>
                     </>
                   ) : (
@@ -2354,10 +2354,10 @@ export default function Customise() {
           </div>
         </form>
       ) : (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+        <div className="bg-white dark:bg-slate-800  border border-gray-200 dark:border-gray-700 p-6">
           <div className="text-center py-12">
             <p className="text-gray-500 dark:text-gray-400">
-              Please select a section from the admin sidebar to edit.
+              Please select a section from the menu on the right to edit.
             </p>
           </div>
         </div>

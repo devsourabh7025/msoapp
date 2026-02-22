@@ -48,6 +48,7 @@ export default function CategoriesPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
+        credentials: "include",
       });
 
       const data = await response.json();
@@ -58,11 +59,12 @@ export default function CategoriesPage() {
         setShowAddForm(false);
         await fetchCategories();
       } else {
-        alert(data.error || "Failed to create category");
+        const errMsg = data.error || data.details || "Failed to create category";
+        alert(errMsg);
       }
     } catch (error) {
       console.error("Error creating category:", error);
-      alert("Failed to create category");
+      alert(`Failed to create category: ${error.message || "Network error"}`);
     }
   };
 

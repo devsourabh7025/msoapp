@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import RichTextEditor from "@/components/RichTextEditor";
+import CategorySearchDropdown from "@/components/CategorySearchDropdown";
 
 export default function EditPost() {
   const router = useRouter();
@@ -312,20 +313,11 @@ export default function EditPost() {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Category <span className="text-red-500">*</span>
               </label>
-              <select
-                name="category"
+              <CategorySearchDropdown
                 value={formData.category}
-                onChange={handleChange}
+                onChange={(val) => setFormData({ ...formData, category: val })}
                 required
-                className="w-full rounded border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-500"
-              >
-                <option value="">Select a category</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat.charAt(0).toUpperCase() + cat.slice(1)}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div>

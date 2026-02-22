@@ -47,7 +47,7 @@ export default function AdminPosts() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="animate-spin h-12 w-12 border-2 border-gray-300 border-t-black"></div>
       </div>
     );
   }
@@ -90,14 +90,14 @@ export default function AdminPosts() {
                 button.innerHTML = originalText;
               }
             }}
-            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md shadow-blue-500/25 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-200 font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-1.5 bg-gray-800 text-white px-4 py-2 hover:bg-black transition font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed border border-gray-800"
           >
             <PlusCircle size={16} />
             Seed Business Posts
           </button>
           <Link
             href="/admin/add-post"
-            className="inline-flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg hover:from-red-600 hover:to-red-700 shadow-md shadow-red-500/25 hover:shadow-lg hover:shadow-red-500/30 transition-all duration-200 font-medium text-sm"
+            className="inline-flex items-center gap-1.5 bg-black text-white px-4 py-2 hover:bg-gray-800 transition font-medium text-sm border border-black"
           >
             <PlusCircle size={16} />
             Add New Post
@@ -107,23 +107,23 @@ export default function AdminPosts() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md shadow-blue-500/25">
+        <div className="bg-black p-3 text-white border border-black">
           <div className="text-xs font-medium opacity-90">Total Posts</div>
           <div className="text-2xl font-bold mt-1">{posts.length}</div>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-3 text-white shadow-md shadow-green-500/25">
+        <div className="bg-white p-3 text-black border border-black">
           <div className="text-xs font-medium opacity-90">Published</div>
           <div className="text-2xl font-bold mt-1">
             {posts.filter((p) => p.status === "published").length}
           </div>
         </div>
-        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-3 text-white shadow-md shadow-yellow-500/25">
+        <div className="bg-gray-100 p-3 text-black border border-gray-300">
           <div className="text-xs font-medium opacity-90">Drafts</div>
           <div className="text-2xl font-bold mt-1">
             {posts.filter((p) => p.status === "draft" || p.status === "pending").length}
           </div>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-3 text-white shadow-md shadow-purple-500/25">
+        <div className="bg-gray-200 p-3 text-black border border-gray-400">
           <div className="text-xs font-medium opacity-90">Categories</div>
           <div className="text-2xl font-bold mt-1">
             {new Set(posts.map((p) => p.category).filter(Boolean)).size}
@@ -132,10 +132,10 @@ export default function AdminPosts() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white border border-gray-300 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+            <thead className="bg-gray-100">
               <tr>
                 <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                   Image
@@ -168,10 +168,10 @@ export default function AdminPosts() {
                 posts.map((post) => (
                   <tr
                     key={post._id}
-                    className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-colors"
+                    className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="px-3 py-2">
-                      <div className="w-16 h-10 relative rounded overflow-hidden shadow-sm ring-1 ring-gray-200">
+                      <div className="w-16 h-10 relative overflow-hidden border border-gray-300">
                         <Image
                           src={post.featuredImage || "/demo.png"}
                           alt={post.title}
@@ -186,7 +186,7 @@ export default function AdminPosts() {
                       </div>
                     </td>
                     <td className="px-3 py-2">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-800">
+                      <span className="inline-flex items-center px-2 py-0.5 text-[10px] font-medium bg-gray-100 text-gray-800 border border-gray-300">
                         {post.category}
                       </span>
                     </td>
@@ -197,12 +197,12 @@ export default function AdminPosts() {
                     </td>
                     <td className="px-3 py-2">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
+                        className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold border ${
                           post.status === "published"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-white text-black border-black"
                             : post.status === "draft"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-gray-100 text-gray-800"
+                            ? "bg-gray-100 text-gray-800 border-gray-400"
+                            : "bg-gray-100 text-gray-800 border-gray-300"
                         }`}
                       >
                         {post.status ? post.status.charAt(0).toUpperCase() + post.status.slice(1) : "Draft"}
@@ -212,14 +212,14 @@ export default function AdminPosts() {
                       <div className="flex items-center gap-1">
                         <Link
                           href={`/post?slug=${post.slug}`}
-                          className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition"
+                          className="p-1.5 text-black hover:bg-gray-100 transition border border-transparent hover:border-gray-300"
                           title="View"
                         >
                           <Eye size={14} />
                         </Link>
                         <Link
                           href={`/admin/edit-post/${post._id}`}
-                          className="p-1.5 text-green-600 hover:bg-green-50 rounded transition"
+                          className="p-1.5 text-gray-700 hover:bg-gray-100 transition border border-transparent hover:border-gray-300"
                           title="Edit"
                         >
                           <Edit size={14} />
@@ -243,7 +243,7 @@ export default function AdminPosts() {
                               alert("Failed to delete post");
                             }
                           }}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded transition"
+                          className="p-1.5 text-gray-600 hover:bg-gray-100 transition border border-transparent hover:border-gray-300"
                           title="Delete"
                         >
                           <Trash2 size={14} />
