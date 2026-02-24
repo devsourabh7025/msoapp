@@ -160,7 +160,7 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                           src={post.featuredImage}
                           alt={post.title}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                           sizes="300px"
                         />
                       ) : (
@@ -194,7 +194,7 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                         src={mainArticle.featuredImage}
                         alt={mainArticle.title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                         sizes="(max-width: 1024px) 100vw, 70vw"
                         priority
                       />
@@ -258,7 +258,7 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                             src={post.featuredImage}
                             alt={post.title}
                             fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
                             sizes="80px"
                           />
                         ) : (

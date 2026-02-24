@@ -149,7 +149,7 @@ export default function Featured() {
                       src={story.featuredImage}
                       alt=""
                       fill
-                      className="object-cover grayscale"
+                      className="object-cover object-center grayscale"
                     />
                   </div>
                 )}
@@ -176,7 +176,7 @@ export default function Featured() {
                         src={socialStories[0].featuredImage}
                         alt=""
                         fill
-                        className="object-cover grayscale"
+                        className="object-cover object-center grayscale"
                       />
                     </div>
                   )}

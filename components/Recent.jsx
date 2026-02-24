@@ -67,7 +67,7 @@ export default function Recent() {
                   src={post.featuredImage}
                   alt={post.title}
                   fill
-                  className="object-cover grayscale"
+                  className="object-cover object-center grayscale"
                 />
               </div>
 

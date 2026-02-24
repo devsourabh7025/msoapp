@@ -11,7 +11,7 @@ export default function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState("The Player");
 
   const drawerData = {
@@ -161,14 +161,15 @@ export default function Navbar() {
       <header className="w-full bg-white dark:bg-gray-950">
         {/* TOP BAR (NOT STICKY) */}
         <div className="border-b border-gray-200 dark:border-white/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="relative flex items-center justify-between h-24">
+          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div className="relative flex items-center justify-between h-16 sm:h-20 lg:h-24">
               {/* LEFT: Drawer Trigger */}
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="h-10 w-10 flex items-center justify-center border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors shrink-0"
+                aria-label="Open menu"
               >
-                <Menu size={22} />
+                <Menu size={20} className="sm:w-[22px] sm:h-[22px]" />
               </button>
 
               {/* CENTER LOGO */}
@@ -176,16 +177,16 @@ export default function Navbar() {
                 href="/"
                 className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none"
               >
-                <span className="text-[52px] sm:text-[64px] font-extrabold tracking-tight text-red-600 uppercase">
+                <span className="text-[38px] sm:text-[52px] lg:text-[64px] font-extrabold tracking-tight text-red-600 uppercase">
                   MSO
                 </span>
-                <span className="text-[11px] sm:text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 uppercase mt-1">
+                <span className="text-[9px] sm:text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 uppercase mt-0.5 sm:mt-1 text-center hidden sm:block">
                   Maharashtra Startup Organisation
                 </span>
               </Link>
 
               {/* RIGHT SIDE */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 {/* Theme toggle: light/dark */}
                 <button
                   type="button"
@@ -206,7 +207,7 @@ export default function Navbar() {
                       <div className="relative" ref={userMenuRef}>
                         <button
                           onClick={() => setUserMenuOpen(!userMenuOpen)}
-                          className="h-10 px-4 border border-black dark:border-white text-sm font-semibold flex items-center gap-2"
+                          className="h-9 sm:h-10 px-3 sm:px-4 border border-black dark:border-white text-xs sm:text-sm font-semibold flex items-center gap-1 sm:gap-2"
                         >
                           <span className="hidden sm:inline max-w-[90px] truncate">
                             {user.name}
@@ -215,7 +216,7 @@ export default function Navbar() {
                         </button>
 
                         {userMenuOpen && (
-                          <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 z-50">
+                          <div className="absolute right-0 top-full mt-2 w-48 sm:w-56 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 z-50">
                             <Link
                               href={user.role === "ADMIN" || user.role === "MANAGER" ? "/admin" : "/user"}
                               onClick={() => setUserMenuOpen(false)}
@@ -238,7 +239,7 @@ export default function Navbar() {
                     ) : (
                       <Link
                         href="/login"
-                        className="h-10 px-6 border border-black dark:border-white text-sm font-semibold flex items-center"
+                        className="h-9 sm:h-10 px-4 sm:px-6 border border-black dark:border-white text-xs sm:text-sm font-semibold flex items-center shrink-0"
                       >
                         Sign In
                       </Link>
@@ -247,18 +248,19 @@ export default function Navbar() {
                 )}
 
                 {/* Search */}
-                <button className="h-10 w-12 flex items-center justify-center bg-black text-white">
-                  <Search size={20} />
+                <button className="h-9 w-9 sm:h-10 sm:w-12 flex items-center justify-center bg-black text-white shrink-0" aria-label="Search">
+                  <Search size={18} className="sm:w-5 sm:h-5" />
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM NAV (STICKY ONLY THIS) */}
+        {/* BOTTOM NAV (STICKY) - Desktop horizontal, Mobile expandable */}
         {menuItems.length > 0 && (
           <div className="sticky top-0 z-40 border-b border-gray-300 dark:border-white/10 bg-white dark:bg-gray-950">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+              {/* Desktop nav */}
               <nav className="hidden lg:flex items-center justify-center gap-10 h-14">
                 {menuItems.map((item, index) => {
                   if (item.type === "link") {
@@ -282,7 +284,7 @@ export default function Navbar() {
                         </button>
 
                         <div className="absolute left-0 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                          <div className="bg-white dark:bg-gray-900 shadow-xl border min-w-[220px] py-2">
+                          <div className="bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 min-w-[220px] py-2">
                             {item.items.map((sub, i) => (
                               <Link
                                 key={sub.id || i}
@@ -301,6 +303,56 @@ export default function Navbar() {
                   return null;
                 })}
               </nav>
+
+              {/* Mobile nav - expandable */}
+              <div className="lg:hidden">
+                <button
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  className="flex items-center justify-between w-full h-12 px-4 text-sm font-semibold text-gray-900 dark:text-white"
+                  aria-expanded={mobileMenuOpen}
+                >
+                  Menu
+                  <ChevronDown size={18} className={`transition-transform ${mobileMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+                {mobileMenuOpen && (
+                  <div className="border-t border-gray-200 dark:border-white/10 py-3 px-4 space-y-1 max-h-[60vh] overflow-y-auto">
+                    {menuItems.map((item, index) => {
+                      if (item.type === "link") {
+                        return (
+                          <Link
+                            key={item.id || index}
+                            href={item.href || "/"}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block py-2.5 px-3 text-sm font-medium hover:text-red-600 hover:bg-gray-50 dark:hover:bg-white/5"
+                          >
+                            {item.label}
+                          </Link>
+                        );
+                      }
+                      if (item.type === "dropdown" && item.items?.length) {
+                        return (
+                          <div key={item.id || index} className="py-2">
+                            <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              {item.label}
+                            </div>
+                            {item.items.map((sub, i) => (
+                              <Link
+                                key={sub.id || i}
+                                href={sub.href || "/"}
+                                onClick={() => setMobileMenuOpen(false)}
+                                className="block py-2 px-3 pl-5 text-sm hover:text-red-600 hover:bg-gray-50 dark:hover:bg-white/5"
+                              >
+                                {sub.label}
+                              </Link>
+                            ))}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -310,26 +362,27 @@ export default function Navbar() {
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex">
           {/* LEFT DRAWER PANEL */}
-          <div className="w-full md:w-1/2 bg-gray-100 dark:bg-gray-950 h-full overflow-y-auto p-6 md:p-10 flex flex-col shadow-2xl">
+          <div className="w-full md:w-1/2 max-w-full bg-gray-100 dark:bg-gray-950 h-full overflow-y-auto p-4 sm:p-6 md:p-10 flex flex-col shadow-2xl">
             {/* Close Button */}
-            <div className="mb-10">
+            <div className="mb-6 sm:mb-10">
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="bg-red-500 text-white w-8 h-8  flex items-center justify-center"
+                className="bg-red-500 text-white w-8 h-8 flex items-center justify-center"
+                aria-label="Close menu"
               >
                 <X size={18} />
               </button>
             </div>
 
             {/* MAIN SECTION */}
-            <div className="flex flex-1 flex-col md:flex-row">
+            <div className="flex flex-1 flex-col md:flex-row gap-6 md:gap-0">
               {/* LEFT BIG CATEGORY MENU */}
-              <div className="w-full md:w-1/2 space-y-6">
+              <div className="w-full md:w-1/2 space-y-4 sm:space-y-6">
                 {Object.keys(drawerData).map((category) => (
                   <div
                     key={category}
                     onClick={() => setActiveCategory(category)}
-                    className={`text-4xl font-bold cursor-pointer transition-all
+                    className={`text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer transition-all
                 ${
                   activeCategory === category
                     ? "text-black dark:text-white"
@@ -342,9 +395,9 @@ export default function Navbar() {
               </div>
 
               {/* RIGHT CONTENT AREA */}
-              <div className="w-full md:w-1/2 pt-6 md:pt-0 md:pl-10">
+              <div className="w-full md:w-1/2 pt-4 md:pt-0 md:pl-10">
                 {drawerData[activeCategory].type === "list" && (
-                  <div className="space-y-4 text-lg font-medium">
+                  <div className="space-y-3 sm:space-y-4 text-base sm:text-lg font-medium">
                     {drawerData[activeCategory].items.map((item, i) => (
                       <div
                         key={i}
@@ -383,15 +436,15 @@ export default function Navbar() {
                 )}
 
                 {drawerData[activeCategory].type === "event" && (
-                  <div className="space-y-6">
+                  <div className="space-y-4 sm:space-y-6">
                     {drawerData[activeCategory].items.map((event, i) => (
-                      <div key={i} className="flex gap-4 items-center">
-                        <div className="w-32 h-20 bg-gray-300 flex items-center justify-center text-sm">
+                      <div key={i} className="flex gap-3 sm:gap-4 items-center">
+                        <div className="w-20 h-14 sm:w-32 sm:h-20 bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                           Image
                         </div>
-                        <div>
-                          <div className="font-semibold">{event.title}</div>
-                          <div className="text-sm text-gray-500">
+                        <div className="min-w-0">
+                          <div className="font-semibold text-sm sm:text-base line-clamp-2">{event.title}</div>
+                          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                             {event.location} — {event.date}
                           </div>
                         </div>
@@ -403,16 +456,16 @@ export default function Navbar() {
             </div>
 
             {/* FOOTER */}
-            <div className="border-t border-gray-300 dark:border-white/10 mt-12 pt-8 flex justify-between items-center">
+            <div className="border-t border-gray-300 dark:border-white/10 mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
               <div className="text-sm font-medium">Follow Us</div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
                 <input
                   type="email"
                   placeholder="Enter your Email"
-                  className="px-4 py-2 border border-gray-400 bg-white dark:bg-gray-900 text-sm"
+                  className="w-full sm:w-auto min-w-0 px-4 py-2.5 sm:py-2 border border-gray-400 dark:border-white/30 bg-white dark:bg-gray-900 text-sm"
                 />
-                <button className="bg-black text-white px-5 py-2 text-sm font-semibold">
+                <button className="w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black px-5 py-2.5 sm:py-2 text-sm font-semibold shrink-0">
                   Subscribe
                 </button>
               </div>

@@ -102,7 +102,7 @@ export default function SpotLight() {
                       src={post.featuredImage}
                       alt={post.title}
                       fill
-                      className="object-cover grayscale"
+                      className="object-cover object-center grayscale"
                       sizes="(max-width: 1024px) 100vw, 25vw"
                     />
                   </div>

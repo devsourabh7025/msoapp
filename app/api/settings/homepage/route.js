@@ -320,9 +320,29 @@ export async function PUT(request) {
       );
     }
     
-    if (!user || user.role !== "ADMIN") {
+    // Allow ADMIN or MANAGER with any customise permission
+    if (!user) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Admin access required" },
+        { status: 403 }
+      );
+    }
+    if (user.role === "ADMIN") {
+      // Admin can always save
+    } else if (user.role === "MANAGER") {
+      const perms = Array.isArray(user.managerPermissions) ? user.managerPermissions : [];
+      const hasCustomise =
+        perms.includes("customise") ||
+        perms.some((p) => p && p.startsWith("customise"));
+      if (!hasCustomise) {
+        return NextResponse.json(
+          { error: "Unauthorized", message: "Manager needs customise permission to save" },
+          { status: 403 }
+        );
+      }
+    } else {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Admin or manager with customise permission required" },
         { status: 403 }
       );
     }

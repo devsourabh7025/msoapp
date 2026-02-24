@@ -10,7 +10,7 @@ import {
   TrendingUp,
   ArrowUpDown,
   FileText,
-  Globe,
+  Type,
 } from "lucide-react";
 
 // section id -> permission key for manager
@@ -40,7 +40,7 @@ const otherSections = [
   { id: "footer", name: "Footer", icon: Layout },
   { id: "post", name: "Post", icon: FileText },
   { id: "sidebar", name: "Sidebar", icon: Layout },
-  { id: "site", name: "Language", icon: Globe },
+  { id: "site", name: "Fonts", icon: Type },
 ];
 
 function canSeeSection(sectionId, user) {

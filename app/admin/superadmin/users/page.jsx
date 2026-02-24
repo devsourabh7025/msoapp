@@ -22,7 +22,7 @@ const MANAGER_PERMISSION_OPTIONS = [
   { id: "customiseFooter", label: "Customise: Footer" },
   { id: "customisePost", label: "Customise: Post" },
   { id: "customiseSidebar", label: "Customise: Sidebar" },
-  { id: "customiseSite", label: "Customise: Language" },
+  { id: "customiseSite", label: "Customise: Fonts" },
 ];
 
 export default function SuperAdminUsers() {
@@ -40,6 +40,7 @@ export default function SuperAdminUsers() {
   const [permissionsForm, setPermissionsForm] = useState([]);
   const [savingPermissions, setSavingPermissions] = useState(false);
   const [loadingPermissionsModal, setLoadingPermissionsModal] = useState(false);
+  const [roleFilter, setRoleFilter] = useState("all");
 
   useEffect(() => {
     fetchUsers();
@@ -259,6 +260,27 @@ export default function SuperAdminUsers() {
         </div>
       </div>
 
+      {/* Role Filter */}
+      <div className="flex items-center gap-4">
+        <label htmlFor="role-filter" className="text-sm font-medium text-gray-700">
+          Filter by role:
+        </label>
+        <select
+          id="role-filter"
+          value={roleFilter}
+          onChange={(e) => setRoleFilter(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900"
+        >
+          <option value="all">All Users</option>
+          <option value="ADMIN">Administrators</option>
+          <option value="MANAGER">Managers</option>
+          <option value="NORMAL_USER">Regular Users</option>
+        </select>
+        <span className="text-sm text-gray-500">
+          Showing {roleFilter === "all" ? users.length : users.filter((u) => u.role === roleFilter).length} of {users.length}
+        </span>
+      </div>
+
       {/* Users Table */}
       <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
@@ -286,7 +308,7 @@ export default function SuperAdminUsers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {users.map((user) => (
+              {(roleFilter === "all" ? users : users.filter((u) => u.role === roleFilter)).map((user) => (
                 <tr
                   key={user._id}
                   className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-colors cursor-pointer"

@@ -9,10 +9,11 @@ function getJWTSecret() {
 }
 
 const DEFAULT_SITE = {
-  language: "en",
+  bodyFont: "Inter",
+  headingFont: "Inter",
 };
 
-// GET - Fetch site settings (public, for language etc.)
+// GET - Fetch site settings (public, for fonts etc.)
 export async function GET() {
   try {
     await ensureConnected();
@@ -20,7 +21,8 @@ export async function GET() {
     const value = doc?.value && typeof doc.value === "object" ? doc.value : {};
     return NextResponse.json({
       site: {
-        language: value.language || DEFAULT_SITE.language,
+        bodyFont: value.bodyFont || DEFAULT_SITE.bodyFont,
+        headingFont: value.headingFont || DEFAULT_SITE.headingFont,
       },
     });
   } catch (error) {
@@ -29,7 +31,7 @@ export async function GET() {
   }
 }
 
-// PUT - Update site settings (admin only)
+// PUT - Update site settings (admin or manager with customiseSite)
 export async function PUT(request) {
   try {
     const token = request.cookies.get("token")?.value;
@@ -38,19 +40,30 @@ export async function PUT(request) {
     }
     const decoded = jwt.verify(token, getJWTSecret());
     await ensureConnected();
-    const user = await User.findById(decoded.userId).select("-password");
-    if (!user || user.role !== "ADMIN") {
+    const user = await User.findById(decoded.userId).select("-password managerPermissions").lean();
+    if (!user) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (user.role === "ADMIN") {
+      // Admin can always save
+    } else if (user.role === "MANAGER") {
+      const perms = Array.isArray(user.managerPermissions) ? user.managerPermissions : [];
+      if (!perms.includes("customiseSite")) {
+        return NextResponse.json({ error: "Manager needs customise permission" }, { status: 403 });
+      }
+    } else {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await request.json();
-    const { language } = body;
+    const { bodyFont, headingFont } = body;
 
     const current = await Settings.findOne({ key: "site" }).maxTimeMS(5000);
     const currentValue = current?.value && typeof current.value === "object" ? current.value : {};
     const updated = {
       ...currentValue,
-      language: typeof language === "string" && language.trim() ? language.trim() : currentValue.language || "en",
+      bodyFont: typeof bodyFont === "string" && bodyFont.trim() ? bodyFont.trim() : (currentValue.bodyFont || "Inter"),
+      headingFont: typeof headingFont === "string" && headingFont.trim() ? headingFont.trim() : (currentValue.headingFont || "Inter"),
     };
 
     await Settings.findOneAndUpdate(
@@ -61,7 +74,7 @@ export async function PUT(request) {
 
     return NextResponse.json({
       message: "Site settings saved successfully",
-      site: { language: updated.language },
+      site: { bodyFont: updated.bodyFont, headingFont: updated.headingFont },
     });
   } catch (error) {
     console.error("Error saving site settings:", error);

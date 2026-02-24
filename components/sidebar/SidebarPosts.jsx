@@ -70,7 +70,7 @@ export default function SidebarPosts({ title = "You May Like" }) {
                     alt={post.title}
                     width={80}
                     height={80}
-                    className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500 grayscale"
+                    className="object-cover object-center w-full h-full group-hover:scale-110 transition-transform duration-500 grayscale"
                   />
                 ) : (
                   <div className="w-full h-full bg-gray-300 dark:bg-gray-600" />

@@ -188,7 +188,7 @@ export default function CategoryPostsPage({ slug, pageTitle, fallbackTitle = "Po
                       src={post.featuredImage}
                       alt={post.title}
                       fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-500 grayscale"
+                      className="object-cover object-center group-hover:scale-110 transition-transform duration-500 grayscale"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
                   ) : (

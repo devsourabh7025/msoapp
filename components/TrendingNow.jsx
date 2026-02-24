@@ -77,7 +77,7 @@ export default function TrendingNow() {
                     src={article.featuredImage}
                     alt={article.title}
                     fill
-                    className="object-cover grayscale"
+                    className="object-cover object-center grayscale"
                   />
                 </div>
 

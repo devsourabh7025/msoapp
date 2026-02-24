@@ -523,6 +523,7 @@ export default function Customise() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(dataToSave),
         signal: controller.signal,
       });
