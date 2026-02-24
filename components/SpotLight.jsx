@@ -77,12 +77,12 @@ export default function SpotLight() {
   }
 
   return (
-    <section className="bg-white py-16">
+    <section className="bg-white dark:bg-gray-950 py-16">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-[140px_1fr] gap-10">
           {/* Vertical Label */}
           <div className="hidden lg:flex">
-            <h2 className="text-[120px] font-extrabold leading-none tracking-tight rotate-180 [writing-mode:vertical-rl]">
+            <h2 className="text-[120px] font-extrabold leading-none tracking-tight rotate-180 [writing-mode:vertical-rl] text-gray-900 dark:text-white">
               Spotlight
             </h2>
           </div>
@@ -108,25 +108,25 @@ export default function SpotLight() {
                   </div>
 
                   {/* Category */}
-                  <div className="flex items-center gap-2 text-sm mb-2">
-                    <span className="w-2 h-2 bg-black inline-block"></span>
+                  <div className="flex items-center gap-2 text-sm mb-2 text-gray-600 dark:text-gray-400">
+                    <span className="w-2 h-2 bg-black dark:bg-white inline-block"></span>
                     <span>{post.category}</span>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-lg font-bold leading-snug mb-2">
+                  <h3 className="text-lg font-bold leading-snug mb-2 text-gray-900 dark:text-white">
                     {post.title}
                   </h3>
 
                   {/* Excerpt */}
                   {post.excerpt && (
-                    <p className="text-sm leading-relaxed mb-3 line-clamp-3">
+                    <p className="text-sm leading-relaxed mb-3 line-clamp-3 text-gray-600 dark:text-gray-300">
                       {post.excerpt}
                     </p>
                   )}
 
                   {/* Author */}
-                  <p className="text-sm font-medium">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-200">
                     {getAuthorName(post.author)}
                   </p>
                 </Link>
@@ -134,7 +134,7 @@ export default function SpotLight() {
             </div>
           ) : (
             <div className="py-20 text-center">
-              <p className="text-sm">No spotlight posts selected</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">No spotlight posts selected</p>
             </div>
           )}
         </div>

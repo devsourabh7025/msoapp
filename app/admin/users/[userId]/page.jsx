@@ -168,6 +168,8 @@ export default function UserDetailPage() {
           <div className="p-4 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl">
             {user.role === "ADMIN" ? (
               <Shield size={32} className="text-white" />
+            ) : user.role === "MANAGER" ? (
+              <Shield size={32} className="text-white" />
             ) : (
               <User size={32} className="text-white" />
             )}
@@ -179,10 +181,12 @@ export default function UserDetailPage() {
                 className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                   user.role === "ADMIN"
                     ? "bg-purple-100 text-purple-800"
+                    : user.role === "MANAGER"
+                    ? "bg-amber-100 text-amber-800"
                     : "bg-blue-100 text-blue-800"
                 }`}
               >
-                {user.role === "ADMIN" ? "Administrator" : "Normal User"}
+                {user.role === "ADMIN" ? "Administrator" : user.role === "MANAGER" ? "Manager" : "Normal User"}
               </span>
             </div>
             <div className="space-y-2 text-gray-600">

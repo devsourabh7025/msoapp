@@ -16,18 +16,18 @@ export default function AdminPosts() {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/superadmin/posts");
+      const response = await fetch("/api/superadmin/posts", { credentials: "include" });
       if (response.ok) {
         const data = await response.json();
-        console.log(`✅ Fetched ${data.posts?.length || 0} posts from database`);
         setPosts(data.posts || []);
       } else {
-        const errorData = await response.json().catch(() => ({ error: "Failed to fetch posts" }));
-        console.error("❌ Error fetching posts:", errorData);
+        const errorData = await response.json().catch(() => ({}));
+        const msg = errorData?.error || `Failed to fetch posts (${response.status})`;
+        console.error("Error fetching posts:", msg);
         setPosts([]);
       }
     } catch (error) {
-      console.error("❌ Error fetching posts:", error);
+      console.error("Error fetching posts:", error?.message || error);
       setPosts([]);
     } finally {
       setLoading(false);

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown, Menu, X, Search } from "lucide-react";
+import { ChevronDown, Menu, X, Search, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Navbar() {
@@ -186,6 +186,20 @@ export default function Navbar() {
 
               {/* RIGHT SIDE */}
               <div className="flex items-center gap-3">
+                {/* Theme toggle: light/dark */}
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="h-10 w-10 flex items-center justify-center border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                  aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                >
+                  {theme === "dark" ? (
+                    <Sun size={20} />
+                  ) : (
+                    <Moon size={20} />
+                  )}
+                </button>
+
                 {!loading && (
                   <>
                     {user ? (
@@ -203,11 +217,11 @@ export default function Navbar() {
                         {userMenuOpen && (
                           <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 z-50">
                             <Link
-                              href={user.role === "ADMIN" ? "/admin" : "/user"}
+                              href={user.role === "ADMIN" || user.role === "MANAGER" ? "/admin" : "/user"}
                               onClick={() => setUserMenuOpen(false)}
                               className="block px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-white/5"
                             >
-                              {user.role === "ADMIN"
+                              {user.role === "ADMIN" || user.role === "MANAGER"
                                 ? "Admin Panel"
                                 : "User Panel"}
                             </Link>

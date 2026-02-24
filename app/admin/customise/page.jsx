@@ -171,12 +171,13 @@ export default function Customise() {
   const fetchAllPosts = async () => {
     try {
       setLoadingPosts(true);
-      const response = await fetch("/api/superadmin/posts");
+      const response = await fetch("/api/superadmin/posts", { credentials: "include" });
       if (response.ok) {
         const data = await response.json();
         setAllPosts(data.posts || []);
       } else {
-        console.error("Failed to fetch posts");
+        const err = await response.json().catch(() => ({}));
+        console.error("Failed to fetch posts:", err?.error || response.status);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);

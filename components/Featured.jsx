@@ -73,17 +73,17 @@ export default function Featured() {
   if (featuredSettings?.showSection === false) return null;
 
   return (
-    <section className="bg-white py-20">
+    <section className="bg-white dark:bg-gray-950 py-20">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <h2 className="text-5xl font-extrabold mb-16">
+        <h2 className="text-5xl font-extrabold mb-16 text-gray-900 dark:text-white">
           {featuredSettings?.title || "Featured"}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           {/* ===== SMB STORY ===== */}
           <div>
-            <span className="inline-block bg-black text-white text-xs px-4 py-1 mb-6">
+            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
               SMB Story
             </span>
 
@@ -92,7 +92,7 @@ export default function Featured() {
                 {/* Main Black Card */}
                 <Link
                   href={`/post?slug=${smbStories[0].slug}`}
-                  className="block bg-black text-white p-6 mb-6"
+                  className="block bg-black dark:bg-white text-white dark:text-black p-6 mb-6"
                 >
                   <h3 className="text-lg font-bold mb-3">
                     {smbStories[0].title}
@@ -114,10 +114,10 @@ export default function Featured() {
                   <Link
                     key={i}
                     href={`/post?slug=${story.slug}`}
-                    className="block border p-4 mb-4"
+                    className="block border border-gray-300 dark:border-gray-600 p-4 mb-4 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50"
                   >
                     <h4 className="text-sm font-medium">{story.title}</h4>
-                    <p className="text-xs mt-2">
+                    <p className="text-xs mt-2 text-gray-600 dark:text-gray-400">
                       {getAuthorName(story.author)}
                     </p>
                   </Link>
@@ -128,7 +128,7 @@ export default function Featured() {
 
           {/* ===== HER STORY ===== */}
           <div>
-            <span className="inline-block bg-black text-white text-xs px-4 py-1 mb-6">
+            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
               Her Story
             </span>
 
@@ -136,11 +136,11 @@ export default function Featured() {
               <Link
                 key={i}
                 href={`/post?slug=${story.slug}`}
-                className="flex items-start gap-4 pb-6 mb-6 border-b"
+                className="flex items-start gap-4 pb-6 mb-6 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
               >
                 <div className="flex-1">
                   <h4 className="text-sm font-bold mb-1">{story.title}</h4>
-                  <p className="text-xs">{getAuthorName(story.author)}</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">{getAuthorName(story.author)}</p>
                 </div>
 
                 {story.featuredImage && (
@@ -159,7 +159,7 @@ export default function Featured() {
 
           {/* ===== SOCIAL STORY ===== */}
           <div>
-            <span className="inline-block bg-black text-white text-xs px-4 py-1 mb-6">
+            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
               Social Story
             </span>
 
@@ -168,7 +168,7 @@ export default function Featured() {
                 {/* First Story with Image */}
                 <Link
                   href={`/post?slug=${socialStories[0].slug}`}
-                  className="block mb-6"
+                  className="block mb-6 text-gray-900 dark:text-white"
                 >
                   {socialStories[0].featuredImage && (
                     <div className="relative w-full aspect-square mb-4 overflow-hidden">
@@ -191,9 +191,9 @@ export default function Featured() {
                   <Link
                     key={i}
                     href={`/post?slug=${story.slug}`}
-                    className="flex gap-4 mb-5"
+                    className="flex gap-4 mb-5 text-gray-900 dark:text-white"
                   >
-                    <span className="text-gray-900 font-bold text-lg">
+                    <span className="font-bold text-lg">
                       {i + 2}
                     </span>
                     <h4 className="text-sm font-medium">{story.title}</h4>

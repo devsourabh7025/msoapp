@@ -49,17 +49,34 @@ export async function GET(request, { params }) {
     await ensureConnected(); // Connection should already exist from login
     const { userId } = await params;
 
-    const user = await User.findById(userId).select("-password");
-    if (!user) {
+    const userDoc = await User.findById(userId).select("-password").lean();
+    if (!userDoc) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // Get all posts by this user
+    const perms = userDoc.managerPermissions;
+    const managerPermissions = Array.isArray(perms) ? perms : [];
+    console.log("[Permissions API] GET user", userId, "– raw managerPermissions:", userDoc.managerPermissions, "→ returning:", managerPermissions);
+    const user = {
+      ...userDoc,
+      _id: userDoc._id?.toString?.() ?? userDoc._id,
+      managerPermissions,
+    };
+
     const posts = await Post.find({ author: userId })
       .sort({ createdAt: -1 })
       .select("title slug status category createdAt autoShareEnabled");
 
-    return NextResponse.json({ user, posts });
+    return NextResponse.json(
+      { user, posts },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching user:", error);
     return NextResponse.json(

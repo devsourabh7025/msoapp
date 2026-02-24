@@ -42,8 +42,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Login successful - redirect based on user role
-      if (data.user?.role === "ADMIN") {
+      // Login successful - redirect based on user role (ADMIN and MANAGER go to admin panel)
+      if (data.user?.role === "ADMIN" || data.user?.role === "MANAGER") {
         router.push("/admin");
       } else {
         router.push("/user");

@@ -28,11 +28,10 @@ export default function UserLayout({ children }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
-        // If user is ADMIN, redirect to admin panel (only ADMIN goes to admin panel)
-        if (data.user?.role === "ADMIN") {
+        // ADMIN and MANAGER go to admin panel; others stay in user panel
+        if (data.user?.role === "ADMIN" || data.user?.role === "MANAGER") {
           router.push("/admin");
         }
-        // All other users (NORMAL_USER, etc.) stay in user panel
       } else {
         router.push("/login");
       }

@@ -50,13 +50,13 @@ export default function TrendingNow() {
   if (trendingSettings?.showSection === false) return null;
 
   return (
-    <section className="bg-white py-24">
+    <section className="bg-white dark:bg-gray-950 py-24">
       <div className="max-w-7xl mx-auto px-6">
         {/* Big Editorial Title */}
-        <h2 className="text-6xl md:text-7xl font-extrabold tracking-tight mb-4">
+        <h2 className="text-6xl md:text-7xl font-extrabold tracking-tight mb-4 text-gray-900 dark:text-white">
           {trendingSettings?.title || "Trending"}
         </h2>
-        <div className="h-px bg-black w-24 mb-16" />
+        <div className="h-px bg-black dark:bg-white w-24 mb-16" />
 
         {trendingArticles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -94,7 +94,7 @@ export default function TrendingNow() {
             ))}
           </div>
         ) : (
-          <p className="text-sm">No trending posts selected</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">No trending posts selected</p>
         )}
       </div>
     </section>

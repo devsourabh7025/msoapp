@@ -22,12 +22,17 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["NORMAL_USER", "ADMIN"],
+      enum: ["NORMAL_USER", "MANAGER", "ADMIN"],
       default: "NORMAL_USER",
     },
     autoShareEnabled: {
       type: Boolean,
       default: false,
+    },
+    // Manager only: list of allowed admin section keys (e.g. posts, addPost, categories)
+    managerPermissions: {
+      type: [String],
+      default: [],
     },
     socialMediaSettings: {
       type: mongoose.Schema.Types.Mixed,
@@ -50,5 +55,13 @@ UserSchema.pre("save", async function () {
 UserSchema.methods.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+// In Next.js dev with hot reload, an old compiled model can persist in memory.
+// If that cached model misses newly added schema fields (like managerPermissions),
+// writes to those fields may be ignored until server restart.
+const existingUserModel = mongoose.models.User;
+if (existingUserModel && !existingUserModel.schema.path("managerPermissions")) {
+  delete mongoose.models.User;
+}
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);

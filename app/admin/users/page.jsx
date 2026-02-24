@@ -2,7 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Edit, Trash2, Shield, User, ToggleLeft, ToggleRight, Eye } from "lucide-react";
+import { Edit, Trash2, Shield, User, ToggleLeft, ToggleRight, Eye, KeyRound } from "lucide-react";
+
+const MANAGER_PERMISSION_OPTIONS = [
+  { id: "posts", label: "Posts (dashboard)" },
+  { id: "addPost", label: "Add Post" },
+  { id: "allPosts", label: "All Posts" },
+  { id: "categories", label: "Categories" },
+  { id: "postRequests", label: "Post Requests" },
+  { id: "ads", label: "Ads Setup" },
+  { id: "pages", label: "Pages" },
+  { id: "customise", label: "Customise (main)" },
+  { id: "customiseHero", label: "Customise: Hero" },
+  { id: "customiseSpotlight", label: "Customise: Spotlight" },
+  { id: "customiseFeatured", label: "Customise: Featured" },
+  { id: "customiseTrending", label: "Customise: Trending" },
+  { id: "customiseHomepageOrder", label: "Customise: Homepage Order" },
+  { id: "customiseHeader", label: "Customise: Header" },
+  { id: "customiseFooter", label: "Customise: Footer" },
+  { id: "customisePost", label: "Customise: Post" },
+  { id: "customiseSidebar", label: "Customise: Sidebar" },
+  { id: "customiseSite", label: "Customise: Language" },
+];
 
 export default function SuperAdminUsers() {
   const router = useRouter();
@@ -15,6 +36,10 @@ export default function SuperAdminUsers() {
     role: "NORMAL_USER",
     autoShareEnabled: false,
   });
+  const [permissionsModalUser, setPermissionsModalUser] = useState(null);
+  const [permissionsForm, setPermissionsForm] = useState([]);
+  const [savingPermissions, setSavingPermissions] = useState(false);
+  const [loadingPermissionsModal, setLoadingPermissionsModal] = useState(false);
 
   useEffect(() => {
     fetchUsers();
@@ -22,10 +47,13 @@ export default function SuperAdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/superadmin/users");
+      const response = await fetch("/api/superadmin/users", {
+        credentials: "include",
+        cache: "no-store",
+      });
       if (response.ok) {
         const data = await response.json();
-        setUsers(data.users);
+        setUsers(data.users || []);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -42,6 +70,80 @@ export default function SuperAdminUsers() {
       role: user.role || "NORMAL_USER",
       autoShareEnabled: user.autoShareEnabled || false,
     });
+  };
+
+  const openPermissionsModal = async (user, e) => {
+    if (e) e.stopPropagation();
+    if (user?.role !== "MANAGER") return;
+    const userId = user._id?.toString?.() || user._id;
+    const initialPerms = Array.isArray(user.managerPermissions) ? [...user.managerPermissions] : [];
+    console.log("[Permissions modal] Open – user from list:", { userId, name: user.name, managerPermissions: user.managerPermissions, initialPerms });
+    setPermissionsModalUser({ ...user, _id: userId });
+    setPermissionsForm(initialPerms);
+    setLoadingPermissionsModal(true);
+    try {
+      const response = await fetch(`/api/superadmin/users/${userId}?t=${Date.now()}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const freshUser = data.user || data;
+        const perms = Array.isArray(freshUser.managerPermissions) ? [...freshUser.managerPermissions] : [];
+        console.log("[Permissions modal] Fetched user – freshUser.managerPermissions:", freshUser.managerPermissions, "→ perms:", perms);
+        setPermissionsForm(perms);
+        setPermissionsModalUser((prev) => (prev?._id === (freshUser._id?.toString?.() || freshUser._id) ? { ...prev, ...freshUser, managerPermissions: perms } : prev));
+      } else {
+        console.warn("[Permissions modal] Fetch not ok:", response.status);
+      }
+    } catch (err) {
+      console.error("[Permissions modal] Fetch error:", err);
+    } finally {
+      setLoadingPermissionsModal(false);
+    }
+  };
+
+  const closePermissionsModal = () => setPermissionsModalUser(null);
+
+  const togglePermission = (id) => {
+    setPermissionsForm((prev) => {
+      const next = prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id];
+      console.log("[Permissions modal] Toggle:", id, "→ form:", next);
+      return next;
+    });
+  };
+
+  const savePermissions = async () => {
+    const userId = permissionsModalUser?._id?.toString?.() ?? permissionsModalUser?._id;
+    if (!userId) return;
+    console.log("[Permissions modal] Save – userId:", userId, "managerPermissions:", permissionsForm);
+    setSavingPermissions(true);
+    try {
+      const response = await fetch("/api/superadmin/users", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          userId,
+          managerPermissions: permissionsForm,
+        }),
+      });
+      if (response.ok) {
+        console.log("[Permissions modal] Save success");
+        await fetchUsers();
+        closePermissionsModal();
+        alert("Permissions updated.");
+      } else {
+        const data = await response.json();
+        console.warn("[Permissions modal] Save failed:", response.status, data);
+        alert(data.error || "Failed to update permissions");
+      }
+    } catch (err) {
+      console.error("[Permissions modal] Save error:", err);
+      alert("Failed to update permissions");
+    } finally {
+      setSavingPermissions(false);
+    }
   };
 
   const handleSave = async () => {
@@ -125,7 +227,7 @@ export default function SuperAdminUsers() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md">
           <div className="text-xs font-medium opacity-90">Total Users</div>
           <div className="text-2xl font-bold mt-1">{users.length}</div>
@@ -134,6 +236,12 @@ export default function SuperAdminUsers() {
           <div className="text-xs font-medium opacity-90">Administrators</div>
           <div className="text-2xl font-bold mt-1">
             {users.filter((u) => u.role === "ADMIN").length}
+          </div>
+        </div>
+        <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg p-3 text-white shadow-md">
+          <div className="text-xs font-medium opacity-90">Managers</div>
+          <div className="text-2xl font-bold mt-1">
+            {users.filter((u) => u.role === "MANAGER").length}
           </div>
         </div>
         <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-3 text-white shadow-md">
@@ -181,9 +289,9 @@ export default function SuperAdminUsers() {
                 <tr
                   key={user._id}
                   className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-colors cursor-pointer"
-                  onClick={() => router.push(`/admin/users/${user._id}`)}
+                  onClick={() => editingUser !== user._id && router.push(`/admin/users/${user._id}`)}
                 >
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2" onClick={(e) => editingUser === user._id && e.stopPropagation()}>
                     {editingUser === user._id ? (
                       <input
                         type="text"
@@ -197,6 +305,8 @@ export default function SuperAdminUsers() {
                       <div className="flex items-center gap-2">
                         {user.role === "ADMIN" ? (
                           <Shield size={14} className="text-purple-600" />
+                        ) : user.role === "MANAGER" ? (
+                          <Shield size={14} className="text-amber-600" />
                         ) : (
                           <User size={18} className="text-gray-400" />
                         )}
@@ -204,7 +314,7 @@ export default function SuperAdminUsers() {
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2" onClick={(e) => editingUser === user._id && e.stopPropagation()}>
                     {editingUser === user._id ? (
                       <input
                         type="email"
@@ -218,7 +328,7 @@ export default function SuperAdminUsers() {
                       <span className="text-xs text-gray-600">{user.email}</span>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                     {editingUser === user._id ? (
                       <select
                         value={editForm.role}
@@ -228,6 +338,7 @@ export default function SuperAdminUsers() {
                         className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
                       >
                         <option value="NORMAL_USER">Normal User</option>
+                        <option value="MANAGER">Manager</option>
                         <option value="ADMIN">Administrator</option>
                       </select>
                     ) : (
@@ -235,22 +346,26 @@ export default function SuperAdminUsers() {
                         className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
                           user.role === "ADMIN"
                             ? "bg-purple-100 text-purple-800"
+                            : user.role === "MANAGER"
+                            ? "bg-amber-100 text-amber-800"
                             : "bg-blue-100 text-blue-800"
                         }`}
                       >
-                        {user.role === "ADMIN" ? "Administrator" : "Normal User"}
+                        {user.role === "ADMIN" ? "Administrator" : user.role === "MANAGER" ? "Manager" : "Normal User"}
                       </span>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                     {editingUser === user._id ? (
                       <button
-                        onClick={() =>
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
                           setEditForm({
                             ...editForm,
                             autoShareEnabled: !editForm.autoShareEnabled,
-                          })
-                        }
+                          });
+                        }}
                         className="flex items-center gap-2"
                       >
                         {editForm.autoShareEnabled ? (
@@ -264,7 +379,11 @@ export default function SuperAdminUsers() {
                       </button>
                     ) : (
                       <button
-                        onClick={() => toggleAutoShare(user._id, user.autoShareEnabled)}
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleAutoShare(user._id, user.autoShareEnabled);
+                        }}
                         className="flex items-center gap-2"
                       >
                         {user.autoShareEnabled ? (
@@ -288,14 +407,22 @@ export default function SuperAdminUsers() {
                       {editingUser === user._id ? (
                         <>
                           <button
-                            onClick={handleSave}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSave();
+                            }}
                             className="p-1.5 text-green-600 hover:bg-green-50 rounded transition"
                             title="Save"
                           >
                             ✓
                           </button>
                           <button
-                            onClick={() => setEditingUser(null)}
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingUser(null);
+                            }}
                             className="p-1.5 text-gray-600 hover:bg-gray-50 rounded transition"
                             title="Cancel"
                           >
@@ -324,6 +451,16 @@ export default function SuperAdminUsers() {
                           >
                             <Edit size={14} />
                           </button>
+                          {user.role === "MANAGER" && (
+                            <button
+                              type="button"
+                              onClick={(e) => openPermissionsModal(user, e)}
+                              className="p-1.5 text-amber-600 hover:bg-amber-50 rounded transition"
+                              title="Permissions"
+                            >
+                              <KeyRound size={14} />
+                            </button>
+                          )}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -344,6 +481,66 @@ export default function SuperAdminUsers() {
           </table>
         </div>
       </div>
+
+      {/* Permissions modal for Manager */}
+      {permissionsModalUser && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={closePermissionsModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Manager permissions"
+        >
+          <div
+            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-lg font-bold text-gray-900 mb-1">
+              Manager permissions
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              {permissionsModalUser.name} – choose what this manager can access.
+            </p>
+            {loadingPermissionsModal ? (
+              <div className="py-8 text-center text-gray-500 text-sm">Loading permissions…</div>
+            ) : (
+            <div className="space-y-2 max-h-64 overflow-y-auto">
+              {MANAGER_PERMISSION_OPTIONS.map((opt) => (
+                <label
+                  key={opt.id}
+                  className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
+                >
+                  <input
+                    type="checkbox"
+                    checked={permissionsForm.includes(opt.id)}
+                    onChange={() => togglePermission(opt.id)}
+                    className="rounded border-gray-300"
+                  />
+                  <span className="text-sm text-gray-900">{opt.label}</span>
+                </label>
+              ))}
+            </div>
+            )}
+            <div className="flex gap-2 mt-6">
+              <button
+                type="button"
+                onClick={savePermissions}
+                disabled={savingPermissions}
+                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 text-sm font-medium"
+              >
+                {savingPermissions ? "Saving…" : "Save"}
+              </button>
+              <button
+                type="button"
+                onClick={closePermissionsModal}
+                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

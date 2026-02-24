@@ -33,8 +33,8 @@ function AdminLayoutContent({ children }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
-        // Only ADMIN role can access admin panel - redirect all others to user panel
-        if (data.user?.role !== "ADMIN") {
+        // ADMIN and MANAGER can access admin panel; others go to user panel
+        if (data.user?.role !== "ADMIN" && data.user?.role !== "MANAGER") {
           router.push("/user");
         }
       } else {
@@ -47,55 +47,31 @@ function AdminLayoutContent({ children }) {
   };
 
   const menuItems = [
-    {
-      name: "Posts",
-      href: "/admin",
-      icon: FileText,
-    },
-    {
-      name: "Add Post",
-      href: "/admin/add-post",
-      icon: PlusCircle,
-    },
+    { id: "posts", name: "Posts", href: "/admin", icon: FileText },
+    { id: "addPost", name: "Add Post", href: "/admin/add-post", icon: PlusCircle },
   ];
 
   const adminMenuItems = [
-    {
-      name: "All Users",
-      href: "/admin/users",
-      icon: Users,
-    },
-    {
-      name: "All Posts",
-      href: "/admin/posts",
-      icon: FileText,
-    },
-    {
-      name: "Categories",
-      href: "/admin/categories",
-      icon: Tag,
-    },
-    {
-      name: "Post Requests",
-      href: "/admin/post-requests",
-      icon: Clock,
-    },
-    {
-      name: "Ads Setup",
-      href: "/admin/ads",
-      icon: Megaphone,
-    },
-    {
-      name: "Pages",
-      href: "/admin/pages",
-      icon: FileStack,
-    },
-    {
-      name: "Customise",
-      href: "/admin/customise",
-      icon: Settings,
-    },
+    { id: "allUsers", name: "All Users", href: "/admin/users", icon: Users },
+    { id: "allPosts", name: "All Posts", href: "/admin/posts", icon: FileText },
+    { id: "categories", name: "Categories", href: "/admin/categories", icon: Tag },
+    { id: "postRequests", name: "Post Requests", href: "/admin/post-requests", icon: Clock },
+    { id: "ads", name: "Ads Setup", href: "/admin/ads", icon: Megaphone },
+    { id: "pages", name: "Pages", href: "/admin/pages", icon: FileStack },
+    { id: "customise", name: "Customise", href: "/admin/customise", icon: Settings },
   ];
+
+  const canShowMenuItem = (item) => {
+    if (user?.role === "ADMIN") {
+      return item.id !== "allUsers" || true; // All Users only for ADMIN, handled below
+    }
+    if (user?.role === "MANAGER") {
+      if (item.id === "allUsers") return false;
+      const perms = user?.managerPermissions || [];
+      return perms.includes(item.id);
+    }
+    return false;
+  };
 
   return (
     <div className="admin-panel min-h-screen bg-white">
@@ -128,7 +104,7 @@ function AdminLayoutContent({ children }) {
 
           {/* Navigation */}
           <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
-            {menuItems.map((item) => {
+            {menuItems.filter((item) => user?.role === "ADMIN" || (user?.role === "MANAGER" && (user?.managerPermissions || []).includes(item.id))).map((item) => {
               const Icon = item.icon;
               // More specific active check to avoid multiple highlights
               let isActive = false;
@@ -172,7 +148,7 @@ function AdminLayoutContent({ children }) {
             })}
 
             {/* Admin Section */}
-            {user?.role === "ADMIN" && (
+            {(user?.role === "ADMIN" || user?.role === "MANAGER") && (
               <>
                 <div className="pt-2 mt-2 border-t border-gray-800">
                   <div className="px-3 py-1.5 flex items-center gap-1.5 text-gray-400 text-[10px] font-semibold uppercase tracking-wider">
@@ -180,7 +156,9 @@ function AdminLayoutContent({ children }) {
                     System
                   </div>
                 </div>
-                {adminMenuItems.map((item) => {
+                {adminMenuItems
+                  .filter((item) => (item.id === "allUsers" ? user?.role === "ADMIN" : canShowMenuItem(item)))
+                  .map((item) => {
                   const Icon = item.icon;
                   const isCustomise = item.href === "/admin/customise";
                   const isActive = isCustomise

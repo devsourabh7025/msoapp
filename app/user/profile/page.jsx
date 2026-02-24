@@ -120,7 +120,7 @@ export default function UserProfile() {
             Role
           </label>
           <div className="w-full rounded-lg border border-gray-300 px-4 py-2 bg-gray-50">
-            {user?.role === "ADMIN" ? "Administrator" : "Normal User"}
+            {user?.role === "ADMIN" ? "Administrator" : user?.role === "MANAGER" ? "Manager" : "Normal User"}
           </div>
         </div>
       </div>

@@ -46,11 +46,26 @@ export async function GET(request) {
 
   try {
     await ensureConnected(); // Connection should already exist from login
-    const users = await User.find({})
+    const docs = await User.find({})
       .select("-password")
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
-    return NextResponse.json({ users });
+    const users = docs.map((u) => ({
+      ...u,
+      managerPermissions: Array.isArray(u.managerPermissions) ? u.managerPermissions : [],
+    }));
+
+    return NextResponse.json(
+      { users },
+      {
+        headers: {
+          "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
@@ -72,7 +87,7 @@ export async function PUT(request) {
 
   try {
     const body = await request.json();
-    const { userId, name, email, role, autoShareEnabled, socialMediaSettings } =
+    const { userId, name, email, role, autoShareEnabled, managerPermissions, socialMediaSettings } =
       body;
 
     await ensureConnected(); // Connection should already exist from login
@@ -80,37 +95,50 @@ export async function PUT(request) {
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (email !== undefined) updateData.email = email;
-    // Only allow role changes to NORMAL_USER via this API
-    // ADMIN role can only be set via /api/superadmin/create-superadmin route
+    // Allow role changes: NORMAL_USER, MANAGER. ADMIN only via create-superadmin route.
     if (role !== undefined) {
       if (role === "NORMAL_USER") {
         updateData.role = "NORMAL_USER";
+      } else if (role === "MANAGER") {
+        updateData.role = "MANAGER";
       } else if (role === "ADMIN") {
-        // Prevent setting ADMIN role via this route - use create-superadmin route instead
         return NextResponse.json(
           { error: "Cannot set ADMIN role via this route. Use /api/superadmin/create-superadmin instead." },
           { status: 403 }
         );
       } else {
-        // Invalid role - default to NORMAL_USER
         updateData.role = "NORMAL_USER";
       }
     }
     if (autoShareEnabled !== undefined)
       updateData.autoShareEnabled = autoShareEnabled;
+    if (managerPermissions !== undefined) {
+      updateData.managerPermissions = Array.isArray(managerPermissions)
+        ? managerPermissions
+        : [];
+      console.log("[Permissions API] PUT updating userId", userId, "managerPermissions:", updateData.managerPermissions);
+    }
     if (socialMediaSettings !== undefined)
       updateData.socialMediaSettings = socialMediaSettings;
 
     const user = await User.findByIdAndUpdate(
       userId,
       { $set: updateData },
-      { new: true }
+      {
+        new: true,
+        // Allow saving fields even if a stale dev model cache misses a schema path.
+        strict: false,
+      }
     ).select("-password");
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const updatedPerms = user.managerPermissions;
+    if (managerPermissions !== undefined) {
+      console.log("[Permissions API] PUT done – user.managerPermissions after save:", Array.isArray(updatedPerms) ? updatedPerms : updatedPerms);
+    }
     return NextResponse.json({ user, message: "User updated successfully" });
   } catch (error) {
     console.error("Error updating user:", error);

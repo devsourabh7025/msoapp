@@ -20,18 +20,20 @@ export async function GET(request) {
     const JWT_SECRET = getJWTSecret();
     const decoded = jwt.verify(token, JWT_SECRET);
 
-    const user = await User.findById(decoded.userId).select("-password");
+    const user = await User.findById(decoded.userId).select("-password").lean();
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    const perms = user.managerPermissions;
     return NextResponse.json({
       user: {
-        _id: user._id,
+        _id: user._id?.toString?.() ?? user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        managerPermissions: Array.isArray(perms) ? perms : [],
       },
     });
   } catch (error) {

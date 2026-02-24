@@ -9,35 +9,50 @@ function getJWTSecret() {
   return process.env.JWT_SECRET || "your-super-secret-jwt-key-change-this-in-production";
 }
 
-// Middleware to check if user is ADMIN
-async function checkAdmin(request) {
+// Allow ADMIN or MANAGER with the given permission (e.g. "posts")
+async function checkAdminOrManager(request, requiredPermission) {
   const token = request.cookies.get("token")?.value;
   if (!token) {
     return { error: "Not authenticated", status: 401 };
   }
 
   try {
-    await ensureConnected(); // Connection should already exist from login
+    await ensureConnected();
     const JWT_SECRET = getJWTSecret();
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId).select("-password");
 
-    if (!user || user.role !== "ADMIN") {
-      return {
-        error: "Unauthorized - Admin access required",
-        status: 403,
-      };
+    if (!user) {
+      return { error: "Not authenticated", status: 401 };
     }
-
-    return { user };
+    if (user.role === "ADMIN") {
+      return { user };
+    }
+    if (user.role === "MANAGER") {
+      // null = any manager allowed (e.g. for dashboard GET); otherwise require permission
+      if (!requiredPermission || (user.managerPermissions || []).includes(requiredPermission)) {
+        return { user };
+      }
+    }
+    return {
+      error: "Unauthorized - Admin or Manager with permission required",
+      status: 403,
+    };
   } catch (error) {
     return { error: "Not authenticated", status: 401 };
   }
 }
 
-// Get all posts
+async function checkAdmin(request) {
+  const result = await checkAdminOrManager(request, null);
+  if (result.user && result.user.role === "ADMIN") return result;
+  if (result.error) return result;
+  return { error: "Unauthorized - Admin access required", status: 403 };
+}
+
+// Get all posts (ADMIN or any MANAGER – dashboard loads for all managers)
 export async function GET(request) {
-  const authCheck = await checkAdmin(request);
+  const authCheck = await checkAdminOrManager(request, null);
   if (authCheck.error) {
     return NextResponse.json(
       { error: authCheck.error },
