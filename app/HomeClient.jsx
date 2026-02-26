@@ -65,6 +65,21 @@ export default function HomeClient({ initialHeroData, initialHeroSettings }) {
             (s) => s.id !== "header" && s.id !== "footer" && s.id !== "recent"
           );
 
+          const hasExplore = filtered.some((s) => s.id === "explore");
+          if (!hasExplore) {
+            const featuredIndex = filtered.findIndex((s) => s.id === "featured");
+            const insertAt = featuredIndex >= 0 ? featuredIndex + 1 : filtered.length;
+            filtered.splice(insertAt, 0, {
+              id: "explore",
+              name: "Discover",
+              component: "Explore",
+              enabled: true,
+            });
+          } else {
+            const i = filtered.findIndex((s) => s.id === "explore");
+            if (i >= 0) filtered[i].enabled = true;
+          }
+
           const hasDiscover = filtered.some((s) => s.id === "discover");
           if (!hasDiscover) {
             filtered.push({
@@ -80,6 +95,7 @@ export default function HomeClient({ initialHeroData, initialHeroSettings }) {
 
           setSectionOrder(filtered);
         }
+        // If no order from API, defaultOrder (which includes Explore) is already in state
       } catch (e) {
         console.error("Failed to load section order:", e);
       }

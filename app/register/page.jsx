@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Home } from "lucide-react";
 
 const industries = [
   "Technology",
@@ -80,7 +81,7 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name,
+          name: isOrg ? companyName.trim() : name,
           email,
           password,
           accountType,
@@ -147,7 +148,7 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex bg-white dark:bg-gray-950">
       {/* Left panel - branding */}
-      <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] shrink-0 bg-gray-950 dark:bg-gray-900 relative overflow-hidden items-end p-12">
+      <div className="hidden lg:flex lg:w-[420px] xl:w-[480px] shrink-0 bg-gray-950 dark:bg-gray-900 relative overflow-hidden items-center p-12">
         <div className="absolute top-0 left-0 w-full h-[3px] bg-red-600" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
         <div className="relative z-10">
@@ -179,8 +180,15 @@ export default function RegisterPage() {
       {/* Right panel - form */}
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-lg mx-auto px-6 py-12">
-          {/* Mobile logo */}
-          <div className="lg:hidden mb-10">
+          {/* Header: Home + logo */}
+          <div className="flex items-center justify-between mb-10">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+            >
+              <Home size={18} />
+              Home
+            </Link>
             <Link href="/" className="inline-flex items-center gap-2">
               <span className="text-2xl font-extrabold tracking-tight text-red-600">
                 MSO
@@ -238,7 +246,7 @@ export default function RegisterPage() {
 
             {/* Organisation details section */}
             {isOrg && (
-              <div className="border border-gray-200 dark:border-white/10 p-5 space-y-4">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="w-6 h-[2px] bg-red-600" />
                   <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-gray-500 dark:text-gray-400">
@@ -268,8 +276,8 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-4">
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>Industry</label>
                     <select
                       value={industry}
@@ -285,7 +293,7 @@ export default function RegisterPage() {
                       ))}
                     </select>
                   </div>
-                  <div>
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>City</label>
                     <input
                       type="text"
@@ -298,8 +306,8 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-4">
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>Founded year</label>
                     <input
                       type="text"
@@ -310,7 +318,7 @@ export default function RegisterPage() {
                       disabled={loading}
                     />
                   </div>
-                  <div>
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>Team size</label>
                     <select
                       value={teamSize}
@@ -328,8 +336,8 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-4">
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>Phone</label>
                     <input
                       type="tel"
@@ -340,7 +348,7 @@ export default function RegisterPage() {
                       disabled={loading}
                     />
                   </div>
-                  <div>
+                  <div className="min-w-0 overflow-hidden">
                     <label className={labelClass}>Website</label>
                     <input
                       type="url"
@@ -368,28 +376,6 @@ export default function RegisterPage() {
                   />
                 </div>
 
-                <div className="pt-3 border-t border-gray-200 dark:border-white/10">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-6 h-[2px] bg-gray-300 dark:bg-white/15" />
-                    <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-gray-400 dark:text-gray-500">
-                      Contact Person
-                    </span>
-                  </div>
-                  <div>
-                    <label className={labelClass}>
-                      Contact person name <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Jane Doe"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className={inputClass}
-                      required
-                      disabled={loading}
-                    />
-                  </div>
-                </div>
               </div>
             )}
 
@@ -426,8 +412,8 @@ export default function RegisterPage() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_1fr] gap-4">
+              <div className="min-w-0 overflow-hidden">
                 <label className={labelClass}>
                   Password <span className="text-red-500">*</span>
                 </label>
@@ -441,7 +427,7 @@ export default function RegisterPage() {
                   disabled={loading}
                 />
               </div>
-              <div>
+              <div className="min-w-0 overflow-hidden">
                 <label className={labelClass}>
                   Confirm <span className="text-red-500">*</span>
                 </label>

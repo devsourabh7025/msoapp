@@ -11,6 +11,7 @@ export default function Navbar() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileDropdownOpen, setMobileDropdownOpen] = useState(null);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -18,6 +19,11 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
 
   const [headerContent, setHeaderContent] = useState(null);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMobileDropdownOpen(null);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname === "/login" || pathname === "/register") {
@@ -86,6 +92,17 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ""; };
   }, [mobileMenuOpen]);
 
+  useEffect(() => {
+    const closeOnLg = () => {
+      if (typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) {
+        setMobileMenuOpen(false);
+        setMobileDropdownOpen(null);
+      }
+    };
+    window.addEventListener("resize", closeOnLg);
+    return () => window.removeEventListener("resize", closeOnLg);
+  }, []);
+
   return (
     <>
       <header className="w-full sticky top-0 z-50 bg-white dark:bg-gray-950">
@@ -97,9 +114,11 @@ export default function Navbar() {
               {/* LEFT: Mobile hamburger (for bottom nav only) */}
               <div className="lg:hidden shrink-0">
                 <button
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  type="button"
+                  onClick={() => setMobileMenuOpen((prev) => !prev)}
                   className="h-9 w-9 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                  aria-label="Toggle menu"
+                  aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                  aria-expanded={mobileMenuOpen}
                 >
                   {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                 </button>
@@ -245,15 +264,28 @@ export default function Navbar() {
                       );
                     }
                     if (item.type === "dropdown" && item.items?.length) {
+                      const itemId = item.id || `dropdown-${index}`;
+                      const isOpen = mobileDropdownOpen === itemId;
                       return (
                         <div key={item.id || index}>
-                          <div className="px-3 pt-4 pb-1.5 text-[10px] font-black tracking-[0.15em] uppercase text-red-600">{item.label}</div>
-                          {item.items.map((sub, i) => (
-                            <Link key={sub.id || i} href={sub.href || "/"} onClick={() => setMobileMenuOpen(false)}
-                              className="block py-2.5 px-3 pl-5 text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
-                              {sub.label}
-                            </Link>
-                          ))}
+                          <button
+                            type="button"
+                            onClick={() => setMobileDropdownOpen((prev) => (prev === itemId ? null : itemId))}
+                            className="flex items-center justify-between w-full py-3 px-3 text-left text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                          >
+                            <span>{item.label}</span>
+                            <ChevronDown size={16} className={`shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                          </button>
+                          {isOpen && (
+                            <div className="pl-3 pb-2">
+                              {item.items.map((sub, i) => (
+                                <Link key={sub.id || i} href={sub.href || "/"} onClick={() => { setMobileMenuOpen(false); setMobileDropdownOpen(null); }}
+                                  className="block py-2.5 px-3 pl-5 text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors">
+                                  {sub.label}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       );
                     }

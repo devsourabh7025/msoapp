@@ -142,7 +142,7 @@ export default function UserProfile() {
 
       {/* Startup / Company — Organisation Details */}
       {isOrg && (
-        <div className="bg-white border border-gray-200 p-5">
+        <div className="bg-white p-5">
           <div className="flex items-center gap-2 mb-3">
             <Building2 size={16} className="text-red-600" />
             <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900">
@@ -192,23 +192,6 @@ export default function UserProfile() {
               <p className="text-sm text-gray-700 leading-relaxed">{user.description}</p>
             </div>
           )}
-
-          {/* Contact person */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400 mb-2">
-              Contact Person
-            </p>
-            <InfoRow icon={User} label="Name" value={user.name} />
-            <InfoRow
-              icon={Calendar}
-              label="Member Since"
-              value={new Date(user.createdAt).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            />
-          </div>
         </div>
       )}
     </div>

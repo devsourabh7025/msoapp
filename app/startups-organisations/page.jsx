@@ -118,7 +118,7 @@ export default function StartupsOrganisationsPage() {
                 <span className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400 block mb-2">
                   Directory
                 </span>
-                <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+                <h1 className="section-title text-gray-900 dark:text-white tracking-tight">
                   Startups & Organisations
                 </h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

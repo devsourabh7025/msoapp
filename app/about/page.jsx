@@ -8,7 +8,7 @@ export default function About() {
       <div className="min-h-screen bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto px-4 py-16">
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <h1 className="section-title text-gray-900 dark:text-white mb-4">
               About Us
             </h1>
             <div className="w-24 h-1 bg-red-500 mx-auto"></div>

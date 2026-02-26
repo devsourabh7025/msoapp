@@ -117,7 +117,7 @@ export default function CategoryPostsPage({ slug, pageTitle, fallbackTitle = "Po
                   ))}
                 </div>
               )}
-              <h1 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+              <h1 className="section-title text-gray-900 dark:text-white tracking-tight">
                 {title}
               </h1>
             </div>
