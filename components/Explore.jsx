@@ -36,46 +36,32 @@ export default function Explore() {
       .replace(/[^a-z0-9-]/g, "");
 
   return (
-    <section className="bg-white dark:bg-gray-950 py-28">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Big Heading */}
-        <div className="mb-20">
-          <h2 className="text-7xl md:text-8xl font-black tracking-tight leading-none text-gray-900 dark:text-white">
-            Explore
-          </h2>
-          <div className="h-px bg-black dark:bg-white w-32 mt-6" />
-          <p className="mt-6 text-lg max-w-2xl text-gray-600 dark:text-gray-300">
+    <section className="home-section">
+      <div className="home-container">
+        <h2 className="home-section-title-lg">Explore</h2>
+        <div className="home-section-accent" />
+        <p className="home-section-subtitle">Discover stories across industries</p>
+          {/* <p className="mt-6 text-lg max-w-2xl text-gray-600 dark:text-gray-300">
             Discover stories across industries shaping Maharashtra’s startup
             ecosystem.
-          </p>
-        </div>
+          </p> */}
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-16">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="h-8 bg-gray-200 dark:bg-gray-800 animate-pulse" />
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="h-5 bg-gray-200 dark:bg-gray-800 animate-pulse" />
             ))}
           </div>
         ) : categories.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-16 gap-y-14">
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-x-6 gap-y-3">
             {categories.map((category, index) => (
               <Link
                 key={index}
                 href={`/explore/${getCategorySlug(category.name)}`}
-                className="group relative"
+                className="group py-1 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400"
               >
-                {/* Category Name */}
-                <h3 className="text-2xl font-bold tracking-tight transition-transform duration-200 group-hover:translate-x-1 text-gray-900 dark:text-white">
-                  {category.name}
-                </h3>
-
-                {/* Count */}
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {category.count || 0} posts
-                </p>
-
-                {/* Animated underline */}
-                <div className="absolute left-0 -bottom-2 h-px bg-black dark:bg-white w-0 group-hover:w-10 transition-all duration-300" />
+                <span className="home-card-title">{category.name}</span>
+                <span className="home-meta ml-1">({category.count || 0})</span>
               </Link>
             ))}
           </div>

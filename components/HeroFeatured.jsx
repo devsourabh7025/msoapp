@@ -18,6 +18,26 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
     return author;
   };
 
+  const getCategoryName = (cat) => {
+    if (!cat) return null;
+    if (typeof cat === "object" && cat?.name) return cat.name;
+    if (typeof cat === "string") return cat;
+    return null;
+  };
+
+  const formatDate = (date) => {
+    if (!date) return null;
+    try {
+      return new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return null;
+    }
+  };
+
   useEffect(() => {
     if (initialHeroData) return;
     let isMounted = true;
@@ -73,7 +93,6 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
   }, [initialHeroData]);
 
   const { topPicks, mainArticle, discussionTableArticles } = useMemo(() => {
-    // Use admin-selected posts from database (accept by _id, slug, or title)
     const main = heroContent?.mainArticle;
     const hasMain = main && (main._id || main.slug || main.title);
     return {
@@ -82,38 +101,32 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
         : [],
       mainArticle: hasMain ? main : null,
       discussionTableArticles: Array.isArray(heroContent?.discussionTable)
-        ? heroContent.discussionTable.slice(0, 4)
+        ? heroContent.discussionTable.slice(0, 5)
         : [],
     };
   }, [heroContent]);
 
   if (loading) {
     return (
-      <section className="relative overflow-hidden bg-gray-50/80 dark:bg-gray-950/50">
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.03] via-transparent to-orange-500/[0.03] dark:from-amber-400/[0.04] dark:to-orange-400/[0.04] pointer-events-none" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-          <div className="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-8 space-y-6">
-              <div className="h-6 bg-gray-200/80 dark:bg-gray-800  w-28" />
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="aspect-[4/3] bg-gray-200/80 dark:bg-gray-800 "
-                  />
-                ))}
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-white/10">
+        <div className="home-container py-10">
+          <div className="animate-pulse">
+            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-32 mb-8" />
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12 lg:col-span-8">
+                <div className="aspect-[16/9] bg-gray-200 dark:bg-gray-800" />
+                <div className="mt-4 space-y-2">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-800 w-3/4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-800 w-1/2" />
+                </div>
               </div>
-              <div className="aspect-[21/10] bg-gray-200/80 dark:bg-gray-800 " />
-            </div>
-            <div className="lg:col-span-4 space-y-6">
-              <div className="h-6 bg-gray-200/80 dark:bg-gray-800  w-36" />
-              <div className="space-y-3">
+              <div className="col-span-12 lg:col-span-4 space-y-4">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="flex gap-3">
-                    <div className="w-20 h-20 shrink-0 bg-gray-200/80 dark:bg-gray-800 " />
+                    <div className="w-20 h-14 shrink-0 bg-gray-200 dark:bg-gray-800" />
                     <div className="flex-1 space-y-2">
-                      <div className="h-4 bg-gray-200/80 dark:bg-gray-800 w-full" />
-                      <div className="h-3 bg-gray-200/80 dark:bg-gray-800 w-24" />
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800" />
+                      <div className="h-3 bg-gray-200 dark:bg-gray-800 w-20" />
                     </div>
                   </div>
                 ))}
@@ -127,170 +140,135 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
 
   const sectionTitle = heroSettings?.title || "The Big Edit";
   const showNewsletter = heroSettings?.showNewsletter !== false;
-  const newsletterTitle = heroSettings?.newsletterTitle || "Newsletter";
   const newsletterPlaceholder =
     heroSettings?.newsletterPlaceholder || "Enter your Email";
-  const equityIntelPosts = discussionTableArticles.slice(0, 3);
 
   return (
-    <section className="bg-white dark:bg-gray-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {/* ================= TOP ROW (Title + Horizontal Posts) ================= */}
-        <div className="grid grid-cols-12 gap-6 items-start">
-          {/* Big Title */}
-          <div className="col-span-12 lg:col-span-3">
-            <h2 className="text-5xl sm:text-6xl font-extrabold text-gray-900 dark:text-white leading-none tracking-tight">
-              {sectionTitle}
-            </h2>
-          </div>
-
-          {/* Horizontal Posts */}
-          <div className="col-span-12 lg:col-span-9">
-            {topPicks.length > 0 ? (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {topPicks.slice(0, 4).map((post, index) => (
-                  <Link
-                    key={post._id || index}
-                    href={`/post?slug=${post.slug}`}
-                    className="group block"
-                  >
-                    <div className="relative w-full h-[110px] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                      {post.featuredImage ? (
-                        <Image
-                          src={post.featuredImage}
-                          alt={post.title}
-                          fill
-                          className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                          sizes="300px"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
-                      )}
-                    </div>
-
-                    <h3 className="mt-2 text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:underline">
-                      {post.title}
-                    </h3>
-                  </Link>
-                ))}
-              </div>
-            ) : null}
-          </div>
+    <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
+      <div className="home-container pt-8 pb-10">
+        {/* Section label */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+            {sectionTitle}
+          </h2>
         </div>
 
-        {/* ================= BOTTOM ROW (Main Article + Equity Intel) ================= */}
-        <div className="grid grid-cols-12 gap-8 mt-8">
-          {/* Main Article (Left) */}
-          <div className="col-span-12 lg:col-span-8">
+        {/* Main grid: Hero + Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-0">
+          {/* Lead story */}
+          <div className="col-span-1 lg:col-span-8 lg:pr-6 lg:border-r border-gray-200 dark:border-white/10">
             {mainArticle ? (
-              <Link
-                href={`/post?slug=${mainArticle.slug}`}
-                className="group block"
-              >
-                <article className="bg-white dark:bg-gray-950">
-                  <div className="relative w-full h-[360px] overflow-hidden bg-gray-100 dark:bg-gray-800">
+              <Link href={`/post?slug=${mainArticle.slug}`} className="group block">
+                <article>
+                  <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
                     {mainArticle.featuredImage ? (
                       <Image
                         src={mainArticle.featuredImage}
                         alt={mainArticle.title}
                         fill
-                        className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 1024px) 100vw, 70vw"
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                        sizes="(max-width: 1024px) 100vw, 66vw"
                         priority
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800" />
+                    )}
+                    {getCategoryName(mainArticle.category) && (
+                      <span className="absolute top-4 left-4 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+                        {getCategoryName(mainArticle.category)}
+                      </span>
                     )}
                   </div>
 
                   <div className="mt-4">
-                    <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                      Insight
-                    </p>
-
-                    <h1 className="mt-1 text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight group-hover:underline">
+                    <h1 className="text-2xl sm:text-3xl lg:text-[2rem] font-extrabold leading-[1.15] text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
                       {mainArticle.title}
                     </h1>
 
                     {mainArticle.excerpt && (
-                      <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+                      <p className="mt-2.5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-2">
                         {mainArticle.excerpt}
                       </p>
                     )}
 
-                    <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      {getAuthorName(mainArticle.author)}
-                    </p>
+                    <div className="mt-3 flex items-center gap-2 text-[11px] tracking-wide uppercase text-gray-500 dark:text-gray-500">
+                      <span className="font-semibold text-gray-700 dark:text-gray-300">
+                        {getAuthorName(mainArticle.author)}
+                      </span>
+                      {formatDate(mainArticle.publishedAt) && (
+                        <>
+                          <span className="w-1 h-1 bg-gray-400 dark:bg-gray-600" />
+                          <span>{formatDate(mainArticle.publishedAt)}</span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </article>
               </Link>
             ) : (
-              <div className="border border-gray-200 dark:border-white/10 p-10 text-center bg-gray-50 dark:bg-gray-900/30">
+              <div className="border border-dashed border-gray-300 dark:border-white/10 p-12 text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No main article selected
+                  No lead story selected
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                  Set one in the admin panel
+                  Configure in admin panel
                 </p>
               </div>
             )}
           </div>
 
-          {/* Equity Intel + Newsletter (Right) */}
-          <div className="col-span-12 lg:col-span-4 space-y-6">
-            {/* Equity Intel */}
-            <div>
-              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">
-                Equity Intel
-              </h3>
-
-              {equityIntelPosts.length > 0 ? (
-                <div className="space-y-4">
-                  {equityIntelPosts.map((post, index) => (
-                    <Link
-                      key={post._id || index}
-                      href={`/post?slug=${post.slug}`}
-                      className="group flex gap-3"
-                    >
-                      <div className="relative shrink-0 w-16 h-16 overflow-hidden bg-gray-100 dark:bg-gray-800">
-                        {post.featuredImage ? (
-                          <Image
-                            src={post.featuredImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                            sizes="80px"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
-                        )}
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white leading-snug line-clamp-2 group-hover:underline">
-                          {post.title}
-                        </h4>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          {getAuthorName(post.author)}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  No stories yet
-                </p>
-              )}
+          {/* Sidebar: Trending + Newsletter */}
+          <div className="col-span-1 lg:col-span-4 lg:pl-6 mt-8 lg:mt-0">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+                Trending
+              </span>
+              <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
             </div>
 
-            {/* Newsletter */}
-            {showNewsletter && (
-              <div className="border border-gray-200 dark:border-white/10 p-4 bg-white dark:bg-gray-950">
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3">
-                  Sign Up For YourStory Newsletter
-                </h4>
+            {discussionTableArticles.length > 0 ? (
+              <div className="divide-y divide-gray-100 dark:divide-white/5">
+                {discussionTableArticles.map((post, index) => (
+                  <Link
+                    key={post._id || index}
+                    href={`/post?slug=${post.slug}`}
+                    className="group flex gap-4 py-3.5 first:pt-0"
+                  >
+                    <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
 
+                    <div className="min-w-0 flex-1">
+                      {getCategoryName(post.category) && (
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                          {getCategoryName(post.category)}
+                        </span>
+                      )}
+                      <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        {post.title}
+                      </h4>
+                      <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+                        {getAuthorName(post.author)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 dark:text-gray-500 py-4">
+                No trending stories
+              </p>
+            )}
+
+            {showNewsletter && (
+              <div className="mt-6 bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 p-5">
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+                  Stay informed
+                </h4>
+                <p className="text-[12px] text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
+                  Get the top stories delivered to your inbox every morning.
+                </p>
                 <form
                   className="flex gap-2"
                   onSubmit={(e) => e.preventDefault()}
@@ -298,23 +276,68 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                   <input
                     type="email"
                     placeholder={newsletterPlaceholder}
-                    className="flex-1 min-w-0 h-10 px-3 border border-gray-300 dark:border-white/20 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none"
+                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-500 transition-colors"
                   />
-
                   <button
                     type="submit"
-                    className="h-10 px-4 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-sm font-semibold"
+                    className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors"
                   >
-                    Sign Up
+                    Go
                   </button>
                 </form>
               </div>
             )}
           </div>
         </div>
+
+        {/* Top Picks strip */}
+        {topPicks.length > 0 && (
+          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-white/10">
+            <div className="flex items-center gap-3 mb-5">
+              <span className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+                Top Picks
+              </span>
+              <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+              {topPicks.slice(0, 4).map((post, index) => (
+                <Link
+                  key={post._id || index}
+                  href={`/post?slug=${post.slug}`}
+                  className="group block"
+                >
+                  <div className="relative w-full aspect-[3/2] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    {post.featuredImage ? (
+                      <Image
+                        src={post.featuredImage}
+                        alt={post.title}
+                        fill
+                        className="object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-out"
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800" />
+                    )}
+                  </div>
+
+                  {getCategoryName(post.category) && (
+                    <span className="mt-2.5 block text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                      {getCategoryName(post.category)}
+                    </span>
+                  )}
+                  <h3 className="mt-1 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    {post.title}
+                  </h3>
+                  <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+                    {getAuthorName(post.author)}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
 }
-
-

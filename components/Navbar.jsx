@@ -61,7 +61,8 @@ export default function Navbar() {
       items: [
         {
           title: "MSO Daily Brief",
-          description: "Your daily essential: A high-level briefing on startup breakthroughs, corporate strategy, and the market moves shaping the new economy. More to Visit More",
+          description:
+            "Your daily essential: A high-level briefing on startup breakthroughs, corporate strategy, and the market moves shaping the new economy.",
         },
         "Startup Digest",
         "Investor Updates",
@@ -158,78 +159,87 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="w-full bg-white dark:bg-gray-950">
-        {/* TOP BAR (NOT STICKY) */}
+      <header className="w-full sticky top-0 z-50 bg-white dark:bg-gray-950">
+        {/* Top thin accent line */}
+        <div className="h-[3px] bg-red-600" />
+
+        {/* Main header bar */}
         <div className="border-b border-gray-200 dark:border-white/10">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div className="relative flex items-center justify-between h-16 sm:h-20 lg:h-24">
-              {/* LEFT: Drawer Trigger */}
+          <div className="max-w-[72rem] mx-auto px-6">
+            <div className="relative flex items-center justify-between h-14 sm:h-16">
+              {/* LEFT: Drawer trigger */}
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="h-9 w-9 sm:h-10 sm:w-10 flex items-center justify-center border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors shrink-0"
+                className="h-9 w-9 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0"
                 aria-label="Open menu"
               >
-                <Menu size={20} className="sm:w-[22px] sm:h-[22px]" />
+                <Menu size={20} />
               </button>
 
               {/* CENTER LOGO */}
               <Link
                 href="/"
-                className="absolute left-1/2 -translate-x-1/2 flex flex-col items-center leading-none"
+                className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2"
               >
-                <span className="text-[38px] sm:text-[52px] lg:text-[64px] font-extrabold tracking-tight text-red-600 uppercase">
+                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-red-600">
                   MSO
                 </span>
-                <span className="text-[9px] sm:text-xs font-medium tracking-wide text-gray-600 dark:text-gray-400 uppercase mt-0.5 sm:mt-1 text-center hidden sm:block">
+                <span className="hidden sm:block text-[10px] font-medium tracking-wide text-gray-500 dark:text-gray-400 uppercase leading-tight max-w-[140px]">
                   Maharashtra Startup Organisation
                 </span>
               </Link>
 
               {/* RIGHT SIDE */}
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                {/* Theme toggle: light/dark */}
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                {/* Theme toggle */}
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="h-10 w-10 flex items-center justify-center border border-gray-300 dark:border-white/20 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                  aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+                  className="h-9 w-9 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label={
+                    theme === "dark"
+                      ? "Switch to light theme"
+                      : "Switch to dark theme"
+                  }
                 >
-                  {theme === "dark" ? (
-                    <Sun size={20} />
-                  ) : (
-                    <Moon size={20} />
-                  )}
+                  {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
                 </button>
 
+                {/* Auth */}
                 {!loading && (
                   <>
                     {user ? (
                       <div className="relative" ref={userMenuRef}>
                         <button
                           onClick={() => setUserMenuOpen(!userMenuOpen)}
-                          className="h-9 sm:h-10 px-3 sm:px-4 border border-black dark:border-white text-xs sm:text-sm font-semibold flex items-center gap-1 sm:gap-2"
+                          className="h-9 px-3 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 transition-colors"
                         >
-                          <span className="hidden sm:inline max-w-[90px] truncate">
+                          <span className="hidden sm:inline max-w-[80px] truncate">
                             {user.name}
                           </span>
-                          <ChevronDown size={16} />
+                          <ChevronDown size={14} />
                         </button>
 
                         {userMenuOpen && (
-                          <div className="absolute right-0 top-full mt-2 w-48 sm:w-56 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 z-50">
+                          <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 z-50">
                             <Link
-                              href={user.role === "ADMIN" || user.role === "MANAGER" ? "/admin" : "/user"}
+                              href={
+                                user.role === "ADMIN" ||
+                                user.role === "MANAGER"
+                                  ? "/admin"
+                                  : "/user"
+                              }
                               onClick={() => setUserMenuOpen(false)}
-                              className="block px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-white/5"
+                              className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                             >
-                              {user.role === "ADMIN" || user.role === "MANAGER"
+                              {user.role === "ADMIN" ||
+                              user.role === "MANAGER"
                                 ? "Admin Panel"
                                 : "User Panel"}
                             </Link>
-
                             <button
                               onClick={handleLogout}
-                              className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                              className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
                             >
                               Logout
                             </button>
@@ -239,7 +249,7 @@ export default function Navbar() {
                     ) : (
                       <Link
                         href="/login"
-                        className="h-9 sm:h-10 px-4 sm:px-6 border border-black dark:border-white text-xs sm:text-sm font-semibold flex items-center shrink-0"
+                        className="h-9 px-4 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center transition-colors shrink-0"
                       >
                         Sign In
                       </Link>
@@ -248,27 +258,30 @@ export default function Navbar() {
                 )}
 
                 {/* Search */}
-                <button className="h-9 w-9 sm:h-10 sm:w-12 flex items-center justify-center bg-black text-white shrink-0" aria-label="Search">
-                  <Search size={18} className="sm:w-5 sm:h-5" />
+                <button
+                  className="h-9 w-9 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors shrink-0"
+                  aria-label="Search"
+                >
+                  <Search size={16} />
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* BOTTOM NAV (STICKY) - Desktop horizontal, Mobile expandable */}
+        {/* Bottom nav bar */}
         {menuItems.length > 0 && (
-          <div className="sticky top-0 z-40 border-b border-gray-300 dark:border-white/10 bg-white dark:bg-gray-950">
-            <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="border-b border-gray-100 dark:border-white/5 bg-white dark:bg-gray-950">
+            <div className="max-w-[72rem] mx-auto px-6">
               {/* Desktop nav */}
-              <nav className="hidden lg:flex items-center justify-center gap-10 h-14">
+              <nav className="hidden lg:flex items-center gap-8 h-10">
                 {menuItems.map((item, index) => {
                   if (item.type === "link") {
                     return (
                       <Link
                         key={item.id || index}
                         href={item.href || "/"}
-                        className="text-base font-semibold hover:text-red-600 transition-colors"
+                        className="text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                       >
                         {item.label}
                       </Link>
@@ -278,18 +291,18 @@ export default function Navbar() {
                   if (item.type === "dropdown" && item.items?.length) {
                     return (
                       <div key={item.id || index} className="relative group">
-                        <button className="flex items-center gap-1 text-base font-semibold hover:text-red-600">
+                        <button className="flex items-center gap-1 text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors h-10">
                           {item.label}
-                          <ChevronDown size={16} />
+                          <ChevronDown size={12} />
                         </button>
 
-                        <div className="absolute left-0 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
-                          <div className="bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 min-w-[220px] py-2">
+                        <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                          <div className="bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 min-w-[200px] py-1">
                             {item.items.map((sub, i) => (
                               <Link
                                 key={sub.id || i}
                                 href={sub.href || "/"}
-                                className="block px-5 py-2.5 text-sm hover:text-red-600 hover:bg-gray-50 dark:hover:bg-white/5"
+                                className="block px-4 py-2.5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                               >
                                 {sub.label}
                               </Link>
@@ -304,18 +317,21 @@ export default function Navbar() {
                 })}
               </nav>
 
-              {/* Mobile nav - expandable */}
+              {/* Mobile nav */}
               <div className="lg:hidden">
                 <button
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                  className="flex items-center justify-between w-full h-12 px-4 text-sm font-semibold text-gray-900 dark:text-white"
+                  className="flex items-center justify-between w-full h-10 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300"
                   aria-expanded={mobileMenuOpen}
                 >
                   Menu
-                  <ChevronDown size={18} className={`transition-transform ${mobileMenuOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform ${mobileMenuOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
                 {mobileMenuOpen && (
-                  <div className="border-t border-gray-200 dark:border-white/10 py-3 px-4 space-y-1 max-h-[60vh] overflow-y-auto">
+                  <div className="border-t border-gray-100 dark:border-white/5 py-2 max-h-[60vh] overflow-y-auto">
                     {menuItems.map((item, index) => {
                       if (item.type === "link") {
                         return (
@@ -323,7 +339,7 @@ export default function Navbar() {
                             key={item.id || index}
                             href={item.href || "/"}
                             onClick={() => setMobileMenuOpen(false)}
-                            className="block py-2.5 px-3 text-sm font-medium hover:text-red-600 hover:bg-gray-50 dark:hover:bg-white/5"
+                            className="block py-2.5 px-3 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                           >
                             {item.label}
                           </Link>
@@ -332,7 +348,7 @@ export default function Navbar() {
                       if (item.type === "dropdown" && item.items?.length) {
                         return (
                           <div key={item.id || index} className="py-2">
-                            <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            <div className="px-3 py-1.5 text-[10px] font-bold tracking-[0.15em] uppercase text-gray-500 dark:text-gray-500">
                               {item.label}
                             </div>
                             {item.items.map((sub, i) => (
@@ -340,7 +356,7 @@ export default function Navbar() {
                                 key={sub.id || i}
                                 href={sub.href || "/"}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block py-2 px-3 pl-5 text-sm hover:text-red-600 hover:bg-gray-50 dark:hover:bg-white/5"
+                                className="block py-2 px-3 pl-5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                               >
                                 {sub.label}
                               </Link>
@@ -358,52 +374,54 @@ export default function Navbar() {
         )}
       </header>
 
-      {/* DRAWER: 100% on mobile, 50% on desktop */}
+      {/* DRAWER OVERLAY */}
       {drawerOpen && (
         <div className="fixed inset-0 z-50 flex">
-          {/* LEFT DRAWER PANEL */}
-          <div className="w-full md:w-1/2 max-w-full bg-gray-100 dark:bg-gray-950 h-full overflow-y-auto p-4 sm:p-6 md:p-10 flex flex-col shadow-2xl">
-            {/* Close Button */}
-            <div className="mb-6 sm:mb-10">
+          {/* Drawer panel */}
+          <div className="w-full md:w-1/2 max-w-2xl bg-white dark:bg-gray-950 h-full overflow-y-auto flex flex-col shadow-2xl">
+            {/* Drawer header */}
+            <div className="flex items-center justify-between px-6 sm:px-10 py-5 border-b border-gray-200 dark:border-white/10">
+              <span className="text-xl font-extrabold tracking-tight text-red-600">
+                MSO
+              </span>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="bg-red-500 text-white w-8 h-8 flex items-center justify-center"
+                className="h-8 w-8 flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-red-600 hover:text-white transition-colors"
                 aria-label="Close menu"
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
-            {/* MAIN SECTION */}
-            <div className="flex flex-1 flex-col md:flex-row gap-6 md:gap-0">
-              {/* LEFT BIG CATEGORY MENU */}
-              <div className="w-full md:w-1/2 space-y-4 sm:space-y-6">
+            {/* Drawer body */}
+            <div className="flex-1 flex flex-col md:flex-row gap-0 px-6 sm:px-10 py-8">
+              {/* Category list */}
+              <div className="w-full md:w-2/5 md:pr-8 md:border-r border-gray-200 dark:border-white/10 space-y-1">
                 {Object.keys(drawerData).map((category) => (
-                  <div
+                  <button
                     key={category}
                     onClick={() => setActiveCategory(category)}
-                    className={`text-2xl sm:text-3xl md:text-4xl font-bold cursor-pointer transition-all
-                ${
-                  activeCategory === category
-                    ? "text-black dark:text-white"
-                    : "text-gray-400"
-                }`}
+                    className={`block w-full text-left py-2 text-lg sm:text-xl font-bold transition-colors ${
+                      activeCategory === category
+                        ? "text-red-600"
+                        : "text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
                   >
                     {category}
-                  </div>
+                  </button>
                 ))}
               </div>
 
-              {/* RIGHT CONTENT AREA */}
-              <div className="w-full md:w-1/2 pt-4 md:pt-0 md:pl-10">
+              {/* Content area */}
+              <div className="w-full md:w-3/5 md:pl-8 pt-6 md:pt-0">
                 {drawerData[activeCategory].type === "list" && (
-                  <div className="space-y-3 sm:space-y-4 text-base sm:text-lg font-medium">
+                  <div className="divide-y divide-gray-100 dark:divide-white/5">
                     {drawerData[activeCategory].items.map((item, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 hover:text-red-600 cursor-pointer"
+                        className="flex items-center gap-3 py-2.5 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
                       >
-                        <span>✸</span>
+                        <span className="w-1.5 h-1.5 bg-red-600 shrink-0" />
                         <span>{item}</span>
                       </div>
                     ))}
@@ -411,42 +429,50 @@ export default function Navbar() {
                 )}
 
                 {drawerData[activeCategory].type === "newsletter" && (
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     {drawerData[activeCategory].items.map((item, i) =>
                       typeof item === "object" ? (
-                        <div key={i} className="space-y-1">
-                          <div className="font-semibold text-lg hover:text-red-600 cursor-pointer">
+                        <div
+                          key={i}
+                          className="bg-gray-50 dark:bg-white/[0.03] border border-gray-200 dark:border-white/10 p-4"
+                        >
+                          <h4 className="text-sm font-bold text-gray-900 dark:text-white">
                             {item.title}
-                          </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                          </h4>
+                          <p className="text-[12px] text-gray-500 dark:text-gray-400 mt-1 leading-relaxed">
                             {item.description}
                           </p>
                         </div>
                       ) : (
                         <div
                           key={i}
-                          className="flex items-center gap-3 hover:text-red-600 cursor-pointer"
+                          className="flex items-center gap-3 py-2 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
                         >
-                          <span>✸</span>
+                          <span className="w-1.5 h-1.5 bg-red-600 shrink-0" />
                           <span>{item}</span>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 )}
 
                 {drawerData[activeCategory].type === "event" && (
-                  <div className="space-y-4 sm:space-y-6">
+                  <div className="space-y-4">
                     {drawerData[activeCategory].items.map((event, i) => (
-                      <div key={i} className="flex gap-3 sm:gap-4 items-center">
-                        <div className="w-20 h-14 sm:w-32 sm:h-20 bg-gray-300 dark:bg-gray-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
-                          Image
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-semibold text-sm sm:text-base line-clamp-2">{event.title}</div>
-                          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                            {event.location} — {event.date}
-                          </div>
+                      <div
+                        key={i}
+                        className="border border-gray-200 dark:border-white/10 p-4"
+                      >
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-red-600">
+                          Event
+                        </span>
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white mt-1">
+                          {event.title}
+                        </h4>
+                        <div className="mt-2 flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-500">
+                          <span>{event.location}</span>
+                          <span className="w-1 h-1 bg-gray-400" />
+                          <span>{event.date}</span>
                         </div>
                       </div>
                     ))}
@@ -455,26 +481,32 @@ export default function Navbar() {
               </div>
             </div>
 
-            {/* FOOTER */}
-            <div className="border-t border-gray-300 dark:border-white/10 mt-12 pt-6 sm:pt-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-              <div className="text-sm font-medium">Follow Us</div>
-
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your Email"
-                  className="w-full sm:w-auto min-w-0 px-4 py-2.5 sm:py-2 border border-gray-400 dark:border-white/30 bg-white dark:bg-gray-900 text-sm"
-                />
-                <button className="w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black px-5 py-2.5 sm:py-2 text-sm font-semibold shrink-0">
-                  Subscribe
-                </button>
+            {/* Drawer footer */}
+            <div className="px-6 sm:px-10 py-6 border-t border-gray-200 dark:border-white/10">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-gray-500 dark:text-gray-500">
+                  Stay updated
+                </span>
+                <form
+                  className="flex gap-2 w-full sm:w-auto sm:max-w-xs"
+                  onSubmit={(e) => e.preventDefault()}
+                >
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none focus:border-red-500 transition-colors"
+                  />
+                  <button className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0">
+                    Go
+                  </button>
+                </form>
               </div>
             </div>
           </div>
 
-          {/* RIGHT OVERLAY - hidden on mobile (drawer is full width) */}
+          {/* Overlay backdrop */}
           <div
-            className="hidden md:block flex-1 bg-black/40"
+            className="hidden md:block flex-1 bg-black/50 backdrop-blur-sm"
             onClick={() => setDrawerOpen(false)}
           />
         </div>

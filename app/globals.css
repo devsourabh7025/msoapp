@@ -6,6 +6,13 @@
 /* -----------------------------
    Base styles
 ------------------------------ */
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -145,4 +152,114 @@ body {
 ------------------------------ */
 [class*="rounded"] {
   border-radius: 0 !important;
+}
+
+/* -----------------------------
+   Premium Homepage Design System (uniform)
+------------------------------ */
+.home-section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+
+.dark .home-section {
+  background: #0f172a;
+  border-bottom-color: rgba(255,255,255,0.08);
+}
+
+.home-container {
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .home-container { padding-left: 1.5rem; padding-right: 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .home-container { padding-left: 2rem; padding-right: 2rem; }
+}
+
+.home-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #171717;
+  margin-bottom: 1.5rem;
+}
+
+.dark .home-section-title {
+  color: #f1f5f9;
+}
+
+/* Premium section titles - big, bold, attractive */
+.home-section-title-lg {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #171717;
+  margin-bottom: 0.5rem;
+}
+
+.dark .home-section-title-lg {
+  color: #f1f5f9;
+}
+
+.home-section-accent {
+  width: 3rem;
+  height: 3px;
+  background: #dc2626;
+  margin-bottom: 1.5rem;
+}
+
+.dark .home-section-accent {
+  background: #ef4444;
+}
+
+.home-section-subtitle {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
+
+.dark .home-section-subtitle {
+  color: #9ca3af;
+}
+
+.home-card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.home-meta {
+  font-size: 0.6875rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.dark .home-meta {
+  color: #9ca3af;
+}
+
+.home-img-card {
+  aspect-ratio: 4/3;
+}
+
+.home-img-thumb {
+  aspect-ratio: 1;
+  width: 4rem;
+  height: 4rem;
+}
+
+.home-img-hero {
+  aspect-ratio: 16/9;
 }

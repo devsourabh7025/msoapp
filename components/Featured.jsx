@@ -54,6 +54,13 @@ export default function Featured() {
     return author;
   };
 
+  const getCategoryName = (cat) => {
+    if (!cat) return null;
+    if (typeof cat === "object" && cat?.name) return cat.name;
+    if (typeof cat === "string") return cat;
+    return null;
+  };
+
   const { smbStories, herStories, socialStories } = useMemo(() => {
     const normalize = (post) => ({
       ...post,
@@ -72,137 +79,165 @@ export default function Featured() {
 
   if (featuredSettings?.showSection === false) return null;
 
+  const hasContent = smbStories.length > 0 || herStories.length > 0 || socialStories.length > 0;
+
+  const ColumnHeader = ({ label }) => (
+    <div className="flex items-center gap-2 mb-5">
+      <span className="px-2.5 py-1 bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-[10px] font-bold tracking-wider uppercase">
+        {label}
+      </span>
+      <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+    </div>
+  );
+
+  const LeadCard = ({ post }) => (
+    <Link href={`/post?slug=${post.slug}`} className="group block mb-5">
+      <div className="relative w-full aspect-[3/2] overflow-hidden bg-gray-100 dark:bg-gray-800">
+        {post.featuredImage && (
+          <Image
+            src={post.featuredImage}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+            sizes="(max-width: 768px) 100vw, 33vw"
+          />
+        )}
+        {getCategoryName(post.category) && (
+          <span className="absolute top-3 left-3 px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+            {getCategoryName(post.category)}
+          </span>
+        )}
+      </div>
+      <h3 className="mt-3 text-base font-bold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+        {post.title}
+      </h3>
+      {post.excerpt && (
+        <p className="mt-1.5 text-[13px] leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-2">
+          {post.excerpt}
+        </p>
+      )}
+      <p className="mt-2 text-[11px] tracking-wide uppercase text-gray-500 dark:text-gray-500">
+        <span className="font-semibold text-gray-700 dark:text-gray-300">{getAuthorName(post.author)}</span>
+      </p>
+    </Link>
+  );
+
+  const ListItem = ({ post, index }) => (
+    <Link
+      href={`/post?slug=${post.slug}`}
+      className="group flex gap-3 py-3 first:pt-0"
+    >
+      <span className="text-lg font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none w-5 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
+        {index + 1}
+      </span>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+          {post.title}
+        </h4>
+        <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+          {getAuthorName(post.author)}
+        </p>
+      </div>
+    </Link>
+  );
+
+  const ListItemWithImage = ({ post }) => (
+    <Link
+      href={`/post?slug=${post.slug}`}
+      className="group flex gap-3 py-3 first:pt-0"
+    >
+      <div className="relative w-16 h-16 shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
+        {post.featuredImage && (
+          <Image
+            src={post.featuredImage}
+            alt={post.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="64px"
+          />
+        )}
+      </div>
+      <div className="flex-1 min-w-0 flex flex-col justify-center">
+        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+          {post.title}
+        </h4>
+        <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
+          {getAuthorName(post.author)}
+        </p>
+      </div>
+    </Link>
+  );
+
   return (
-    <section className="bg-white dark:bg-gray-950 py-20">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* Header */}
-        <h2 className="text-5xl font-extrabold mb-16 text-gray-900 dark:text-white">
-          {featuredSettings?.title || "Featured"}
-        </h2>
+    <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
+      <div className="home-container py-10">
+        {/* Section header */}
+        <div className="flex items-center gap-3 mb-8">
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+            {featuredSettings?.title || "Featured"}
+          </h2>
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* ===== SMB STORY ===== */}
-          <div>
-            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
-              SMB Story
-            </span>
-
-            {smbStories.length > 0 && (
-              <>
-                {/* Main Black Card */}
-                <Link
-                  href={`/post?slug=${smbStories[0].slug}`}
-                  className="block bg-black dark:bg-white text-white dark:text-black p-6 mb-6"
-                >
-                  <h3 className="text-lg font-bold mb-3">
-                    {smbStories[0].title}
-                  </h3>
-
-                  {smbStories[0].excerpt && (
-                    <p className="text-sm mb-4 line-clamp-3">
-                      {smbStories[0].excerpt}
-                    </p>
-                  )}
-
-                  <p className="text-sm font-medium">
-                    {getAuthorName(smbStories[0].author)}
-                  </p>
-                </Link>
-
-                {/* Secondary Stories */}
-                {smbStories.slice(1).map((story, i) => (
-                  <Link
-                    key={i}
-                    href={`/post?slug=${story.slug}`}
-                    className="block border border-gray-300 dark:border-gray-600 p-4 mb-4 text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                  >
-                    <h4 className="text-sm font-medium">{story.title}</h4>
-                    <p className="text-xs mt-2 text-gray-600 dark:text-gray-400">
-                      {getAuthorName(story.author)}
-                    </p>
-                  </Link>
-                ))}
-              </>
-            )}
-          </div>
-
-          {/* ===== HER STORY ===== */}
-          <div>
-            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
-              Her Story
-            </span>
-
-            {herStories.map((story, i) => (
-              <Link
-                key={i}
-                href={`/post?slug=${story.slug}`}
-                className="flex items-start gap-4 pb-6 mb-6 border-b border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white"
-              >
-                <div className="flex-1">
-                  <h4 className="text-sm font-bold mb-1">{story.title}</h4>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">{getAuthorName(story.author)}</p>
-                </div>
-
-                {story.featuredImage && (
-                  <div className="w-16 h-16 relative shrink-0 overflow-hidden">
-                    <Image
-                      src={story.featuredImage}
-                      alt=""
-                      fill
-                      className="object-cover object-center grayscale"
-                    />
-                  </div>
-                )}
-              </Link>
-            ))}
-          </div>
-
-          {/* ===== SOCIAL STORY ===== */}
-          <div>
-            <span className="inline-block bg-black dark:bg-white text-white dark:text-black text-xs px-4 py-1 mb-6">
-              Social Story
-            </span>
-
-            {socialStories.length > 0 && (
-              <>
-                {/* First Story with Image */}
-                <Link
-                  href={`/post?slug=${socialStories[0].slug}`}
-                  className="block mb-6 text-gray-900 dark:text-white"
-                >
-                  {socialStories[0].featuredImage && (
-                    <div className="relative w-full aspect-square mb-4 overflow-hidden">
-                      <Image
-                        src={socialStories[0].featuredImage}
-                        alt=""
-                        fill
-                        className="object-cover object-center grayscale"
-                      />
+        {hasContent ? (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-0">
+            {/* SMB Stories */}
+            <div className="md:pr-6 md:border-r border-gray-200 dark:border-white/10 pb-8 md:pb-0">
+              <ColumnHeader label="SMB Story" />
+              {smbStories.length > 0 && (
+                <>
+                  <LeadCard post={smbStories[0]} />
+                  {smbStories.length > 1 && (
+                    <div className="divide-y divide-gray-100 dark:divide-white/5">
+                      {smbStories.slice(1).map((story, i) => (
+                        <ListItem key={story._id || i} post={story} index={i} />
+                      ))}
                     </div>
                   )}
+                </>
+              )}
+            </div>
 
-                  <h4 className="text-sm font-bold">
-                    {socialStories[0].title}
-                  </h4>
-                </Link>
+            {/* Her Stories */}
+            <div className="md:px-6 md:border-r border-gray-200 dark:border-white/10 py-8 md:py-0 border-t md:border-t-0">
+              <ColumnHeader label="Her Story" />
+              {herStories.length > 0 && (
+                <>
+                  <LeadCard post={herStories[0]} />
+                  {herStories.length > 1 && (
+                    <div className="divide-y divide-gray-100 dark:divide-white/5">
+                      {herStories.slice(1).map((story, i) => (
+                        <ListItem key={story._id || i} post={story} index={i} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
-                {/* Ranked List */}
-                {socialStories.slice(1).map((story, i) => (
-                  <Link
-                    key={i}
-                    href={`/post?slug=${story.slug}`}
-                    className="flex gap-4 mb-5 text-gray-900 dark:text-white"
-                  >
-                    <span className="font-bold text-lg">
-                      {i + 2}
-                    </span>
-                    <h4 className="text-sm font-medium">{story.title}</h4>
-                  </Link>
-                ))}
-              </>
-            )}
+            {/* Social Stories */}
+            <div className="md:pl-6 pt-8 md:pt-0 border-t md:border-t-0">
+              <ColumnHeader label="Social Story" />
+              {socialStories.length > 0 && (
+                <>
+                  <LeadCard post={socialStories[0]} />
+                  {socialStories.length > 1 && (
+                    <div className="divide-y divide-gray-100 dark:divide-white/5">
+                      {socialStories.slice(1).map((story, i) => (
+                        <ListItem key={story._id || i} post={story} index={i} />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="py-12 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No featured stories selected</p>
+          </div>
+        )}
       </div>
     </section>
   );

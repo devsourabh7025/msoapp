@@ -45,7 +45,6 @@ export default function SpotLight() {
     };
   }, [pathname]);
 
-  /* Normalize posts */
   const spotlightPosts = useMemo(() => {
     if (
       spotlightContent &&
@@ -72,72 +71,112 @@ export default function SpotLight() {
     return author;
   };
 
+  const getCategoryName = (cat) => {
+    if (!cat) return null;
+    if (typeof cat === "object" && cat?.name) return cat.name;
+    if (typeof cat === "string") return cat;
+    return null;
+  };
+
   if (spotlightSettings?.showSection === false) {
     return null;
   }
 
+  const lead = spotlightPosts[0];
+  const rest = spotlightPosts.slice(1, 4);
+
   return (
-    <section className="bg-white dark:bg-gray-950 py-16">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[140px_1fr] gap-10">
-          {/* Vertical Label */}
-          <div className="hidden lg:flex">
-            <h2 className="text-[120px] font-extrabold leading-none tracking-tight rotate-180 [writing-mode:vertical-rl] text-gray-900 dark:text-white">
-              Spotlight
-            </h2>
-          </div>
-
-          {/* Posts */}
-          {spotlightPosts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-              {spotlightPosts.slice(0, 4).map((post, index) => (
-                <Link
-                  key={post._id || post.id || index}
-                  href={`/post?slug=${post.slug}`}
-                  className="block"
-                >
-                  {/* Image */}
-                  <div className="relative w-full aspect-square mb-4 overflow-hidden">
-                    <Image
-                      src={post.featuredImage}
-                      alt={post.title}
-                      fill
-                      className="object-cover object-center grayscale"
-                      sizes="(max-width: 1024px) 100vw, 25vw"
-                    />
-                  </div>
-
-                  {/* Category */}
-                  <div className="flex items-center gap-2 text-sm mb-2 text-gray-600 dark:text-gray-400">
-                    <span className="w-2 h-2 bg-black dark:bg-white inline-block"></span>
-                    <span>{post.category}</span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-lg font-bold leading-snug mb-2 text-gray-900 dark:text-white">
-                    {post.title}
-                  </h3>
-
-                  {/* Excerpt */}
-                  {post.excerpt && (
-                    <p className="text-sm leading-relaxed mb-3 line-clamp-3 text-gray-600 dark:text-gray-300">
-                      {post.excerpt}
-                    </p>
-                  )}
-
-                  {/* Author */}
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-200">
-                    {getAuthorName(post.author)}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="py-20 text-center">
-              <p className="text-sm text-gray-600 dark:text-gray-400">No spotlight posts selected</p>
-            </div>
-          )}
+    <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
+      <div className="home-container py-10">
+        {/* Section header */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+            Spotlight
+          </h2>
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
         </div>
+
+        {spotlightPosts.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
+            {/* Lead spotlight story */}
+            {lead && (
+              <div className="col-span-1 lg:col-span-6 lg:pr-6 lg:border-r border-gray-200 dark:border-white/10">
+                <Link href={`/post?slug=${lead.slug}`} className="group block">
+                  <div className="relative w-full aspect-[3/2] overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    <Image
+                      src={lead.featuredImage}
+                      alt={lead.title}
+                      fill
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    {getCategoryName(lead.category) && (
+                      <span className="absolute top-3 left-3 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+                        {getCategoryName(lead.category)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <h3 className="text-xl sm:text-2xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                      {lead.title}
+                    </h3>
+                    {lead.excerpt && (
+                      <p className="mt-2 text-[14px] leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-2">
+                        {lead.excerpt}
+                      </p>
+                    )}
+                    <p className="mt-2 text-[11px] tracking-wide uppercase text-gray-500 dark:text-gray-500">
+                      <span className="font-semibold text-gray-700 dark:text-gray-300">{getAuthorName(lead.author)}</span>
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            )}
+
+            {/* Remaining stories */}
+            {rest.length > 0 && (
+              <div className="col-span-1 lg:col-span-6 lg:pl-6 mt-8 lg:mt-0">
+                <div className="divide-y divide-gray-100 dark:divide-white/5">
+                  {rest.map((post, index) => (
+                    <Link
+                      key={post._id || post.id || index}
+                      href={`/post?slug=${post.slug}`}
+                      className="group flex gap-4 py-4 first:pt-0 last:pb-0"
+                    >
+                      <div className="relative w-28 sm:w-36 aspect-[3/2] shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        <Image
+                          src={post.featuredImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-out"
+                          sizes="160px"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0 flex flex-col justify-center">
+                        {getCategoryName(post.category) && (
+                          <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                            {getCategoryName(post.category)}
+                          </span>
+                        )}
+                        <h4 className="text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors mt-0.5">
+                          {post.title}
+                        </h4>
+                        <p className="mt-1.5 text-[11px] text-gray-500 dark:text-gray-500">
+                          {getAuthorName(post.author)}
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="py-12 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No spotlight posts selected</p>
+          </div>
+        )}
       </div>
     </section>
   );

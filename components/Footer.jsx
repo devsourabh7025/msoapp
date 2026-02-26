@@ -88,112 +88,144 @@ export default function Footer() {
 
   const copyright =
     footerContent?.copyright ??
-    "© {year} Maharashtra Startup Organisation. All rights reserved.";
+    "\u00a9 {year} Maharashtra Startup Organisation. All rights reserved.";
 
   const copyrightText = copyright.replace(
     "{year}",
     new Date().getFullYear().toString(),
   );
 
+  const ColumnHeader = ({ label }) => (
+    <div className="flex items-center gap-2 mb-4">
+      <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-gray-100">
+        {label}
+      </span>
+      <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+    </div>
+  );
+
   return (
-    <footer className="bg-white text-black dark:bg-gray-950 dark:text-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-        {/* TOP ROW */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-6">
-          {/* LEFT SIDE COLUMNS - 2x2 grid on mobile, row on desktop */}
-          <div className="grid grid-cols-2 sm:flex sm:flex-1 sm:justify-between gap-8 sm:gap-4">
-            {/* Brands */}
-            <div className="min-w-0">
-              <h4 className="font-semibold mb-3 text-sm">Brands</h4>
-              <ul className="space-y-2 text-xs">
-                {staticBrands.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
+    <footer className="w-screen relative left-1/2 -translate-x-1/2 bg-gray-50 dark:bg-gray-950 border-t border-gray-200 dark:border-white/10">
+      <div className="max-w-[72rem] mx-auto px-6 lg:px-8">
+        {/* Top bar: logo + newsletter */}
+        <div className="py-8 border-b border-gray-200 dark:border-white/10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <span className="inline-block w-8 h-[3px] bg-red-600" />
+              <h2 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+                MSO
+              </h2>
             </div>
 
-            {/* Topics */}
-            <div className="min-w-0">
-              <h4 className="font-semibold mb-3 text-sm">Topics</h4>
-              <ul className="space-y-2 text-xs">
-                {staticTopics.map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Resource Hub */}
-            <div className="min-w-0">
-              <h4 className="font-semibold mb-3 text-sm">Resource Hub</h4>
-              <ul className="space-y-2 text-xs">
-                {resources.map((link, i) => (
-                  <li key={i}>
-                    <Link href={link.url || "/"} className="hover:underline">{link.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Discover */}
-            <div className="min-w-0">
-              <h4 className="font-semibold mb-3 text-sm">Discover</h4>
-              <ul className="space-y-2 text-xs">
-                {company.map((link, i) => (
-                  <li key={i}>
-                    <Link href={link.url || "/"} className="hover:underline">{link.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* VERTICAL DIVIDER */}
-          <div className="hidden lg:block border-l border-black dark:border-white shrink-0" />
-
-          {/* NEWSLETTER - full width on mobile */}
-          <div className="w-full lg:w-[320px] lg:shrink-0">
-            <h4 className="font-semibold mb-3 text-sm">MSO Buzz</h4>
-            <p className="text-xs mb-4 leading-relaxed">
-              Start your day with impactful startup stories and concise news
-              delivered in a five-minute read.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-2 sm:gap-0">
+            <form
+              className="flex gap-2 w-full sm:w-auto sm:max-w-sm"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <input
                 type="email"
-                placeholder="Enter your Email"
-                className="flex-1 min-w-0 px-3 py-2.5 sm:py-2 border border-black dark:border-white bg-transparent text-xs outline-none focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-gray-950"
+                placeholder="Your email for daily briefing"
+                className="flex-1 min-w-0 h-9 px-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-red-500 transition-colors"
               />
-              <button className="px-4 py-2.5 sm:py-2 bg-black dark:bg-white text-white dark:text-black text-xs font-medium shrink-0">
+              <button
+                type="submit"
+                className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0"
+              >
                 Subscribe
               </button>
-            </div>
+            </form>
+          </div>
+        </div>
 
-            <p className="text-[10px] mt-3 text-gray-600 dark:text-gray-400">
-              I hereby consent to the processing of personal data provided and
-              agree to the privacy policy.
+        {/* Link columns */}
+        <div className="py-10 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
+          <div>
+            <ColumnHeader label="Brands" />
+            <ul className="space-y-2.5">
+              {staticBrands.map((item, i) => (
+                <li key={i}>
+                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-default">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <ColumnHeader label="Topics" />
+            <ul className="space-y-2.5">
+              {staticTopics.map((item, i) => (
+                <li key={i}>
+                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-default">
+                    {item}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <ColumnHeader label="Resources" />
+            <ul className="space-y-2.5">
+              {resources.map((link, i) => (
+                <li key={i}>
+                  <Link
+                    href={link.url || "/"}
+                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <ColumnHeader label="Discover" />
+            <ul className="space-y-2.5">
+              {company.map((link, i) => (
+                <li key={i}>
+                  <Link
+                    href={link.url || "/"}
+                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* About blurb */}
+          <div className="col-span-2 sm:col-span-4 lg:col-span-1">
+            <ColumnHeader label="About" />
+            <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-relaxed">
+              Empowering Maharashtra&rsquo;s startup ecosystem with news,
+              insights, and stories that matter.
             </p>
-
-            <p className="text-xs mt-5 underline cursor-pointer hover:no-underline">
-              Advertise with Newsletter →
+            <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-4 leading-relaxed">
+              Start your day with impactful startup stories delivered in a
+              five-minute read.
             </p>
           </div>
         </div>
 
-        {/* BOTTOM - stack on mobile */}
-        <div className="mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-black/20 dark:border-white/20">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            {/* Logo */}
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">MSO</h2>
+        {/* Bottom bar */}
+        <div className="py-6 border-t border-gray-200 dark:border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <p className="text-[12px] text-gray-400 dark:text-gray-600">
+            {copyrightText}
+          </p>
 
-            {/* Links - wrap on mobile */}
-            <div className="flex flex-wrap gap-4 sm:gap-6 text-xs">
-              {bottomLinks.map((link, i) => (
-                <Link key={i} href={link.url || "/"} className="hover:underline">
-                  {link.title}
-                </Link>
-              ))}
-            </div>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {bottomLinks.map((link, i) => (
+              <Link
+                key={i}
+                href={link.url || "/"}
+                className="text-[12px] text-gray-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+              >
+                {link.title}
+              </Link>
+            ))}
           </div>
         </div>
       </div>
