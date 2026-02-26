@@ -111,7 +111,7 @@ export default function Footer() {
         <div className="py-8 border-b border-gray-200 dark:border-white/10">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="inline-block w-8 h-[3px] bg-red-600" />
+              <span className="inline-block w-8 h-[3px] bg-orange-600" />
               <h2 className="text-xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                 MSO
               </h2>
@@ -124,11 +124,11 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Your email for daily briefing"
-                className="flex-1 min-w-0 h-9 px-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-red-500 transition-colors"
+                className="flex-1 min-w-0 h-9 px-3 bg-white dark:bg-white/5 border border-gray-300 dark:border-white/10 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-orange-500 transition-colors"
               />
               <button
                 type="submit"
-                className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0"
+                className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0"
               >
                 Subscribe
               </button>
@@ -143,7 +143,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {staticBrands.map((item, i) => (
                 <li key={i}>
-                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-default">
+                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-default">
                     {item}
                   </span>
                 </li>
@@ -156,7 +156,7 @@ export default function Footer() {
             <ul className="space-y-2.5">
               {staticTopics.map((item, i) => (
                 <li key={i}>
-                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-default">
+                  <span className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-default">
                     {item}
                   </span>
                 </li>
@@ -171,7 +171,7 @@ export default function Footer() {
                 <li key={i}>
                   <Link
                     href={link.url || "/"}
-                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                   >
                     {link.title}
                   </Link>
@@ -187,7 +187,7 @@ export default function Footer() {
                 <li key={i}>
                   <Link
                     href={link.url || "/"}
-                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    className="text-[13px] text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                   >
                     {link.title}
                   </Link>
@@ -221,7 +221,7 @@ export default function Footer() {
               <Link
                 key={i}
                 href={link.url || "/"}
-                className="text-[12px] text-gray-500 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                className="text-[12px] text-gray-500 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
               >
                 {link.title}
               </Link>

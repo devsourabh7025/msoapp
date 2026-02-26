@@ -161,7 +161,7 @@ export default function Navbar() {
     <>
       <header className="w-full sticky top-0 z-50 bg-white dark:bg-gray-950">
         {/* Top thin accent line */}
-        <div className="h-[3px] bg-red-600" />
+        <div className="h-[3px] bg-orange-600" />
 
         {/* Main header bar */}
         <div className="border-b border-gray-200 dark:border-white/10">
@@ -170,7 +170,7 @@ export default function Navbar() {
               {/* LEFT: Drawer trigger */}
               <button
                 onClick={() => setDrawerOpen(true)}
-                className="h-9 w-9 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0"
+                className="h-9 w-9 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors shrink-0"
                 aria-label="Open menu"
               >
                 <Menu size={20} />
@@ -181,7 +181,7 @@ export default function Navbar() {
                 href="/"
                 className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2"
               >
-                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-red-600">
+                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-orange-600">
                   MSO
                 </span>
                 <span className="hidden sm:block text-[10px] font-medium tracking-wide text-gray-500 dark:text-gray-400 uppercase leading-tight max-w-[140px]">
@@ -212,7 +212,7 @@ export default function Navbar() {
                       <div className="relative" ref={userMenuRef}>
                         <button
                           onClick={() => setUserMenuOpen(!userMenuOpen)}
-                          className="h-9 px-3 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center gap-1 transition-colors"
+                          className="h-9 px-3 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 flex items-center gap-1 transition-colors"
                         >
                           <span className="hidden sm:inline max-w-[80px] truncate">
                             {user.name}
@@ -230,7 +230,7 @@ export default function Navbar() {
                                   : "/user"
                               }
                               onClick={() => setUserMenuOpen(false)}
-                              className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                              className="block px-4 py-3 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                             >
                               {user.role === "ADMIN" ||
                               user.role === "MANAGER"
@@ -239,7 +239,7 @@ export default function Navbar() {
                             </Link>
                             <button
                               onClick={handleLogout}
-                              className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                              className="w-full text-left px-4 py-3 text-sm text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-500/10 transition-colors"
                             >
                               Logout
                             </button>
@@ -249,7 +249,7 @@ export default function Navbar() {
                     ) : (
                       <Link
                         href="/login"
-                        className="h-9 px-4 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 flex items-center transition-colors shrink-0"
+                        className="h-9 px-4 text-[12px] font-bold tracking-wide uppercase text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 flex items-center transition-colors shrink-0"
                       >
                         Sign In
                       </Link>
@@ -259,7 +259,7 @@ export default function Navbar() {
 
                 {/* Search */}
                 <button
-                  className="h-9 w-9 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors shrink-0"
+                  className="h-9 w-9 flex items-center justify-center bg-orange-600 hover:bg-orange-700 text-white transition-colors shrink-0"
                   aria-label="Search"
                 >
                   <Search size={16} />
@@ -281,7 +281,7 @@ export default function Navbar() {
                       <Link
                         key={item.id || index}
                         href={item.href || "/"}
-                        className="text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        className="text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors"
                       >
                         {item.label}
                       </Link>
@@ -291,7 +291,7 @@ export default function Navbar() {
                   if (item.type === "dropdown" && item.items?.length) {
                     return (
                       <div key={item.id || index} className="relative group">
-                        <button className="flex items-center gap-1 text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors h-10">
+                        <button className="flex items-center gap-1 text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 transition-colors h-10">
                           {item.label}
                           <ChevronDown size={12} />
                         </button>
@@ -302,7 +302,7 @@ export default function Navbar() {
                               <Link
                                 key={sub.id || i}
                                 href={sub.href || "/"}
-                                className="block px-4 py-2.5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                                className="block px-4 py-2.5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                               >
                                 {sub.label}
                               </Link>
@@ -339,7 +339,7 @@ export default function Navbar() {
                             key={item.id || index}
                             href={item.href || "/"}
                             onClick={() => setMobileMenuOpen(false)}
-                            className="block py-2.5 px-3 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                            className="block py-2.5 px-3 text-[13px] font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                           >
                             {item.label}
                           </Link>
@@ -356,7 +356,7 @@ export default function Navbar() {
                                 key={sub.id || i}
                                 href={sub.href || "/"}
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="block py-2 px-3 pl-5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                                className="block py-2 px-3 pl-5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                               >
                                 {sub.label}
                               </Link>
@@ -381,12 +381,12 @@ export default function Navbar() {
           <div className="w-full md:w-1/2 max-w-2xl bg-white dark:bg-gray-950 h-full overflow-y-auto flex flex-col shadow-2xl">
             {/* Drawer header */}
             <div className="flex items-center justify-between px-6 sm:px-10 py-5 border-b border-gray-200 dark:border-white/10">
-              <span className="text-xl font-extrabold tracking-tight text-red-600">
+              <span className="text-xl font-extrabold tracking-tight text-orange-600">
                 MSO
               </span>
               <button
                 onClick={() => setDrawerOpen(false)}
-                className="h-8 w-8 flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-red-600 hover:text-white transition-colors"
+                className="h-8 w-8 flex items-center justify-center bg-gray-100 dark:bg-white/10 text-gray-700 dark:text-gray-300 hover:bg-orange-600 hover:text-white transition-colors"
                 aria-label="Close menu"
               >
                 <X size={16} />
@@ -403,7 +403,7 @@ export default function Navbar() {
                     onClick={() => setActiveCategory(category)}
                     className={`block w-full text-left py-2 text-lg sm:text-xl font-bold transition-colors ${
                       activeCategory === category
-                        ? "text-red-600"
+                        ? "text-orange-600"
                         : "text-gray-400 dark:text-gray-600 hover:text-gray-700 dark:hover:text-gray-300"
                     }`}
                   >
@@ -419,9 +419,9 @@ export default function Navbar() {
                     {drawerData[activeCategory].items.map((item, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 py-2.5 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
+                        className="flex items-center gap-3 py-2.5 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer transition-colors"
                       >
-                        <span className="w-1.5 h-1.5 bg-red-600 shrink-0" />
+                        <span className="w-1.5 h-1.5 bg-orange-600 shrink-0" />
                         <span>{item}</span>
                       </div>
                     ))}
@@ -446,9 +446,9 @@ export default function Navbar() {
                       ) : (
                         <div
                           key={i}
-                          className="flex items-center gap-3 py-2 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 cursor-pointer transition-colors"
+                          className="flex items-center gap-3 py-2 text-[14px] font-medium text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 cursor-pointer transition-colors"
                         >
-                          <span className="w-1.5 h-1.5 bg-red-600 shrink-0" />
+                          <span className="w-1.5 h-1.5 bg-orange-600 shrink-0" />
                           <span>{item}</span>
                         </div>
                       ),
@@ -463,7 +463,7 @@ export default function Navbar() {
                         key={i}
                         className="border border-gray-200 dark:border-white/10 p-4"
                       >
-                        <span className="text-[10px] font-bold tracking-wider uppercase text-red-600">
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600">
                           Event
                         </span>
                         <h4 className="text-sm font-bold text-gray-900 dark:text-white mt-1">
@@ -494,9 +494,9 @@ export default function Navbar() {
                   <input
                     type="email"
                     placeholder="Enter your email"
-                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none focus:border-red-500 transition-colors"
+                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 outline-none focus:border-orange-500 transition-colors"
                   />
-                  <button className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0">
+                  <button className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold tracking-wide uppercase transition-colors shrink-0">
                     Go
                   </button>
                 </form>

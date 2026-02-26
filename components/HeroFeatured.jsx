@@ -148,7 +148,7 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
       <div className="home-container pt-8 pb-10">
         {/* Section label */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <span className="inline-block w-8 h-[3px] bg-orange-600" />
           <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
             {sectionTitle}
           </h2>
@@ -175,14 +175,14 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800" />
                     )}
                     {getCategoryName(mainArticle.category) && (
-                      <span className="absolute top-4 left-4 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+                      <span className="absolute top-4 left-4 px-2.5 py-1 bg-orange-600 text-white text-[10px] font-bold tracking-wider uppercase">
                         {getCategoryName(mainArticle.category)}
                       </span>
                     )}
                   </div>
 
                   <div className="mt-4">
-                    <h1 className="text-2xl sm:text-3xl lg:text-[2rem] font-extrabold leading-[1.15] text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
+                    <h1 className="text-2xl sm:text-3xl lg:text-[2rem] font-extrabold leading-[1.15] text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors duration-200">
                       {mainArticle.title}
                     </h1>
 
@@ -235,17 +235,17 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                     href={`/post?slug=${post.slug}`}
                     className="group flex gap-4 py-3.5 first:pt-0"
                   >
-                    <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
+                    <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-orange-200 dark:group-hover:text-orange-900/50 transition-colors">
                       {String(index + 1).padStart(2, "0")}
                     </span>
 
                     <div className="min-w-0 flex-1">
                       {getCategoryName(post.category) && (
-                        <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
                           {getCategoryName(post.category)}
                         </span>
                       )}
-                      <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                      <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                         {post.title}
                       </h4>
                       <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
@@ -276,11 +276,11 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                   <input
                     type="email"
                     placeholder={newsletterPlaceholder}
-                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-500 transition-colors"
+                    className="flex-1 min-w-0 h-9 px-3 border border-gray-300 dark:border-white/15 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-orange-500 transition-colors"
                   />
                   <button
                     type="submit"
-                    className="h-9 px-4 bg-red-600 hover:bg-red-700 text-white text-xs font-bold tracking-wide uppercase transition-colors"
+                    className="h-9 px-4 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold tracking-wide uppercase transition-colors"
                   >
                     Go
                   </button>
@@ -322,11 +322,11 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
                   </div>
 
                   {getCategoryName(post.category) && (
-                    <span className="mt-2.5 block text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                    <span className="mt-2.5 block text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
                       {getCategoryName(post.category)}
                     </span>
                   )}
-                  <h3 className="mt-1 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                  <h3 className="mt-1 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                     {post.title}
                   </h3>
                   <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">

@@ -215,12 +215,12 @@ body {
 .home-section-accent {
   width: 3rem;
   height: 3px;
-  background: #dc2626;
+  background: #ea580c;
   margin-bottom: 1.5rem;
 }
 
 .dark .home-section-accent {
-  background: #ef4444;
+  background: #f97316;
 }
 
 .home-section-subtitle {

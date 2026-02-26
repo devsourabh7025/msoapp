@@ -80,14 +80,14 @@ export default function Recent() {
       <div className="home-container py-10">
         {/* Section header */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <span className="inline-block w-8 h-[3px] bg-orange-600" />
           <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
             Recent
           </h2>
           <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
           <Link
             href="/explore"
-            className="text-[11px] font-bold tracking-wide uppercase text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0"
+            className="text-[11px] font-bold tracking-wide uppercase text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 transition-colors shrink-0"
           >
             View all →
           </Link>
@@ -107,13 +107,13 @@ export default function Recent() {
                     sizes="(max-width: 1024px) 100vw, 40vw"
                   />
                   {getCategoryName(lead.category) && (
-                    <span className="absolute top-3 left-3 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+                    <span className="absolute top-3 left-3 px-2.5 py-1 bg-orange-600 text-white text-[10px] font-bold tracking-wider uppercase">
                       {getCategoryName(lead.category)}
                     </span>
                   )}
                 </div>
                 <div className="mt-4">
-                  <h3 className="text-xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                  <h3 className="text-xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                     {lead.title}
                   </h3>
                   {lead.excerpt && (
@@ -153,12 +153,12 @@ export default function Recent() {
                         sizes="(max-width: 1024px) 50vw, 25vw"
                       />
                       {getCategoryName(post.category) && (
-                        <span className="absolute top-2 left-2 px-2 py-0.5 bg-white/95 dark:bg-gray-900/95 text-[10px] font-bold text-red-600">
+                        <span className="absolute top-2 left-2 px-2 py-0.5 bg-white/95 dark:bg-gray-900/95 text-[10px] font-bold text-orange-600">
                           {getCategoryName(post.category)}
                         </span>
                       )}
                     </div>
-                    <h4 className="mt-2.5 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    <h4 className="mt-2.5 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                       {post.title}
                     </h4>
                     {post.excerpt && (
@@ -185,16 +185,16 @@ export default function Recent() {
                     href={`/post?slug=${post.slug}`}
                     className="group flex gap-4 py-3.5 first:pt-3"
                   >
-                    <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
+                    <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-orange-200 dark:group-hover:text-orange-900/50 transition-colors">
                       {String(index + 4).padStart(2, "0")}
                     </span>
                     <div className="min-w-0 flex-1">
                       {getCategoryName(post.category) && (
-                        <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
+                        <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
                           {getCategoryName(post.category)}
                         </span>
                       )}
-                      <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                      <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                         {post.title}
                       </h4>
                       {post.excerpt && (

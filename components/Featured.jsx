@@ -103,12 +103,12 @@ export default function Featured() {
           />
         )}
         {getCategoryName(post.category) && (
-          <span className="absolute top-3 left-3 px-2 py-0.5 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+          <span className="absolute top-3 left-3 px-2 py-0.5 bg-orange-600 text-white text-[10px] font-bold tracking-wider uppercase">
             {getCategoryName(post.category)}
           </span>
         )}
       </div>
-      <h3 className="mt-3 text-base font-bold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+      <h3 className="mt-3 text-base font-bold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
         {post.title}
       </h3>
       {post.excerpt && (
@@ -127,11 +127,11 @@ export default function Featured() {
       href={`/post?slug=${post.slug}`}
       className="group flex gap-3 py-3 first:pt-0"
     >
-      <span className="text-lg font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none w-5 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
+      <span className="text-lg font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none w-5 shrink-0 group-hover:text-orange-200 dark:group-hover:text-orange-900/50 transition-colors">
         {index + 1}
       </span>
       <div className="flex-1 min-w-0">
-        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
           {post.title}
         </h4>
         <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
@@ -158,7 +158,7 @@ export default function Featured() {
         )}
       </div>
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
           {post.title}
         </h4>
         <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-500">
@@ -173,7 +173,7 @@ export default function Featured() {
       <div className="home-container py-10">
         {/* Section header */}
         <div className="flex items-center gap-3 mb-8">
-          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <span className="inline-block w-8 h-[3px] bg-orange-600" />
           <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
             {featuredSettings?.title || "Featured"}
           </h2>
