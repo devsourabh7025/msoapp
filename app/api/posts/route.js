@@ -29,8 +29,7 @@ async function checkAuth(request) {
       };
     }
 
-    // Allow both NORMAL_USER and ADMIN to create posts
-    if (user.role !== "NORMAL_USER" && user.role !== "ADMIN") {
+    if (!["NORMAL_USER", "ADMIN", "MANAGER"].includes(user.role)) {
       return {
         error: "Unauthorized - Invalid user role",
         status: 403,
@@ -54,7 +53,15 @@ export async function POST(request) {
   }
 
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: "Request body too large or malformed. Try reducing image sizes." },
+        { status: 413 }
+      );
+    }
     const { title, content, category, status, featuredImage, contentBlocks, excerpt, seo } = body;
 
     // Validate required fields

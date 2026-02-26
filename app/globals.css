@@ -185,27 +185,52 @@ body {
   .home-container { padding-left: 2rem; padding-right: 2rem; }
 }
 
+/* Section titles: bold display font - big and impactful */
+.home-section-heading {
+  font-family: var(--font-section-title), sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+@media (min-width: 640px) {
+  .home-section-heading {
+    font-size: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-section-heading {
+    font-size: 2.5rem;
+  }
+}
+
 .home-section-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-size: 1.75rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #171717;
   margin-bottom: 1.5rem;
+  font-family: var(--font-section-title), sans-serif;
+  line-height: 1;
 }
 
 .dark .home-section-title {
   color: #f1f5f9;
 }
 
-/* Premium section titles - big, bold, attractive */
+/* Premium section titles - large hero style */
 .home-section-title-lg {
-  font-size: clamp(2rem, 5vw, 3.5rem);
-  font-weight: 800;
+  font-size: clamp(3.25rem, 8vw, 5.5rem);
+  font-weight: 400;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 0.95;
   color: #171717;
   margin-bottom: 0.5rem;
+  font-family: var(--font-section-title), sans-serif;
 }
 
 .dark .home-section-title-lg {
@@ -215,12 +240,12 @@ body {
 .home-section-accent {
   width: 3rem;
   height: 3px;
-  background: #ea580c;
+  background: #dc2626;
   margin-bottom: 1.5rem;
 }
 
 .dark .home-section-accent {
-  background: #f97316;
+  background: #ef4444;
 }
 
 .home-section-subtitle {

@@ -61,17 +61,10 @@ export async function GET(request) {
   }
 
   try {
-    await ensureConnected(); // Connection should already exist from login
-    
-    // Find all admin users first
-    const adminUsers = await User.find({ role: "ADMIN" }).select("_id");
-    const adminUserIds = adminUsers.map(user => user._id);
-    
-    // Filter posts to only show those from administrators
-    const posts = await Post.find({
-      author: { $in: adminUserIds }
-    })
-      .populate("author", "name email role")
+    await ensureConnected();
+
+    const posts = await Post.find({})
+      .populate("author", "name email role accountType companyName")
       .sort({ createdAt: -1 });
 
     return NextResponse.json({ posts });
@@ -79,7 +72,7 @@ export async function GET(request) {
     console.error("Error fetching posts:", error);
     return NextResponse.json(
       { error: "Failed to fetch posts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

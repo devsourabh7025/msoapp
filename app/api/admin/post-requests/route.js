@@ -48,9 +48,9 @@ export async function GET(request) {
 
     // Get all posts with pending status, excluding admin posts
     const posts = await Post.find({ status: "pending" })
-      .populate("author", "name email role")
+      .populate("author", "name email role accountType companyName")
       .sort({ createdAt: -1 })
-      .select("title slug excerpt category featuredImage status author createdAt contentBlocks");
+      .select("title slug excerpt content category featuredImage status author createdAt contentBlocks");
 
     return NextResponse.json({ posts });
   } catch (error) {

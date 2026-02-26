@@ -10,46 +10,59 @@ function getJWTSecret() {
 
 export async function POST(request) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, accountType } = await request.json();
 
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     await ensureConnected();
 
-    // Find user by email
     const user = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
       return NextResponse.json(
         { error: "Invalid email or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    // Compare password using bcrypt directly
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return NextResponse.json(
         { error: "Invalid email or password" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    // Generate JWT token
+    const storedType = user.accountType || "individual";
+    const requestedType = accountType || "individual";
+
+    if (storedType !== requestedType) {
+      const typeLabels = {
+        individual: "Individual",
+        startup: "Startup",
+        company: "Company",
+      };
+      return NextResponse.json(
+        {
+          error: `This account is registered as ${typeLabels[storedType] || storedType}. Please select "${typeLabels[storedType] || storedType}" to sign in.`,
+        },
+        { status: 403 },
+      );
+    }
+
     const JWT_SECRET = getJWTSecret();
     const token = jwt.sign(
       { userId: user._id, email: user.email, role: user.role },
       JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
-    // Create response with user data (excluding password)
     const response = NextResponse.json({
       message: "Login successful",
       user: {
@@ -57,34 +70,32 @@ export async function POST(request) {
         name: user.name,
         email: user.email,
         role: user.role,
+        accountType: storedType,
+        companyName: user.companyName,
       },
     });
 
-    // Set HTTP-only cookie
-    // In development, secure should be false (localhost doesn't use HTTPS)
-    // In production (Vercel), secure should be true (HTTPS is used)
     const isProduction = process.env.NODE_ENV === "production";
     const protocol =
       request.headers.get("x-forwarded-proto") ||
       (request.headers.get("host")?.includes("localhost") ? "http" : "https");
     const isHTTPS = protocol === "https";
 
-    // Set cookie - secure only in production with HTTPS
     response.cookies.set("token", token, {
       httpOnly: true,
-      secure: isProduction && isHTTPS, // false in dev, true in production
+      secure: isProduction && isHTTPS,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
     });
 
     return response;
   } catch (error) {
     console.error("Login error:", error);
-    // Provide more detailed error message in development
-    const errorMessage = process.env.NODE_ENV === "development" 
-      ? `Login failed: ${error.message}` 
-      : "Failed to login";
+    const errorMessage =
+      process.env.NODE_ENV === "development"
+        ? `Login failed: ${error.message}`
+        : "Failed to login";
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

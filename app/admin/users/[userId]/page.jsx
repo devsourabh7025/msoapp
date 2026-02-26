@@ -16,6 +16,12 @@ import {
   Linkedin,
   Youtube,
   FileText,
+  Building2,
+  Phone,
+  Globe,
+  MapPin,
+  Users as UsersIcon,
+  Briefcase,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -69,11 +75,8 @@ export default function UserDetailPage() {
       const response = await fetch(`/api/superadmin/users/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          socialMediaSettings: newSettings,
-        }),
+        body: JSON.stringify({ socialMediaSettings: newSettings }),
       });
-
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
@@ -96,11 +99,8 @@ export default function UserDetailPage() {
       const response = await fetch(`/api/superadmin/users/${userId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          autoShareEnabled: !user.autoShareEnabled,
-        }),
+        body: JSON.stringify({ autoShareEnabled: !user.autoShareEnabled }),
       });
-
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
@@ -118,7 +118,7 @@ export default function UserDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="w-8 h-8 border-2 border-red-600 border-t-transparent animate-spin" />
       </div>
     );
   }
@@ -126,10 +126,10 @@ export default function UserDetailPage() {
   if (!user) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">User not found</p>
+        <p className="text-gray-500 text-sm">User not found</p>
         <button
           onClick={() => router.push("/admin/users")}
-          className="mt-4 text-red-500 hover:text-red-600"
+          className="mt-4 text-red-600 hover:underline text-sm font-medium"
         >
           Back to Users
         </button>
@@ -146,144 +146,200 @@ export default function UserDetailPage() {
     { key: "youtube", name: "YouTube", icon: Youtube, color: "text-red-600" },
   ];
 
+  const isOrg = user.accountType === "startup" || user.accountType === "company";
+
+  const InfoItem = ({ icon: Icon, label, value }) => {
+    if (!value) return null;
+    return (
+      <div className="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
+        <Icon size={15} className="text-gray-400 mt-0.5 shrink-0" />
+        <div>
+          <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400">{label}</p>
+          <p className="text-sm text-gray-900 mt-0.5">{value}</p>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <button
           onClick={() => router.push("/admin/users")}
-          className="p-2 hover:bg-gray-100 rounded-lg transition"
+          className="p-1.5 text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 transition-colors"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={16} />
         </button>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">User Details</h1>
-          <p className="text-sm text-gray-500 mt-1">View and manage user information</p>
+          <h1 className="text-xl font-extrabold text-gray-900">User Details</h1>
+          <p className="text-[11px] text-gray-400 mt-0.5">View and manage user information</p>
         </div>
       </div>
 
       {/* User Info Card */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-        <div className="flex items-start gap-6">
-          <div className="p-4 bg-gradient-to-br from-red-500 to-red-600 rounded-2xl">
-            {user.role === "ADMIN" ? (
-              <Shield size={32} className="text-white" />
-            ) : user.role === "MANAGER" ? (
-              <Shield size={32} className="text-white" />
+      <div className="bg-white border border-gray-200 p-5">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 bg-red-600 flex items-center justify-center shrink-0">
+            {isOrg ? (
+              <Building2 size={22} className="text-white" />
+            ) : user.role === "ADMIN" || user.role === "MANAGER" ? (
+              <Shield size={22} className="text-white" />
             ) : (
-              <User size={32} className="text-white" />
+              <User size={22} className="text-white" />
             )}
           </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg font-extrabold text-gray-900">
+                {isOrg ? (user.companyName || user.name) : user.name}
+              </h2>
               <span
-                className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
                   user.role === "ADMIN"
-                    ? "bg-purple-100 text-purple-800"
+                    ? "bg-purple-50 text-purple-700 border border-purple-200"
                     : user.role === "MANAGER"
-                    ? "bg-amber-100 text-amber-800"
-                    : "bg-blue-100 text-blue-800"
+                    ? "bg-amber-50 text-amber-700 border border-amber-200"
+                    : "bg-blue-50 text-blue-700 border border-blue-200"
                 }`}
               >
-                {user.role === "ADMIN" ? "Administrator" : user.role === "MANAGER" ? "Manager" : "Normal User"}
+                {user.role === "ADMIN" ? "Admin" : user.role === "MANAGER" ? "Manager" : "User"}
+              </span>
+              <span
+                className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
+                  user.accountType === "startup"
+                    ? "bg-red-50 text-red-700 border border-red-200"
+                    : user.accountType === "company"
+                    ? "bg-gray-900 text-white"
+                    : "bg-gray-100 text-gray-600"
+                }`}
+              >
+                {user.accountType || "individual"}
               </span>
             </div>
-            <div className="space-y-2 text-gray-600">
-              <div className="flex items-center gap-2">
-                <Mail size={16} />
-                <span>{user.email}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium px-2 py-1 rounded bg-gray-100">
-                  {user.accountType === "organization" ? "Organization" : "Individual"}
-                </span>
-              </div>
-              {user.accountType === "organization" && user.organizationName && (
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-sm font-semibold text-gray-700">
-                    {user.organizationName}
-                  </span>
+
+            {/* Individual — show personal info inline */}
+            {!isOrg && (
+              <div className="mt-3 space-y-1.5">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Mail size={14} className="text-gray-400" />
+                  <span>{user.email}</span>
                 </div>
-              )}
-              <div className="flex items-center gap-2">
-                <Calendar size={16} />
-                <span>
-                  Joined: {new Date(user.createdAt).toLocaleDateString()}
-                </span>
+                {user.phone && (
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Phone size={14} className="text-gray-400" />
+                    <span>{user.phone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <Calendar size={14} className="text-gray-400" />
+                  <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Org — show industry + city subtitle */}
+            {isOrg && (
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+                {user.industry && <span>{user.industry}</span>}
+                {user.industry && user.city && <span className="w-1 h-1 bg-gray-300 rounded-full" />}
+                {user.city && <span>{user.city}</span>}
+                {(user.industry || user.city) && <span className="w-1 h-1 bg-gray-300 rounded-full" />}
+                <span>Joined {new Date(user.createdAt).toLocaleDateString()}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Organization Information */}
-      {user.accountType === "organization" && (
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Organization Information
-          </h3>
-          <div className="space-y-4">
-            {user.organizationName && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Organization Name
-                </label>
-                <div className="text-gray-900 font-semibold">{user.organizationName}</div>
-              </div>
-            )}
-            {user.organizationWebsite && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Website
-                </label>
-                <a
-                  href={user.organizationWebsite}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline"
-                >
-                  {user.organizationWebsite}
-                </a>
-              </div>
-            )}
-            {user.organizationDescription && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <div className="text-gray-700">{user.organizationDescription}</div>
-              </div>
-            )}
+      {/* Organisation Details — only for startup/company */}
+      {isOrg && (
+        <div className="bg-white border border-gray-200 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Building2 size={16} className="text-red-600" />
+            <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900">
+              {user.accountType === "startup" ? "Startup" : "Company"} Information
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8">
+            <div>
+              <InfoItem
+                icon={Building2}
+                label={user.accountType === "startup" ? "Startup Name" : "Company Name"}
+                value={user.companyName}
+              />
+              <InfoItem icon={Briefcase} label="Industry" value={user.industry} />
+              <InfoItem icon={MapPin} label="City" value={user.city} />
+              <InfoItem icon={Calendar} label="Founded Year" value={user.foundedYear} />
+            </div>
+            <div>
+              <InfoItem icon={UsersIcon} label="Team Size" value={user.teamSize} />
+              <InfoItem icon={Phone} label="Phone" value={user.phone} />
+              <InfoItem
+                icon={Globe}
+                label="Website"
+                value={
+                  user.website ? (
+                    <a
+                      href={user.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-red-600 hover:underline"
+                    >
+                      {user.website}
+                    </a>
+                  ) : null
+                }
+              />
+              <InfoItem icon={Mail} label="Business Email" value={user.email} />
+            </div>
+          </div>
+
+          {user.description && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400 mb-1">
+                About
+              </p>
+              <p className="text-sm text-gray-700 leading-relaxed">{user.description}</p>
+            </div>
+          )}
+
+          {/* Contact person */}
+          <div className="mt-4 pt-4 border-t border-gray-100">
+            <p className="text-[10px] font-bold tracking-wider uppercase text-gray-400 mb-2">
+              Contact Person
+            </p>
+            <InfoItem icon={User} label="Name" value={user.name} />
           </div>
         </div>
       )}
 
       {/* Auto-Share Toggle */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+      <div className="bg-white border border-gray-200 p-5">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900">
               Auto-Share Content
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Enable automatic sharing of user's posts to social media
+            <p className="text-[11px] text-gray-400 mt-0.5">
+              Automatically share user&apos;s posts to social media
             </p>
           </div>
           <button
             onClick={toggleAutoShare}
             disabled={saving}
-            className="flex items-center gap-3"
+            className="flex items-center gap-2"
           >
             {user.autoShareEnabled ? (
               <>
-                <ToggleRight size={32} className="text-green-600" />
-                <span className="text-sm font-medium text-green-600">Enabled</span>
+                <ToggleRight size={28} className="text-green-600" />
+                <span className="text-xs font-bold text-green-600">ON</span>
               </>
             ) : (
               <>
-                <ToggleLeft size={32} className="text-gray-400" />
-                <span className="text-sm font-medium text-gray-400">Disabled</span>
+                <ToggleLeft size={28} className="text-gray-300" />
+                <span className="text-xs font-bold text-gray-400">OFF</span>
               </>
             )}
           </button>
@@ -291,15 +347,15 @@ export default function UserDetailPage() {
       </div>
 
       {/* Social Media Settings */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Social Media Auto-Sharing Settings
+      <div className="bg-white border border-gray-200 p-5">
+        <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900 mb-1">
+          Social Media Auto-Sharing
         </h3>
-        <p className="text-sm text-gray-500 mb-6">
-          Select which social media platforms should receive automatic posts from this user
+        <p className="text-[11px] text-gray-400 mb-4">
+          Select platforms for automatic posting
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {socialPlatforms.map((platform) => {
             const Icon = platform.icon;
             const isEnabled = socialMediaSettings[platform.key] || false;
@@ -307,123 +363,105 @@ export default function UserDetailPage() {
             return (
               <div
                 key={platform.key}
-                className={`border-2 rounded-xl p-4 transition-all ${
-                  isEnabled
-                    ? "border-green-500 bg-green-50"
-                    : "border-gray-200 bg-gray-50"
+                className={`border p-3 transition-colors ${
+                  isEnabled ? "border-green-400 bg-green-50/50" : "border-gray-200"
                 }`}
               >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <Icon size={24} className={platform.color} />
-                    <span className="font-semibold text-gray-900">
-                      {platform.name}
-                    </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Icon size={18} className={platform.color} />
+                    <span className="text-sm font-semibold text-gray-900">{platform.name}</span>
                   </div>
                   <button
                     onClick={() => toggleSocialMedia(platform.key)}
                     disabled={saving || !user.autoShareEnabled}
-                    className="flex items-center"
-                    title={
-                      !user.autoShareEnabled
-                        ? "Enable auto-share first"
-                        : isEnabled
-                        ? "Disable"
-                        : "Enable"
-                    }
+                    title={!user.autoShareEnabled ? "Enable auto-share first" : ""}
                   >
                     {isEnabled ? (
-                      <ToggleRight size={24} className="text-green-600" />
+                      <ToggleRight size={22} className="text-green-600" />
                     ) : (
-                      <ToggleLeft size={24} className="text-gray-400" />
+                      <ToggleLeft size={22} className="text-gray-300" />
                     )}
                   </button>
                 </div>
-                <p className="text-xs text-gray-500">
-                  {isEnabled
-                    ? "Auto-sharing enabled"
-                    : "Auto-sharing disabled"}
-                </p>
               </div>
             );
           })}
         </div>
 
         {!user.autoShareEnabled && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-sm text-yellow-800">
-              ⚠️ Auto-share must be enabled first before configuring individual social media platforms.
-            </p>
+          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 text-[11px] text-amber-800">
+            Auto-share must be enabled before configuring individual platforms.
           </div>
         )}
       </div>
 
       {/* User Posts */}
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6">
+      <div className="bg-white border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <FileText size={20} />
+          <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900 flex items-center gap-2">
+            <FileText size={16} />
             User Posts ({posts.length})
           </h3>
         </div>
 
         {posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <FileText size={48} className="mx-auto mb-2 opacity-50" />
-            <p>This user hasn't created any posts yet.</p>
+          <div className="text-center py-10 text-gray-400">
+            <FileText size={32} className="mx-auto mb-2 opacity-40" />
+            <p className="text-sm">No posts yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                     Title
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                     Category
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                     Auto-Share
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                     Created
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {posts.map((post) => (
-                  <tr key={post._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-gray-900">{post.title}</span>
+                  <tr key={post._id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-3 py-2.5">
+                      <span className="text-sm font-semibold text-gray-900">{post.title}</span>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800">
+                    <td className="px-3 py-2.5">
+                      <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-gray-100 text-gray-600">
                         {post.category}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5">
                       <span
-                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold ${
+                        className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
                           post.status === "published"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
+                            ? "bg-green-50 text-green-700 border border-green-200"
+                            : "bg-yellow-50 text-yellow-700 border border-yellow-200"
                         }`}
                       >
                         {post.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 py-2.5">
                       {post.autoShareEnabled ? (
-                        <span className="text-green-600 text-sm">✓ Enabled</span>
+                        <span className="text-green-600 text-[11px] font-bold">Enabled</span>
                       ) : (
-                        <span className="text-gray-400 text-sm">✗ Disabled</span>
+                        <span className="text-gray-300 text-[11px]">Disabled</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-3 py-2.5 text-[11px] text-gray-500">
                       {new Date(post.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -436,4 +474,3 @@ export default function UserDetailPage() {
     </div>
   );
 }
-

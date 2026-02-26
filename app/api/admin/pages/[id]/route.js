@@ -10,41 +10,26 @@ function getJWTSecret() {
 
 async function checkAdmin(request) {
   const token = request.cookies.get("token")?.value;
-  if (!token) {
-    return { error: "Not authenticated", status: 401 };
-  }
-
+  if (!token) return { error: "Not authenticated", status: 401 };
   try {
     await ensureConnected();
     const decoded = jwt.verify(token, getJWTSecret());
     const user = await User.findById(decoded.userId).select("-password");
-
-    if (!user || user.role !== "ADMIN") {
-      return { error: "Unauthorized - Admin access required", status: 403 };
-    }
-
+    if (!user || user.role !== "ADMIN") return { error: "Unauthorized - Admin access required", status: 403 };
     return { user };
-  } catch (error) {
+  } catch {
     return { error: "Not authenticated", status: 401 };
   }
 }
 
-// GET - Fetch single page by ID
 export async function GET(request, { params }) {
   const authCheck = await checkAdmin(request);
-  if (authCheck.error) {
-    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
-  }
-
+  if (authCheck.error) return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   try {
     await ensureConnected();
     const { id } = await params;
     const page = await Page.findById(id);
-
-    if (!page) {
-      return NextResponse.json({ error: "Page not found" }, { status: 404 });
-    }
-
+    if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
     return NextResponse.json({ page });
   } catch (error) {
     console.error("Error fetching page:", error);
@@ -52,34 +37,33 @@ export async function GET(request, { params }) {
   }
 }
 
-// PUT - Update page
 export async function PUT(request, { params }) {
   const authCheck = await checkAdmin(request);
-  if (authCheck.error) {
-    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
-  }
+  if (authCheck.error) return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
 
   try {
     await ensureConnected();
     const { id } = await params;
     const body = await request.json();
-    const { title, category, status } = body;
+    const { title, content, category, categories, status } = body;
 
     const page = await Page.findById(id);
-    if (!page) {
-      return NextResponse.json({ error: "Page not found" }, { status: 404 });
+    if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
+
+    if (title !== undefined) page.title = title.trim();
+    if (content !== undefined) page.content = content;
+    if (category !== undefined) page.category = category.trim();
+    if (categories !== undefined) {
+      const cats = Array.isArray(categories) ? categories.filter(Boolean) : [];
+      page.categories = cats;
+      if (cats.length > 0 && !page.category) page.category = cats[0];
     }
-
-    if (title) page.title = title.trim();
-    if (category) page.category = category.trim();
-    if (status) page.status = status;
-
-    if (status === "published" && !page.publishedAt) {
-      page.publishedAt = new Date();
+    if (status) {
+      page.status = status;
+      if (status === "published" && !page.publishedAt) page.publishedAt = new Date();
     }
 
     await page.save();
-
     return NextResponse.json({ page, message: "Page updated successfully" });
   } catch (error) {
     console.error("Error updating page:", error);
@@ -87,22 +71,14 @@ export async function PUT(request, { params }) {
   }
 }
 
-// DELETE - Delete page
 export async function DELETE(request, { params }) {
   const authCheck = await checkAdmin(request);
-  if (authCheck.error) {
-    return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
-  }
-
+  if (authCheck.error) return NextResponse.json({ error: authCheck.error }, { status: authCheck.status });
   try {
     await ensureConnected();
     const { id } = await params;
     const page = await Page.findByIdAndDelete(id);
-
-    if (!page) {
-      return NextResponse.json({ error: "Page not found" }, { status: 404 });
-    }
-
+    if (!page) return NextResponse.json({ error: "Page not found" }, { status: 404 });
     return NextResponse.json({ message: "Page deleted successfully" });
   } catch (error) {
     console.error("Error deleting page:", error);

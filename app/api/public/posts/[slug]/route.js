@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { ensureConnected } from "@/lib/moongoose";
 import Post from "@/models/Post";
 import User from "@/models/User";
+import DailyView from "@/models/DailyView";
+import MonthlyView from "@/models/MonthlyView";
 import jwt from "jsonwebtoken";
 
 function getJWTSecret() {
@@ -14,14 +16,13 @@ async function getOptionalUser(request) {
     if (!token) return null;
     const decoded = jwt.verify(token, getJWTSecret());
     await ensureConnected();
-    const user = await User.findById(decoded.userId).select("_id");
+    const user = await User.findById(decoded.userId).select("_id role");
     return user;
   } catch {
     return null;
   }
 }
 
-// Public endpoint to fetch a single published post by slug
 export async function GET(request, { params }) {
   try {
     await ensureConnected();
@@ -36,28 +37,62 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Increment views in DB (use native collection to ensure write)
-    const collection = Post.collection;
-    await collection.updateOne(
-      { slug: slugTrimmed, status: "published" },
-      { $inc: { views: 1 } }
-    );
-
-    // Second: fetch the post (with updated views)
-    const post = await Post.findOne(
-      { slug: slugTrimmed, status: "published" }
-    )
-      .populate("author", "name email")
-      .select("-__v")
-      .lean();
-
+    const { searchParams } = new URL(request.url);
+    const isPreview = searchParams.get("preview") === "true";
     const currentUser = await getOptionalUser(request);
 
+    let post;
+
+    if (isPreview && currentUser) {
+      post = await Post.findOne({ slug: slugTrimmed })
+        .populate("author", "name email")
+        .select("-__v")
+        .lean();
+
+      if (post) {
+        const isAuthor = post.author?._id?.toString() === currentUser._id.toString();
+        const isAdmin = currentUser.role === "ADMIN" || currentUser.role === "MANAGER";
+        if (!isAuthor && !isAdmin) {
+          post = null;
+        }
+      }
+    } else {
+      await Post.collection.updateOne(
+        { slug: slugTrimmed, status: "published" },
+        { $inc: { views: 1 } }
+      );
+
+      post = await Post.findOne(
+        { slug: slugTrimmed, status: "published" }
+      )
+        .populate("author", "name email")
+        .select("-__v")
+        .lean();
+
+      if (post?._id) {
+        const startOfToday = new Date();
+        startOfToday.setUTCHours(0, 0, 0, 0);
+        startOfToday.setUTCMilliseconds(0);
+        const year = startOfToday.getUTCFullYear();
+        const month = startOfToday.getUTCMonth() + 1; // 1-12
+        await Promise.all([
+          DailyView.findOneAndUpdate(
+            { postId: post._id, date: startOfToday },
+            { $inc: { count: 1 } },
+            { upsert: true, new: true }
+          ),
+          MonthlyView.findOneAndUpdate(
+            { postId: post._id, year, month },
+            { $inc: { count: 1 } },
+            { upsert: true, new: true }
+          ),
+        ]);
+      }
+    }
+
     if (!post) {
-      // Check if post exists with different status for better error message
       const postExists = await Post.findOne({ slug: slugTrimmed }).select("status title");
       if (postExists) {
-        console.log(`Post found but status is "${postExists.status}", not "published"`);
         return NextResponse.json(
           { 
             error: "Post not found",
@@ -76,7 +111,6 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Get related posts (same category, excluding current post)
     const relatedPosts = await Post.find({
       category: post.category,
       status: "published",
@@ -99,6 +133,10 @@ export async function GET(request, { params }) {
       likedBy.some((id) => (id && id.toString?.()) === currentUserId)
     );
     delete postData.likedBy;
+
+    if (isPreview) {
+      postData.isPreview = true;
+    }
 
     return NextResponse.json(
       { post: postData, relatedPosts: relatedPosts || [] },

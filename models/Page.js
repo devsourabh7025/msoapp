@@ -4,7 +4,9 @@ const PageSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     slug: { type: String, required: true, unique: true },
-    category: { type: String, required: true },
+    content: { type: String, default: "" },
+    category: { type: String, default: "" },
+    categories: { type: [String], default: [] },
     status: {
       type: String,
       enum: ["draft", "published"],
@@ -15,7 +17,6 @@ const PageSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Clear cached model to avoid stale pre-save hooks (Mongoose 9 removed next callback)
 if (mongoose.models.Page) {
   delete mongoose.models.Page;
 }

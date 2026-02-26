@@ -34,6 +34,16 @@ export async function GET(request) {
         email: user.email,
         role: user.role,
         managerPermissions: Array.isArray(perms) ? perms : [],
+        accountType: user.accountType || "individual",
+        companyName: user.companyName || "",
+        phone: user.phone || "",
+        website: user.website || "",
+        industry: user.industry || "",
+        city: user.city || "",
+        foundedYear: user.foundedYear || "",
+        teamSize: user.teamSize || "",
+        description: user.description || "",
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {

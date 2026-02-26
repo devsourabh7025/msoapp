@@ -55,8 +55,8 @@ export default function DiscoverMore() {
       <div className="home-container py-10">
         {/* Section header */}
         <div className="flex items-center gap-3 mb-8">
-          <span className="inline-block w-8 h-[3px] bg-orange-600" />
-          <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="home-section-heading text-gray-900 dark:text-white">
             Discover More
           </h2>
           <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
@@ -90,16 +90,16 @@ export default function DiscoverMore() {
                       href={`/post?slug=${post.slug}`}
                       className="group flex items-start gap-3 py-3 first:pt-0 last:pb-0"
                     >
-                      <span className="text-lg font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none w-5 shrink-0 group-hover:text-orange-200 dark:group-hover:text-orange-900/50 transition-colors tabular-nums">
+                      <span className="text-lg font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none w-5 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors tabular-nums">
                         {colIndex * Math.ceil(posts.length / 3) + index + 1}
                       </span>
                       <div className="flex-1 min-w-0">
                         {getCategoryName(post.category) && (
-                          <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
+                          <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
                             {getCategoryName(post.category)}
                           </span>
                         )}
-                        <h3 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                        <h3 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                           {post.title}
                         </h3>
                       </div>

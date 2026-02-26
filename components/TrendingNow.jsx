@@ -72,8 +72,8 @@ export default function TrendingNow() {
       <div className="home-container py-10">
         {/* Section header */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="inline-block w-8 h-[3px] bg-orange-600" />
-          <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="home-section-heading text-gray-900 dark:text-white">
             {trendingSettings?.title || "Trending"}
           </h2>
           <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
@@ -93,17 +93,17 @@ export default function TrendingNow() {
                       className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                       sizes="(max-width: 1024px) 100vw, 40vw"
                     />
-                    <span className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center bg-orange-600 text-white text-xs font-bold">
+                    <span className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center bg-red-600 text-white text-xs font-bold">
                       01
                     </span>
                   </div>
                   <div className="mt-4">
                     {getCategoryName(lead.category) && (
-                      <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
+                      <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
                         {getCategoryName(lead.category)}
                       </span>
                     )}
-                    <h3 className="mt-1 text-xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                    <h3 className="mt-1 text-xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                       {lead.title}
                     </h3>
                     <p className="mt-2 text-[11px] tracking-wide uppercase text-gray-500">
@@ -133,16 +133,16 @@ export default function TrendingNow() {
                           className="object-cover group-hover:scale-[1.04] transition-transform duration-500 ease-out"
                           sizes="(max-width: 1024px) 50vw, 25vw"
                         />
-                        <span className="absolute top-2 left-2 w-6 h-6 flex items-center justify-center bg-white/95 dark:bg-gray-900/95 text-[10px] font-bold text-orange-600">
+                        <span className="absolute top-2 left-2 w-6 h-6 flex items-center justify-center bg-white/95 dark:bg-gray-900/95 text-[10px] font-bold text-red-600">
                           {String(index + 2).padStart(2, "0")}
                         </span>
                       </div>
                       {getCategoryName(article.category) && (
-                        <span className="mt-2.5 block text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
+                        <span className="mt-2.5 block text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
                           {getCategoryName(article.category)}
                         </span>
                       )}
-                      <h4 className="mt-1 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                      <h4 className="mt-1 text-sm font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                         {article.title}
                       </h4>
                       <p className="mt-1 text-[11px] text-gray-500">
@@ -162,16 +162,16 @@ export default function TrendingNow() {
                       href={`/post?slug=${article.slug}`}
                       className="group flex gap-4 py-3.5 first:pt-3"
                     >
-                      <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-orange-200 dark:group-hover:text-orange-900/50 transition-colors">
+                      <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none mt-0.5 select-none tabular-nums w-7 shrink-0 group-hover:text-red-200 dark:group-hover:text-red-900/50 transition-colors">
                         {String(index + 4).padStart(2, "0")}
                       </span>
                       <div className="min-w-0 flex-1">
                         {getCategoryName(article.category) && (
-                          <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600 dark:text-orange-400">
+                          <span className="text-[10px] font-bold tracking-wider uppercase text-red-600 dark:text-red-400">
                             {getCategoryName(article.category)}
                           </span>
                         )}
-                        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+                        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                           {article.title}
                         </h4>
                         <p className="mt-1 text-[11px] text-gray-500">

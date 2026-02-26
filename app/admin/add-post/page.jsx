@@ -57,7 +57,18 @@ export default function AddPost() {
     try {
       const dataToUse = customData || formData;
 
-      // Validate that there's at least some content
+      if (!dataToUse.title?.trim()) {
+        setError("Please enter a title for your post");
+        setLoading(false);
+        return;
+      }
+
+      if (!dataToUse.category) {
+        setError("Please select a category for your post");
+        setLoading(false);
+        return;
+      }
+
       const textContent = content.replace(/<[^>]*>/g, "").trim();
       if (!textContent) {
         setError("Please add some content to your post");
@@ -82,7 +93,7 @@ export default function AddPost() {
         category: dataToUse.category,
         featuredImage: dataToUse.featuredImage,
         status: dataToUse.status,
-        contentBlocks: [{ type: "text", content: content }], // Store as single block for compatibility
+        contentBlocks: [],
         seo: seoData,
       };
 
@@ -287,18 +298,9 @@ export default function AddPost() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Status
-                </label>
-                <select
-                  name="status"
-                  value={formData.status}
-                  onChange={handleChange}
-                  className="w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-black"
-                >
-                  <option value="draft">Draft</option>
-                  <option value="published">Published</option>
-                </select>
+                <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold">
+                  Use the buttons below to save as Draft or Publish directly
+                </p>
               </div>
             </div>
           )}
@@ -606,9 +608,13 @@ export default function AddPost() {
                 Save Draft
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleSubmit(e, { ...formData, status: "published" });
+                }}
                 disabled={loading}
-                className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed border border-black"
+                className="bg-red-600 text-white px-6 py-3 hover:bg-red-700 transition font-bold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Publishing..." : "Publish Post"}
               </button>

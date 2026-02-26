@@ -221,87 +221,83 @@ export default function SuperAdminUsers() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">All Users</h1>
-        <p className="text-xs text-gray-500 mt-0.5">Manage users and their permissions</p>
+        <h1 className="text-xl font-extrabold text-gray-900">All Users</h1>
+        <p className="text-xs text-gray-500 mt-0.5">Manage users, startups, and company accounts</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Total Users</div>
-          <div className="text-2xl font-bold mt-1">{users.length}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Total</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.length}</div>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Administrators</div>
-          <div className="text-2xl font-bold mt-1">
-            {users.filter((u) => u.role === "ADMIN").length}
-          </div>
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Admins</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.filter((u) => u.role === "ADMIN").length}</div>
         </div>
-        <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Managers</div>
-          <div className="text-2xl font-bold mt-1">
-            {users.filter((u) => u.role === "MANAGER").length}
-          </div>
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Managers</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.filter((u) => u.role === "MANAGER").length}</div>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Auto-Share Enabled</div>
-          <div className="text-2xl font-bold mt-1">
-            {users.filter((u) => u.autoShareEnabled).length}
-          </div>
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Individuals</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.filter((u) => !u.accountType || u.accountType === "individual").length}</div>
         </div>
-        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Regular Users</div>
-          <div className="text-2xl font-bold mt-1">
-            {users.filter((u) => u.role === "NORMAL_USER").length}
-          </div>
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-red-600">Startups</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.filter((u) => u.accountType === "startup").length}</div>
+        </div>
+        <div className="border border-gray-200 p-3 bg-white">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-red-600">Companies</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{users.filter((u) => u.accountType === "company").length}</div>
         </div>
       </div>
 
-      {/* Role Filter */}
-      <div className="flex items-center gap-4">
-        <label htmlFor="role-filter" className="text-sm font-medium text-gray-700">
-          Filter by role:
-        </label>
+      {/* Filter */}
+      <div className="flex flex-wrap items-center gap-3">
         <select
           id="role-filter"
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 bg-white text-gray-900"
+          className="h-9 px-3 text-sm border border-gray-300 bg-white text-gray-900 outline-none focus:border-red-500 transition-colors"
         >
           <option value="all">All Users</option>
           <option value="ADMIN">Administrators</option>
           <option value="MANAGER">Managers</option>
           <option value="NORMAL_USER">Regular Users</option>
         </select>
-        <span className="text-xs text-gray-500">
+        <span className="text-[11px] text-gray-400">
           Showing {roleFilter === "all" ? users.length : users.filter((u) => u.role === roleFilter).length} of {users.length}
         </span>
       </div>
 
       {/* Users Table */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden">
+      <div className="bg-white border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Name
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Email
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
+                  Account Type
+                </th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Role
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Auto-Share
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Created
                 </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">
                   Actions
                 </th>
               </tr>
@@ -350,6 +346,24 @@ export default function SuperAdminUsers() {
                       <span className="text-xs text-gray-600">{user.email}</span>
                     )}
                   </td>
+                  <td className="px-3 py-2">
+                    <div>
+                      <span
+                        className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
+                          user.accountType === "startup"
+                            ? "bg-red-50 text-red-700 border border-red-200"
+                            : user.accountType === "company"
+                            ? "bg-gray-900 text-white"
+                            : "bg-gray-100 text-gray-600"
+                        }`}
+                      >
+                        {user.accountType || "individual"}
+                      </span>
+                      {user.companyName && (
+                        <p className="text-[11px] text-gray-500 mt-0.5 truncate max-w-[140px]">{user.companyName}</p>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                     {editingUser === user._id ? (
                       <select
@@ -357,7 +371,7 @@ export default function SuperAdminUsers() {
                         onChange={(e) =>
                           setEditForm({ ...editForm, role: e.target.value })
                         }
-                        className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
+                        className="px-2 py-1 text-xs border border-gray-300 outline-none focus:border-red-500"
                       >
                         <option value="NORMAL_USER">Normal User</option>
                         <option value="MANAGER">Manager</option>
@@ -365,15 +379,15 @@ export default function SuperAdminUsers() {
                       </select>
                     ) : (
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
+                        className={`inline-flex items-center px-2 py-0.5 text-[10px] font-bold tracking-wide ${
                           user.role === "ADMIN"
-                            ? "bg-purple-100 text-purple-800"
+                            ? "bg-purple-50 text-purple-700 border border-purple-200"
                             : user.role === "MANAGER"
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-blue-100 text-blue-800"
+                            ? "bg-amber-50 text-amber-700 border border-amber-200"
+                            : "bg-blue-50 text-blue-700 border border-blue-200"
                         }`}
                       >
-                        {user.role === "ADMIN" ? "Administrator" : user.role === "MANAGER" ? "Manager" : "Normal User"}
+                        {user.role === "ADMIN" ? "Admin" : user.role === "MANAGER" ? "Manager" : "User"}
                       </span>
                     )}
                   </td>
@@ -507,55 +521,55 @@ export default function SuperAdminUsers() {
       {/* Permissions modal for Manager */}
       {permissionsModalUser && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
           onClick={closePermissionsModal}
           role="dialog"
           aria-modal="true"
           aria-label="Manager permissions"
         >
           <div
-            className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6"
+            className="bg-white border border-gray-200 max-w-md w-full mx-4 p-5"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-gray-900 mb-1">
-              Manager permissions
+            <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900 mb-0.5">
+              Manager Permissions
             </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              {permissionsModalUser.name} – choose what this manager can access.
+            <p className="text-[11px] text-gray-400 mb-4">
+              {permissionsModalUser.name} — choose accessible sections.
             </p>
             {loadingPermissionsModal ? (
-              <div className="py-8 text-center text-gray-500 text-sm">Loading permissions…</div>
+              <div className="py-8 text-center text-gray-400 text-sm">Loading permissions…</div>
             ) : (
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-1 max-h-64 overflow-y-auto">
               {MANAGER_PERMISSION_OPTIONS.map((opt) => (
                 <label
                   key={opt.id}
-                  className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 rounded"
+                  className="flex items-center gap-2 cursor-pointer p-2 hover:bg-gray-50 transition-colors"
                 >
                   <input
                     type="checkbox"
                     checked={permissionsForm.includes(opt.id)}
                     onChange={() => togglePermission(opt.id)}
-                    className="rounded border-gray-300"
+                    className="accent-red-600"
                   />
                   <span className="text-sm text-gray-900">{opt.label}</span>
                 </label>
               ))}
             </div>
             )}
-            <div className="flex gap-2 mt-6">
+            <div className="flex gap-2 mt-5 pt-4 border-t border-gray-100">
               <button
                 type="button"
                 onClick={savePermissions}
                 disabled={savingPermissions}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 text-sm font-medium"
+                className="px-4 py-2 bg-red-600 text-white text-sm font-bold tracking-wide hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
                 {savingPermissions ? "Saving…" : "Save"}
               </button>
               <button
                 type="button"
                 onClick={closePermissionsModal}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 text-sm font-medium"
+                className="px-4 py-2 border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
               >
                 Cancel
               </button>

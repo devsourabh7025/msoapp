@@ -58,7 +58,7 @@ export default function Explore() {
               <Link
                 key={index}
                 href={`/explore/${getCategorySlug(category.name)}`}
-                className="group py-1 text-gray-900 dark:text-white hover:text-orange-600 dark:hover:text-orange-400"
+                className="group py-1 text-gray-900 dark:text-white hover:text-red-600 dark:hover:text-red-400"
               >
                 <span className="home-card-title">{category.name}</span>
                 <span className="home-meta ml-1">({category.count || 0})</span>

@@ -9,11 +9,21 @@ function getJWTSecret() {
 
 export async function POST(request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, accountType, companyName, phone, website, industry, city, foundedYear, teamSize, description } = await request.json();
 
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: "Name, email, and password are required" },
+        { status: 400 }
+      );
+    }
+
+    const validAccountTypes = ["individual", "startup", "company"];
+    const finalAccountType = validAccountTypes.includes(accountType) ? accountType : "individual";
+
+    if ((finalAccountType === "startup" || finalAccountType === "company") && !companyName?.trim()) {
+      return NextResponse.json(
+        { error: "Organisation name is required for startup/company accounts" },
         { status: 400 }
       );
     }
@@ -37,12 +47,22 @@ export async function POST(request) {
       );
     }
 
-    // Create new user
+    const isOrg = finalAccountType === "startup" || finalAccountType === "company";
+
     const user = new User({
       name,
       email: email.toLowerCase(),
       password,
       role: "NORMAL_USER",
+      accountType: finalAccountType,
+      companyName: companyName?.trim() || "",
+      phone: isOrg ? (phone?.trim() || "") : "",
+      website: isOrg ? (website?.trim() || "") : "",
+      industry: isOrg ? (industry?.trim() || "") : "",
+      city: isOrg ? (city?.trim() || "") : "",
+      foundedYear: isOrg ? (foundedYear?.trim() || "") : "",
+      teamSize: isOrg ? (teamSize?.trim() || "") : "",
+      description: isOrg ? (description?.trim() || "") : "",
     });
 
     await user.save();

@@ -25,6 +25,51 @@ const UserSchema = new mongoose.Schema(
       enum: ["NORMAL_USER", "MANAGER", "ADMIN"],
       default: "NORMAL_USER",
     },
+    accountType: {
+      type: String,
+      enum: ["individual", "startup", "company"],
+      default: "individual",
+    },
+    companyName: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    phone: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    website: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    industry: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    city: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    foundedYear: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    teamSize: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    description: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     autoShareEnabled: {
       type: Boolean,
       default: false,
@@ -60,7 +105,7 @@ UserSchema.methods.comparePassword = async function (candidatePassword) {
 // If that cached model misses newly added schema fields (like managerPermissions),
 // writes to those fields may be ignored until server restart.
 const existingUserModel = mongoose.models.User;
-if (existingUserModel && !existingUserModel.schema.path("managerPermissions")) {
+if (existingUserModel && (!existingUserModel.schema.path("managerPermissions") || !existingUserModel.schema.path("accountType") || !existingUserModel.schema.path("industry"))) {
   delete mongoose.models.User;
 }
 

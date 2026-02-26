@@ -3,28 +3,24 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock } from "lucide-react";
 
 function formatDate(date) {
   if (!date) return "";
-  const d = new Date(date);
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "short",
     day: "numeric",
+    year: "numeric",
   });
 }
 
-export default function SidebarPosts({ title = "You May Like" }) {
+export default function SidebarPosts({ title = "Trending" }) {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const response = await fetch(
-          "/api/public/posts?limit=3&sort=viewsDesc"
-        );
+        const response = await fetch("/api/public/posts?limit=5&sort=viewsDesc");
         const data = await response.json();
         setPosts(data.posts || []);
       } catch (error) {
@@ -38,21 +34,22 @@ export default function SidebarPosts({ title = "You May Like" }) {
   }, []);
 
   return (
-    <div className="border border-gray-300 dark:border-gray-600 overflow-hidden bg-white dark:bg-black">
-      <div className="bg-black dark:bg-white px-6 py-4">
-        <h4 className="font-bold text-sm text-white dark:text-black uppercase tracking-wider">
+    <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+        <h4 className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400">
           {title}
         </h4>
       </div>
 
-      <div className="p-5 space-y-5 bg-white dark:bg-black">
+      <div className="divide-y divide-gray-100 dark:divide-gray-800/50">
         {loading ? (
-          [...Array(3)].map((_, i) => (
-            <div key={i} className="flex gap-4 animate-pulse">
-              <div className="w-20 h-20 bg-gray-200 dark:bg-gray-800 shrink-0 border border-gray-300 dark:border-gray-600" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 w-full" />
-                <div className="h-3 bg-gray-200 dark:bg-gray-700 w-24" />
+          [...Array(4)].map((_, i) => (
+            <div key={i} className="flex gap-3 p-4 animate-pulse">
+              <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 shrink-0" />
+              <div className="flex-1 space-y-2 py-1">
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 w-full" />
+                <div className="h-3 bg-gray-100 dark:bg-gray-800 w-2/3" />
+                <div className="h-2 bg-gray-100 dark:bg-gray-800 w-20" />
               </div>
             </div>
           ))
@@ -61,34 +58,41 @@ export default function SidebarPosts({ title = "You May Like" }) {
             <Link
               key={post._id || post.slug || i}
               href={`/post?slug=${post.slug}`}
-              className="flex gap-4 group transition-all duration-300 hover:scale-[1.02]"
+              className="flex gap-3 p-4 group hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
             >
-              <div className="relative flex-shrink-0 w-20 h-20 overflow-hidden ring-2 ring-gray-200 dark:ring-gray-700 group-hover:ring-gray-900 dark:group-hover:ring-white transition-all duration-300">
-                {post.featuredImage ? (
+              <span className="text-2xl font-black text-gray-200 dark:text-gray-800 leading-none w-6 shrink-0 pt-0.5">
+                {i + 1}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold leading-snug text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors line-clamp-2">
+                  {post.title}
+                </p>
+                <div className="flex items-center gap-2 mt-1.5">
+                  {post.category && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400">
+                      {post.category}
+                    </span>
+                  )}
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                    {formatDate(post.publishedAt)}
+                  </span>
+                </div>
+              </div>
+              {post.featuredImage && (
+                <div className="relative flex-shrink-0 w-16 h-16 overflow-hidden bg-gray-100 dark:bg-gray-800">
                   <Image
                     src={post.featuredImage}
                     alt={post.title}
-                    width={80}
-                    height={80}
-                    className="object-cover object-center w-full h-full group-hover:scale-110 transition-transform duration-500 grayscale"
+                    width={64}
+                    height={64}
+                    className="object-cover w-full h-full"
                   />
-                ) : (
-                  <div className="w-full h-full bg-gray-300 dark:bg-gray-600" />
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold leading-snug text-black dark:text-white group-hover:underline line-clamp-2">
-                  {post.title}
-                </p>
-                <span className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1.5 mt-2">
-                  <Clock size={12} className="opacity-70" />
-                  <span>{formatDate(post.publishedAt)}</span>
-                </span>
-              </div>
+                </div>
+              )}
             </Link>
           ))
         ) : (
-          <p className="text-sm text-gray-600 dark:text-gray-300 py-4 text-center">
+          <p className="text-xs text-gray-400 dark:text-gray-500 py-6 text-center">
             No posts yet
           </p>
         )}

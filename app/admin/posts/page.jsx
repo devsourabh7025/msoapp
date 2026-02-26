@@ -1,362 +1,314 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Edit, Trash2, Eye, ToggleLeft, ToggleRight } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Edit,
+  Trash2,
+  Eye,
+  ToggleLeft,
+  ToggleRight,
+  Search,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import Link from "next/link";
 
-export default function AdminPosts() {
+const PAGE_SIZE = 15;
+
+export default function AllPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingPost, setEditingPost] = useState(null);
-  const [editForm, setEditForm] = useState({
-    title: "",
-    category: "",
-    status: "draft",
-    autoShareEnabled: false,
-  });
+  const [editForm, setEditForm] = useState({ title: "", category: "", status: "draft", autoShareEnabled: false });
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [authorFilter, setAuthorFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState("newest");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+
+  useEffect(() => { fetchPosts(); }, []);
+  useEffect(() => { setPage(1); }, [statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery]);
 
   const fetchPosts = async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/superadmin/posts");
-      if (response.ok) {
-        const data = await response.json();
-        setPosts(data.posts || []);
-      } else {
-        const errorData = await response.json().catch(() => ({ error: "Failed to fetch posts" }));
-        console.error("Error fetching posts:", errorData);
-        setPosts([]);
-      }
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-      setPosts([]);
-    } finally {
-      setLoading(false);
-    }
+      if (response.ok) { const data = await response.json(); setPosts(data.posts || []); }
+      else { setPosts([]); }
+    } catch { setPosts([]); } finally { setLoading(false); }
   };
 
   const handleEdit = (post) => {
     setEditingPost(post._id);
-    setEditForm({
-      title: post.title,
-      category: post.category,
-      status: post.status,
-      autoShareEnabled: post.autoShareEnabled || false,
-    });
+    setEditForm({ title: post.title, category: post.category, status: post.status, autoShareEnabled: post.autoShareEnabled || false });
   };
 
   const handleSave = async () => {
     try {
       const response = await fetch("/api/superadmin/posts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          postId: editingPost,
-          ...editForm,
-        }),
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: editingPost, ...editForm }),
       });
-
-      if (response.ok) {
-        await fetchPosts();
-        setEditingPost(null);
-        alert("Post updated successfully!");
-      } else {
-        const data = await response.json();
-        alert(data.error || "Failed to update post");
-      }
-    } catch (error) {
-      console.error("Error updating post:", error);
-      alert("Failed to update post");
-    }
+      if (response.ok) { await fetchPosts(); setEditingPost(null); }
+      else { const d = await response.json(); alert(d.error || "Failed to update"); }
+    } catch { alert("Failed to update post"); }
   };
 
   const handleDelete = async (postId) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
-
     try {
-      const response = await fetch(`/api/superadmin/posts?postId=${postId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await fetchPosts();
-        alert("Post deleted successfully!");
-      } else {
-        const data = await response.json();
-        alert(data.error || "Failed to delete post");
-      }
-    } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Failed to delete post");
-    }
+      const response = await fetch(`/api/superadmin/posts?postId=${postId}`, { method: "DELETE" });
+      if (response.ok) await fetchPosts();
+      else { const d = await response.json(); alert(d.error || "Failed to delete"); }
+    } catch { alert("Failed to delete post"); }
   };
 
   const toggleAutoShare = async (postId, currentValue) => {
     try {
       const response = await fetch("/api/superadmin/posts", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          postId,
-          autoShareEnabled: !currentValue,
-        }),
+        method: "PUT", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId, autoShareEnabled: !currentValue }),
       });
-
-      if (response.ok) {
-        await fetchPosts();
-      }
-    } catch (error) {
-      console.error("Error toggling auto-share:", error);
-    }
+      if (response.ok) await fetchPosts();
+    } catch (error) { console.error("Error toggling auto-share:", error); }
   };
+
+  const categories = useMemo(() => [...new Set(posts.map((p) => p.category).filter(Boolean))].sort(), [posts]);
+  const authors = useMemo(() => {
+    const map = new Map();
+    posts.forEach((p) => {
+      if (p.author?._id) {
+        const isOrg = p.author.accountType === "startup" || p.author.accountType === "company";
+        map.set(p.author._id, isOrg ? (p.author.companyName || p.author.name) : p.author.name);
+      }
+    });
+    return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
+  }, [posts]);
+
+  const filtered = useMemo(() => {
+    let list = [...posts];
+    if (statusFilter !== "all") list = list.filter((p) => p.status === statusFilter);
+    if (categoryFilter !== "all") list = list.filter((p) => p.category === categoryFilter);
+    if (authorFilter !== "all") list = list.filter((p) => p.author?._id === authorFilter);
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = list.filter((p) => p.title?.toLowerCase().includes(q) || p.author?.name?.toLowerCase().includes(q) || p.author?.companyName?.toLowerCase().includes(q));
+    }
+    list.sort((a, b) => {
+      const dA = new Date(a.publishedAt || a.createdAt);
+      const dB = new Date(b.publishedAt || b.createdAt);
+      return sortOrder === "newest" ? dB - dA : dA - dB;
+    });
+    return list;
+  }, [posts, statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const hasFilters = statusFilter !== "all" || categoryFilter !== "all" || authorFilter !== "all" || searchQuery.trim();
+  const clearFilters = () => { setStatusFilter("all"); setCategoryFilter("all"); setAuthorFilter("all"); setSearchQuery(""); };
+
+  const formatDate = (d) => { if (!d) return "—"; return new Date(d).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }); };
+  const authorName = (a) => { if (!a) return "Unknown"; return (a.accountType === "startup" || a.accountType === "company") ? (a.companyName || a.name) : a.name; };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+        <div className="w-8 h-8 border-2 border-red-600 border-t-transparent animate-spin" />
       </div>
     );
   }
 
+  const sel = "h-9 px-3 text-sm border border-gray-200 bg-white text-gray-900 outline-none focus:border-red-500 transition-colors";
+
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-gray-900">All Posts</h1>
-        <p className="text-xs text-gray-500 mt-0.5">Manage all posts and auto-sharing settings</p>
+        <h1 className="text-xl font-extrabold text-gray-900">All Posts</h1>
+        <p className="text-xs text-gray-400 mt-0.5">Manage all posts, inline edit, and auto-sharing</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Total Posts</div>
-          <div className="text-2xl font-bold mt-1">{posts.length}</div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="bg-white border border-gray-200 p-3">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Total</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.length}</div>
         </div>
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Published</div>
-          <div className="text-2xl font-bold mt-1">
-            {posts.filter((p) => p.status === "published").length}
-          </div>
+        <div className="bg-white border border-gray-200 p-3">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-green-600">Published</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.status === "published").length}</div>
         </div>
-        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Drafts</div>
-          <div className="text-2xl font-bold mt-1">
-            {posts.filter((p) => p.status === "draft").length}
-          </div>
+        <div className="bg-white border border-gray-200 p-3">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-amber-600">Draft / Pending</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.status === "draft" || p.status === "pending").length}</div>
         </div>
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-3 text-white shadow-md">
-          <div className="text-xs font-medium opacity-90">Auto-Share Enabled</div>
-          <div className="text-2xl font-bold mt-1">
-            {posts.filter((p) => p.autoShareEnabled).length}
-          </div>
+        <div className="bg-white border border-gray-200 p-3">
+          <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Auto-Share</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.autoShareEnabled).length}</div>
         </div>
       </div>
 
-      {/* Posts Table */}
-      <div className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input type="text" placeholder="Search title or author..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full h-9 pl-9 pr-3 text-sm border border-gray-200 bg-white outline-none focus:border-red-500 transition-colors" />
+        </div>
+        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={sel}>
+          <option value="all">All Status</option>
+          <option value="published">Published</option>
+          <option value="draft">Draft</option>
+          <option value="pending">Pending</option>
+        </select>
+        <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className={sel}>
+          <option value="all">All Categories</option>
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select value={authorFilter} onChange={(e) => setAuthorFilter(e.target.value)} className={sel}>
+          <option value="all">All Authors</option>
+          {authors.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+        </select>
+        <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={sel}>
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+        </select>
+        {hasFilters && (
+          <button onClick={clearFilters} className="h-9 px-3 flex items-center gap-1 text-sm text-red-600 border border-red-200 hover:bg-red-50 transition-colors">
+            <X size={14} /> Clear
+          </button>
+        )}
+        <span className="text-[11px] text-gray-400 ml-auto">{filtered.length} of {posts.length}</span>
+      </div>
+
+      {/* Table */}
+      <div className="bg-white border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Image
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Title
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Author
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Category
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Status
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Auto-Share
-                </th>
-                <th className="px-3 py-2 text-left text-[10px] font-bold text-gray-700 uppercase">
-                  Actions
-                </th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Title</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Author</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Category</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Date</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Status</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Auto-Share</th>
+                <th className="px-3 py-2.5 text-left text-[10px] font-bold tracking-wider uppercase text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {posts.length === 0 && !loading ? (
-                <tr>
-                  <td colSpan="7" className="px-3 py-8 text-center text-sm text-gray-500">
-                    No posts found. Create your first post to get started.
-                  </td>
-                </tr>
-              ) : (
-              posts.map((post) => (
-                <tr
-                  key={post._id}
-                  className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-white transition-colors"
-                >
-                  <td className="px-3 py-2">
-                    <div className="w-16 h-10 relative rounded overflow-hidden shadow-sm ring-1 ring-gray-200">
-                      <Image
-                        src={post.featuredImage || "/demo.png"}
-                        alt={post.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                  </td>
-                  <td className="px-3 py-2">
+              {paginated.length === 0 ? (
+                <tr><td colSpan="7" className="px-3 py-8 text-center text-sm text-gray-400">{hasFilters ? "No posts match filters." : "No posts found."}</td></tr>
+              ) : paginated.map((post) => (
+                <tr key={post._id} className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-3 py-2.5">
                     {editingPost === post._id ? (
-                      <input
-                        type="text"
-                        value={editForm.title}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, title: e.target.value })
-                        }
-                        className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
-                      />
+                      <input type="text" value={editForm.title} onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                        className="w-full px-2 py-1 text-xs border border-gray-300 outline-none focus:border-red-500" />
                     ) : (
-                      <div className="text-xs font-semibold text-gray-900 max-w-md line-clamp-2">
-                        {post.title}
-                      </div>
+                      <div className="text-sm font-semibold text-gray-900 max-w-sm line-clamp-1">{post.title}</div>
                     )}
                   </td>
-                  <td className="px-3 py-2">
-                      <span className="text-xs text-gray-600">
-                      {post.author?.name || "Unknown"}
-                    </span>
-                  </td>
-                  <td className="px-3 py-2">
-                    {editingPost === post._id ? (
-                      <input
-                        type="text"
-                        value={editForm.category}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, category: e.target.value })
-                        }
-                        className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
-                      />
-                    ) : (
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {post.category}
-                      </span>
+                  <td className="px-3 py-2.5">
+                    <span className="text-[12px] font-medium text-gray-800">{authorName(post.author)}</span>
+                    {(post.author?.accountType === "startup" || post.author?.accountType === "company") && (
+                      <span className="ml-1 text-[9px] font-bold tracking-wide uppercase text-red-600">{post.author.accountType}</span>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2.5">
                     {editingPost === post._id ? (
-                      <select
-                        value={editForm.status}
-                        onChange={(e) =>
-                          setEditForm({ ...editForm, status: e.target.value })
-                        }
-                        className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-red-500"
-                      >
+                      <input type="text" value={editForm.category} onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                        className="px-2 py-1 text-xs border border-gray-300 outline-none focus:border-red-500" />
+                    ) : (
+                      <span className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase bg-gray-100 text-gray-600">{post.category}</span>
+                    )}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <span className="text-[11px] text-gray-500">{formatDate(post.publishedAt || post.createdAt)}</span>
+                  </td>
+                  <td className="px-3 py-2.5">
+                    {editingPost === post._id ? (
+                      <select value={editForm.status} onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                        className="px-2 py-1 text-xs border border-gray-300 outline-none focus:border-red-500">
                         <option value="draft">Draft</option>
+                        <option value="pending">Pending</option>
                         <option value="published">Published</option>
                       </select>
                     ) : (
-                      <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold ${
-                          post.status === "published"
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {post.status}
-                      </span>
+                      <span className={`inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
+                        post.status === "published" ? "bg-green-50 text-green-700 border border-green-200"
+                        : post.status === "pending" ? "bg-amber-50 text-amber-700 border border-amber-200"
+                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                      }`}>{post.status || "draft"}</span>
                     )}
                   </td>
-                  <td className="px-3 py-2">
+                  <td className="px-3 py-2.5">
                     {editingPost === post._id ? (
-                      <button
-                        onClick={() =>
-                          setEditForm({
-                            ...editForm,
-                            autoShareEnabled: !editForm.autoShareEnabled,
-                          })
-                        }
-                        className="flex items-center gap-2"
-                      >
-                        {editForm.autoShareEnabled ? (
-                          <ToggleRight size={24} className="text-green-600" />
-                        ) : (
-                          <ToggleLeft size={24} className="text-gray-400" />
-                        )}
-                        <span className="text-sm">
-                          {editForm.autoShareEnabled ? "Enabled" : "Disabled"}
-                        </span>
+                      <button onClick={() => setEditForm({ ...editForm, autoShareEnabled: !editForm.autoShareEnabled })} className="flex items-center gap-1.5">
+                        {editForm.autoShareEnabled ? <ToggleRight size={20} className="text-green-600" /> : <ToggleLeft size={20} className="text-gray-300" />}
+                        <span className="text-[11px] font-bold">{editForm.autoShareEnabled ? "On" : "Off"}</span>
                       </button>
                     ) : (
-                      <button
-                        onClick={() => toggleAutoShare(post._id, post.autoShareEnabled)}
-                        className="flex items-center gap-2"
-                      >
-                        {post.autoShareEnabled ? (
-                          <ToggleRight size={24} className="text-green-600" />
-                        ) : (
-                          <ToggleLeft size={24} className="text-gray-400" />
-                        )}
-                        <span className="text-sm">
-                          {post.autoShareEnabled ? "Enabled" : "Disabled"}
-                        </span>
+                      <button onClick={() => toggleAutoShare(post._id, post.autoShareEnabled)} className="flex items-center gap-1.5">
+                        {post.autoShareEnabled ? <ToggleRight size={20} className="text-green-600" /> : <ToggleLeft size={20} className="text-gray-300" />}
+                        <span className="text-[11px] font-bold">{post.autoShareEnabled ? "On" : "Off"}</span>
                       </button>
                     )}
                   </td>
-                  <td className="px-3 py-2">
-                    <div className="flex items-center gap-2">
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-1">
                       {editingPost === post._id ? (
                         <>
-                          <button
-                            onClick={handleSave}
-                            className="p-1.5 text-green-600 hover:bg-green-50 rounded transition"
-                            title="Save"
-                          >
-                            ✓
-                          </button>
-                          <button
-                            onClick={() => setEditingPost(null)}
-                            className="p-1.5 text-gray-600 hover:bg-gray-50 rounded transition"
-                            title="Cancel"
-                          >
-                            ✕
-                          </button>
+                          <button onClick={handleSave} className="p-1.5 text-green-600 hover:bg-green-50 transition-colors" title="Save">&#10003;</button>
+                          <button onClick={() => setEditingPost(null)} className="p-1.5 text-gray-500 hover:bg-gray-100 transition-colors" title="Cancel">&#10005;</button>
                         </>
                       ) : (
                         <>
-                          <Link
-                            href={`/post?slug=${post.slug}`}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition"
-                            title="View"
-                          >
-                            <Eye size={14} />
-                          </Link>
-                          <Link
-                            href={`/admin/edit-post/${post._id}`}
-                            className="p-1.5 text-green-600 hover:bg-green-50 rounded transition"
-                            title="Edit"
-                          >
-                            <Edit size={14} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(post._id)}
-                            className="p-1.5 text-red-600 hover:bg-red-50 rounded transition"
-                            title="Delete"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <Link href={`/post?slug=${post.slug}${post.status !== "published" ? "&preview=true" : ""}`} target="_blank" className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors" title="View"><Eye size={14} /></Link>
+                          <button onClick={() => handleEdit(post)} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Inline Edit"><Edit size={14} /></button>
+                          <Link href={`/admin/edit-post/${post._id}`} className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" title="Full Edit"><Edit size={14} /></Link>
+                          <button onClick={() => handleDelete(post._id)} className="p-1.5 text-gray-500 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete"><Trash2 size={14} /></button>
                         </>
                       )}
                     </div>
                   </td>
                 </tr>
-              ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-3 py-2.5 border-t border-gray-200 bg-gray-50/50">
+            <span className="text-[11px] text-gray-400">Page {page} of {totalPages}</span>
+            <div className="flex items-center gap-1">
+              <button disabled={page <= 1} onClick={() => setPage(page - 1)}
+                className="p-1.5 border border-gray-200 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <ChevronLeft size={14} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === totalPages || Math.abs(p - page) <= 2)
+                .reduce((acc, p, i, arr) => { if (i > 0 && p - arr[i - 1] > 1) acc.push("..."); acc.push(p); return acc; }, [])
+                .map((p, i) =>
+                  p === "..." ? (
+                    <span key={`e${i}`} className="px-1 text-gray-400 text-xs">...</span>
+                  ) : (
+                    <button key={p} onClick={() => setPage(p)}
+                      className={`min-w-[28px] h-7 text-xs font-bold border transition-colors ${
+                        p === page ? "bg-red-600 text-white border-red-600" : "border-gray-200 text-gray-600 hover:bg-gray-100"
+                      }`}>{p}</button>
+                  ),
+                )}
+              <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}
+                className="p-1.5 border border-gray-200 text-gray-500 hover:text-gray-900 disabled:opacity-30 disabled:cursor-not-allowed transition-colors">
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
