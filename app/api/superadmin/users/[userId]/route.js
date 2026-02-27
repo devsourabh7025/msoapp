@@ -100,13 +100,14 @@ export async function PUT(request, { params }) {
     await ensureConnected(); // Connection should already exist from login
     const { userId } = await params;
     const body = await request.json();
-    const { socialMediaSettings, autoShareEnabled } = body;
+    const { socialMediaSettings, autoShareEnabled, isUnicorn } = body;
 
     const updateData = {};
     if (socialMediaSettings !== undefined)
       updateData.socialMediaSettings = socialMediaSettings;
     if (autoShareEnabled !== undefined)
       updateData.autoShareEnabled = autoShareEnabled;
+    if (isUnicorn !== undefined) updateData.isUnicorn = !!isUnicorn;
 
     const user = await User.findByIdAndUpdate(
       userId,

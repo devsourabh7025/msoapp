@@ -30,6 +30,10 @@ const UserSchema = new mongoose.Schema(
       enum: ["individual", "startup", "company"],
       default: "individual",
     },
+    isUnicorn: {
+      type: Boolean,
+      default: false,
+    },
     companyName: {
       type: String,
       trim: true,

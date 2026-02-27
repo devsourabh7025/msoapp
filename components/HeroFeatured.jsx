@@ -61,7 +61,7 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
           setHeroSettings(response.data.settings);
         } else {
           setHeroSettings({
-            title: "The Big Edit",
+            title: "",
             showNewsletter: true,
             newsletterTitle: "Newsletter",
             newsletterPlaceholder: "Enter your Email",
@@ -159,7 +159,10 @@ export default function HeroFeatured({ initialHeroData, initialHeroSettings }) {
           {/* Lead story */}
           <div className="col-span-1 lg:col-span-8 lg:pr-6 lg:border-r border-gray-200 dark:border-white/10">
             {mainArticle ? (
-              <Link href={`/post?slug=${mainArticle.slug}`} className="group block">
+              <Link
+                href={`/post?slug=${mainArticle.slug}`}
+                className="group block"
+              >
                 <article>
                   <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
                     {mainArticle.featuredImage ? (

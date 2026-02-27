@@ -41,7 +41,7 @@ export async function GET(request) {
     }
 
     const list = await User.find(query)
-      .select("companyName accountType industry city website description foundedYear teamSize createdAt")
+      .select("companyName accountType isUnicorn industry city website description foundedYear teamSize createdAt")
       .sort({ companyName: 1 })
       .lean();
 

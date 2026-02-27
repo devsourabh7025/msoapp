@@ -22,6 +22,7 @@ import {
   MapPin,
   Users as UsersIcon,
   Briefcase,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -110,6 +111,29 @@ export default function UserDetailPage() {
     } catch (error) {
       console.error("Error updating auto-share:", error);
       alert("Failed to update auto-share setting");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleUnicorn = async () => {
+    if (!user) return;
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/superadmin/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isUnicorn: !user.isUnicorn }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data.user);
+      } else {
+        alert("Failed to update unicorn flag");
+      }
+    } catch (error) {
+      console.error("Error updating unicorn flag:", error);
+      alert("Failed to update unicorn flag");
     } finally {
       setSaving(false);
     }
@@ -304,6 +328,42 @@ export default function UserDetailPage() {
               <p className="text-sm text-gray-700 leading-relaxed">{user.description}</p>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Unicorn Toggle (org only) */}
+      {user && (user.accountType === "startup" || user.accountType === "company") && (
+        <div className="bg-white border border-gray-200 p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-extrabold tracking-wide uppercase text-gray-900">
+                Unicorn Company
+              </h3>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Show this organisation in the public Unicorn list
+              </p>
+            </div>
+            <button
+              onClick={toggleUnicorn}
+              disabled={saving}
+              className="flex items-center gap-2"
+              title="Toggle unicorn status"
+            >
+              {user.isUnicorn ? (
+                <>
+                  <Sparkles size={18} className="text-amber-600" />
+                  <ToggleRight size={28} className="text-green-600" />
+                  <span className="text-xs font-bold text-green-600">ON</span>
+                </>
+              ) : (
+                <>
+                  <Sparkles size={18} className="text-gray-300" />
+                  <ToggleLeft size={28} className="text-gray-300" />
+                  <span className="text-xs font-bold text-gray-400">OFF</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       )}
 

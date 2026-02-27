@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-import { Search, Building2, MapPin, Briefcase, Globe } from "lucide-react";
+import { Search, Building2, MapPin, Briefcase, Globe, Calculator, Sparkles, RefreshCcw } from "lucide-react";
 
 export default function StartupsOrganisationsPage() {
   const [list, setList] = useState([]);
@@ -14,6 +14,14 @@ export default function StartupsOrganisationsPage() {
   const [industryFilter, setIndustryFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [sortBy, setSortBy] = useState("name");
+  const [unicornOnly, setUnicornOnly] = useState(false);
+  const [activeTab, setActiveTab] = useState("directory"); // "directory" | "calculator" | "unicorns"
+
+  // Fund calculator
+  const [monthlyBurn, setMonthlyBurn] = useState("");
+  const [runwayMonths, setRunwayMonths] = useState("12");
+  const [currentCash, setCurrentCash] = useState("");
+  const [bufferMonths, setBufferMonths] = useState("3");
 
   useEffect(() => {
     const fetchList = async () => {
@@ -91,8 +99,17 @@ export default function StartupsOrganisationsPage() {
       );
     }
 
+    if (unicornOnly) {
+      result = result.filter((u) => !!u.isUnicorn);
+    }
+
     return result;
-  }, [list, typeFilter, industryFilter, cityFilter, searchQuery, sortBy]);
+  }, [list, typeFilter, industryFilter, cityFilter, searchQuery, sortBy, unicornOnly]);
+
+  const unicornsAll = useMemo(
+    () => list.filter((u) => !!u.isUnicorn),
+    [list],
+  );
 
   const clearFilters = () => {
     setSearchQuery("");
@@ -105,7 +122,30 @@ export default function StartupsOrganisationsPage() {
     searchQuery.trim() ||
     typeFilter !== "all" ||
     industryFilter ||
-    cityFilter;
+    cityFilter ||
+    unicornOnly;
+
+  const resetCalculator = () => {
+    setMonthlyBurn("");
+    setRunwayMonths("12");
+    setCurrentCash("");
+    setBufferMonths("3");
+  };
+
+  const toNum = (v) => {
+    const n = Number(String(v).replace(/,/g, "").trim());
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const calc = useMemo(() => {
+    const burn = toNum(monthlyBurn);
+    const runway = Math.max(0, Math.floor(toNum(runwayMonths)));
+    const buffer = Math.max(0, Math.floor(toNum(bufferMonths)));
+    const cash = toNum(currentCash);
+    const totalNeeded = burn * (runway + buffer);
+    const gap = Math.max(0, totalNeeded - cash);
+    return { burn, runway, buffer, cash, totalNeeded, gap };
+  }, [monthlyBurn, runwayMonths, bufferMonths, currentCash]);
 
   return (
     <>
@@ -125,14 +165,15 @@ export default function StartupsOrganisationsPage() {
                   Discover startups and organisations on MSO
                 </p>
               </div>
-              {!loading && (
+              {activeTab === "directory" && !loading && (
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
                   {filtered.length} {filtered.length === 1 ? "profile" : "profiles"}
                 </span>
               )}
             </div>
 
-            {/* Filters */}
+            {/* Filters – only for Directory tab */}
+            {activeTab === "directory" && (
             <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
               <div className="flex-1 min-w-[200px] relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500" size={18} />
@@ -146,6 +187,21 @@ export default function StartupsOrganisationsPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setUnicornOnly((p) => !p)}
+                  className={`px-3 py-2.5 border text-sm font-bold transition-colors ${
+                    unicornOnly
+                      ? "border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800"
+                      : "border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:border-amber-300 hover:text-amber-700 dark:hover:border-amber-800"
+                  }`}
+                  title="Show only unicorn companies"
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <Sparkles size={14} className={unicornOnly ? "" : "text-amber-500"} />
+                    Unicorns
+                  </span>
+                </button>
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
@@ -203,11 +259,55 @@ export default function StartupsOrganisationsPage() {
                 )}
               </div>
             </div>
+            )}
+
+            {/* Tab buttons: option-wise switch */}
+            <div className="mt-6 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => setActiveTab("directory")}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold border transition-colors ${
+                  activeTab === "directory"
+                    ? "bg-red-600 text-white border-red-600 dark:bg-red-500 dark:border-red-500"
+                    : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-300 hover:border-red-600 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                }`}
+              >
+                <Building2 size={16} />
+                Startups & Organisations
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("calculator")}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold border transition-colors ${
+                  activeTab === "calculator"
+                    ? "bg-red-600 text-white border-red-600 dark:bg-red-500 dark:border-red-500"
+                    : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-300 hover:border-red-600 dark:hover:border-red-500 hover:text-red-600 dark:hover:text-red-400"
+                }`}
+              >
+                <Calculator size={16} />
+                Fund Calculator
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("unicorns")}
+                className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold border transition-colors ${
+                  activeTab === "unicorns"
+                    ? "bg-amber-600 text-white border-amber-600 dark:bg-amber-500 dark:border-amber-500"
+                    : "border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-300 hover:border-amber-600 dark:hover:border-amber-500 hover:text-amber-600 dark:hover:text-amber-400"
+                }`}
+              >
+                <Sparkles size={16} />
+                Unicorn Companies
+                {unicornsAll.length > 0 && (
+                  <span className="ml-0.5 text-[10px] opacity-90">({unicornsAll.length})</span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          {loading ? (
+          {activeTab === "directory" && (loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
@@ -249,15 +349,23 @@ export default function StartupsOrganisationsPage() {
                     <h2 className="text-lg font-black text-gray-900 dark:text-white leading-tight">
                       {org.companyName || "Unnamed"}
                     </h2>
-                    <span
-                      className={`shrink-0 px-2 py-0.5 text-[10px] font-bold uppercase border ${
-                        org.accountType === "startup"
-                          ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"
-                      }`}
-                    >
-                      {org.accountType}
-                    </span>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {org.isUnicorn && (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase border bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                          <Sparkles size={12} />
+                          Unicorn
+                        </span>
+                      )}
+                      <span
+                        className={`px-2 py-0.5 text-[10px] font-bold uppercase border ${
+                          org.accountType === "startup"
+                            ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                            : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700"
+                        }`}
+                      >
+                        {org.accountType}
+                      </span>
+                    </div>
                   </div>
 
                   {org.industry && (
@@ -306,8 +414,216 @@ export default function StartupsOrganisationsPage() {
                 </article>
               ))}
             </div>
-          )}
+          ))}
         </div>
+
+        {activeTab === "calculator" && (
+        <div id="fund-calculator" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-10">
+          <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-6">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Calculator size={18} className="text-red-600 dark:text-red-400" />
+                  <h2 className="text-lg font-black text-gray-900 dark:text-white">
+                    Fund Calculator
+                  </h2>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Estimate funding needed (simple runway-based calculator).
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={resetCalculator}
+                className="inline-flex items-center gap-2 px-3 py-2 text-sm font-bold border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+              >
+                <RefreshCcw size={16} />
+                Reset
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-gray-600 dark:text-gray-400 mb-2">
+                  Monthly burn (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={monthlyBurn}
+                  onChange={(e) => setMonthlyBurn(e.target.value)}
+                  placeholder="e.g. 300000"
+                  className="w-full h-11 px-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-gray-600 dark:text-gray-400 mb-2">
+                  Current cash (₹)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={currentCash}
+                  onChange={(e) => setCurrentCash(e.target.value)}
+                  placeholder="e.g. 1200000"
+                  className="w-full h-11 px-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-gray-600 dark:text-gray-400 mb-2">
+                  Runway (months)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={runwayMonths}
+                  onChange={(e) => setRunwayMonths(e.target.value)}
+                  placeholder="e.g. 12"
+                  className="w-full h-11 px-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold tracking-[0.1em] uppercase text-gray-600 dark:text-gray-400 mb-2">
+                  Buffer (months)
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  value={bufferMonths}
+                  onChange={(e) => setBufferMonths(e.target.value)}
+                  placeholder="e.g. 3"
+                  className="w-full h-11 px-4 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 text-gray-900 dark:text-white text-sm outline-none focus:border-red-600 dark:focus:border-red-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-4">
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  Total needed
+                </div>
+                <div className="text-2xl font-black text-gray-900 dark:text-white mt-1">
+                  ₹{Math.round(calc.totalNeeded).toLocaleString("en-IN")}
+                </div>
+              </div>
+              <div className="border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/30 p-4">
+                <div className="text-[10px] font-black uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  Cash available
+                </div>
+                <div className="text-2xl font-black text-gray-900 dark:text-white mt-1">
+                  ₹{Math.round(calc.cash).toLocaleString("en-IN")}
+                </div>
+              </div>
+              <div className="border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 p-4">
+                <div className="text-[10px] font-black uppercase tracking-widest text-red-600 dark:text-red-400">
+                  Funding gap
+                </div>
+                <div className="text-2xl font-black text-gray-900 dark:text-white mt-1">
+                  ₹{Math.round(calc.gap).toLocaleString("en-IN")}
+                </div>
+              </div>
+            </div>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-3">
+              Note: This is a quick estimate. It doesn’t include revenue growth, one-time costs, or taxes.
+            </p>
+          </div>
+        </div>
+          )}
+
+          {activeTab === "unicorns" && (
+        <div id="unicorn-companies" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 p-6">
+            <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+              <div>
+                <div className="flex items-center gap-2">
+                  <Sparkles size={18} className="text-amber-600 dark:text-amber-400" />
+                  <h2 className="text-lg font-black text-gray-900 dark:text-white">
+                    Unicorn Companies
+                  </h2>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Organisations marked as unicorns in the directory.
+                </p>
+              </div>
+              <span className="text-xs font-bold text-gray-500 dark:text-gray-400">
+                {unicornsAll.length} {unicornsAll.length === 1 ? "unicorn" : "unicorns"}
+              </span>
+            </div>
+
+            {unicornsAll.length === 0 ? (
+              <div className="text-center py-10 border border-gray-200 dark:border-gray-800">
+                <Sparkles className="mx-auto text-amber-300 dark:text-amber-700 mb-3" size={44} />
+                <p className="text-gray-500 dark:text-gray-400">
+                  No unicorns marked yet.
+                </p>
+                <p className="text-[12px] text-gray-400 dark:text-gray-500 mt-1">
+                  Admin can open a user profile in Admin → Users and enable “Unicorn Company”.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {unicornsAll.map((org) => (
+                  <div
+                    key={org._id}
+                    className="border border-amber-200 dark:border-amber-900/50 bg-amber-50/40 dark:bg-amber-900/10 p-5"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-lg font-black text-gray-900 dark:text-white leading-tight">
+                          {org.companyName || "Unnamed"}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                          {(org.industry || "")}
+                          {org.industry && org.city ? " · " : ""}
+                          {org.city || ""}
+                        </p>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase border bg-white/70 dark:bg-gray-950/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800">
+                        <Sparkles size={12} />
+                        Unicorn
+                      </span>
+                    </div>
+
+                    {org.description && (
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3 mt-3">
+                        {org.description}
+                      </p>
+                    )}
+
+                    <div className="flex flex-wrap items-center gap-2 pt-3 mt-3 border-t border-amber-200/60 dark:border-amber-900/40">
+                      {org.website && (
+                        <a
+                          href={org.website.startsWith("http") ? org.website : `https://${org.website}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-800 dark:text-amber-300 hover:underline"
+                        >
+                          <Globe size={12} />
+                          Website
+                        </a>
+                      )}
+                      {org.foundedYear && (
+                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                          Founded {org.foundedYear}
+                        </span>
+                      )}
+                      {org.teamSize && (
+                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                          Team: {org.teamSize}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+          )}
       </div>
       <Footer />
     </>
