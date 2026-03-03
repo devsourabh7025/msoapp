@@ -1,394 +1,393 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Save, Layout, Plus, X, Trash2 } from "lucide-react";
+import { Save, Plus, Trash2 } from "lucide-react";
+
+const defaultFooter = {
+  brandName: "MSO",
+  tagline: "Empowering Maharashtra's startup ecosystem with news, insights, and stories that matter.",
+  address: "Pune, Maharashtra, India",
+  email: "hello@mso.in",
+  phone: "",
+  socialLinks: {
+    facebook: "",
+    twitter: "",
+    youtube: "",
+    instagram: "",
+    linkedin: "",
+  },
+  brands: [
+    { label: "Equity Intel" },
+    { label: "The AI Index" },
+    { label: "Start-Up Narrative" },
+    { label: "Fearless & Fabulous" },
+    { label: "Social Impact" },
+    { label: "Corporate Intel" },
+    { label: "Beyond Work" },
+    { label: "MSO Studio" },
+  ],
+  topics: [
+    { label: "Practo" },
+    { label: "Microsoft" },
+    { label: "Ola" },
+    { label: "Swiggy" },
+    { label: "Zomato" },
+    { label: "Uber" },
+    { label: "Amazon" },
+    { label: "Cred" },
+  ],
+  resources: [],
+  company: [],
+  legal: [],
+  bottomLinks: [],
+  copyright: "© {year} Maharashtra Startup Organisation. All rights reserved.",
+  newsletter: {
+    title: "Stay Informed",
+    headline: "Get the daily briefing that matters",
+    subtitle: "Startup breakthroughs, corporate strategy, and market moves — delivered in a five-minute read.",
+    placeholder: "Enter your email address",
+    buttonText: "Subscribe",
+  },
+};
+
+function mergeWithDefaults(saved) {
+  if (!saved || typeof saved !== "object") return { ...defaultFooter };
+  return {
+    ...defaultFooter,
+    ...saved,
+    socialLinks: { ...defaultFooter.socialLinks, ...(saved.socialLinks || {}) },
+    brands: Array.isArray(saved.brands) ? saved.brands : defaultFooter.brands,
+    topics: Array.isArray(saved.topics) ? saved.topics : defaultFooter.topics,
+    resources: Array.isArray(saved.resources) ? saved.resources : [],
+    company: Array.isArray(saved.company) ? saved.company : [],
+    legal: Array.isArray(saved.legal) ? saved.legal : [],
+    bottomLinks: Array.isArray(saved.bottomLinks) ? saved.bottomLinks : [],
+    newsletter: { ...defaultFooter.newsletter, ...(saved.newsletter || {}) },
+  };
+}
 
 export default function FooterCustomise() {
   const [saving, setSaving] = useState(false);
-  const [footerContent, setFooterContent] = useState({
-    description: "Maharashtra Startup Organisation - Empowering entrepreneurs and startups across Maharashtra with resources, funding opportunities, mentorship, and a thriving ecosystem for innovation and growth.",
-    email: "contact@maharashtrastartup.org",
-    phone: "+91 123 456 7890",
-    address: "Mumbai, Maharashtra, India",
-    socialLinks: {
-      facebook: "https://facebook.com",
-      twitter: "https://twitter.com",
-      youtube: "https://youtube.com",
-      instagram: "https://instagram.com",
-      linkedin: "https://linkedin.com",
-    },
-    resources: [
-      { title: "Startup Stories", url: "/?category=startup-stories" },
-      { title: "Success Stories", url: "/?category=success-stories" },
-      { title: "Funding & Investment", url: "/?category=funding" },
-      { title: "Incubators", url: "/?category=incubators" },
-      { title: "Technology", url: "/?category=technology" },
-      { title: "Business Strategy", url: "/?category=business" },
-      { title: "Innovation", url: "/?category=innovation" },
-      { title: "Entrepreneurship", url: "/?category=entrepreneurship" },
-    ],
-    company: [
-      { title: "About Us", url: "/about" },
-      { title: "Contact", url: "/contact" },
-      { title: "Our Mission", url: "/" },
-      { title: "Team", url: "/" },
-      { title: "Careers", url: "/" },
-      { title: "Partners", url: "/" },
-      { title: "Events", url: "/" },
-      { title: "Blog", url: "/" },
-    ],
-    legal: [
-      { title: "Privacy Policy", url: "/privacy-policy" },
-      { title: "Terms of Service", url: "/privacy-policy" },
-      { title: "Support", url: "/contact" },
-      { title: "FAQs", url: "/" },
-      { title: "Cookie Policy", url: "/" },
-      { title: "GDPR", url: "/" },
-      { title: "Accessibility", url: "/" },
-    ],
-    copyright: "© {year} Maharashtra Startup Organisation. All rights reserved.",
-    tagline: "Empowering Maharashtra's startup ecosystem since 2024",
-    bottomLinks: [
-      { title: "Privacy", url: "/privacy-policy" },
-      { title: "Terms", url: "/privacy-policy" },
-      { title: "Support", url: "/contact" },
-      { title: "Sitemap", url: "/" },
-    ],
-  });
+  const [footerContent, setFooterContent] = useState(defaultFooter);
 
   useEffect(() => {
-    const loadFooterContent = async () => {
+    const load = async () => {
       try {
-        // Try to load from API first
-        const response = await fetch("/api/settings/footer");
-        if (response.ok) {
-          const data = await response.json();
-          if (data.footer) {
-            setFooterContent(data.footer);
-            return;
-          }
+        const res = await fetch("/api/settings/footer");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.footer) setFooterContent(mergeWithDefaults(data.footer));
         }
-      } catch (error) {
-        console.error("Error loading footer from API:", error);
+      } catch (e) {
+        console.error("Error loading footer:", e);
       }
-
-      // Use default values if API fails
-      // (default values are already set in initial state)
     };
-
-    loadFooterContent();
+    load();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
     try {
-      const response = await fetch("/api/settings/footer", {
+      const res = await fetch("/api/settings/footer", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ footer: footerContent }),
+        credentials: "include",
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || errorData.message || "Failed to save footer settings";
-        alert(`Error: ${errorMessage}`);
-        setSaving(false);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.error || data.message || "Failed to save");
         return;
       }
-
-      const result = await response.json();
-      alert(result.message || "Footer settings saved successfully!");
-    } catch (error) {
-      console.error("Error saving footer:", error);
-      alert(`Failed to save footer settings: ${error.message || "Network error. Please check your connection and try again."}`);
+      alert(data.message || "Footer saved successfully.");
+    } catch (err) {
+      alert(err.message || "Failed to save");
     } finally {
       setSaving(false);
     }
   };
 
-  const addLink = (section) => {
+  const addItem = (section, item = { label: "", url: "" }) => {
     setFooterContent((prev) => ({
       ...prev,
-      [section]: [...(prev[section] || []), { title: "", url: "" }],
+      [section]: [...(prev[section] || []), item],
     }));
   };
 
-  const updateLink = (section, index, field, value) => {
+  const updateItem = (section, index, field, value) => {
     setFooterContent((prev) => ({
       ...prev,
-      [section]: prev[section].map((link, i) =>
-        i === index ? { ...link, [field]: value } : link
+      [section]: (prev[section] || []).map((it, i) =>
+        i === index ? { ...it, [field]: value } : it
       ),
     }));
   };
 
-  const removeLink = (section, index) => {
+  const removeItem = (section, index) => {
     setFooterContent((prev) => ({
       ...prev,
-      [section]: prev[section].filter((_, i) => i !== index),
+      [section]: (prev[section] || []).filter((_, i) => i !== index),
     }));
   };
+
+  const updateNewsletter = (field, value) => {
+    setFooterContent((prev) => ({
+      ...prev,
+      newsletter: { ...(prev.newsletter || {}), [field]: value },
+    }));
+  };
+
+  const linkSections = [
+    { key: "resources", label: "Resources" },
+    { key: "company", label: "Discover" },
+    { key: "legal", label: "Legal & Support" },
+    { key: "bottomLinks", label: "Bottom Bar Links" },
+  ];
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Footer Customisation</h1>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Footer</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Customize all footer settings and links
+          All footer content is editable. No static text — everything is saved and shown from here.
         </p>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800">
-          <div className="p-5 space-y-6">
-            {/* Basic Information */}
-            <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
-              <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Basic Information
-                </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Organization details</p>
+        <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 divide-y divide-gray-200 dark:divide-gray-800">
+          {/* Brand & contact */}
+          <div className="p-5 space-y-4">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Brand & Contact</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Brand name</label>
+                <input
+                  type="text"
+                  value={footerContent.brandName ?? ""}
+                  onChange={(e) => setFooterContent((p) => ({ ...p, brandName: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder="MSO"
+                />
               </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
-                    Description
-                  </label>
-                  <textarea
-                    value={footerContent.description || ""}
-                    onChange={(e) => {
-                      setFooterContent((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }));
-                    }}
-                    rows={3}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    placeholder="Organization description..."
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-2">
-                    Contact Information
-                  </label>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        value={footerContent.email || ""}
-                        onChange={(e) => {
-                          setFooterContent((prev) => ({
-                            ...prev,
-                            email: e.target.value,
-                          }));
-                        }}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        placeholder="contact@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Phone
-                      </label>
-                      <input
-                        type="tel"
-                        value={footerContent.phone || ""}
-                        onChange={(e) => {
-                          setFooterContent((prev) => ({
-                            ...prev,
-                            phone: e.target.value,
-                          }));
-                        }}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        placeholder="+91 123 456 7890"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Address
-                      </label>
-                      <input
-                        type="text"
-                        value={footerContent.address || ""}
-                        onChange={(e) => {
-                          setFooterContent((prev) => ({
-                            ...prev,
-                            address: e.target.value,
-                          }));
-                        }}
-                        className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        placeholder="Mumbai, Maharashtra, India"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-gray-900 dark:text-white mb-3">
-                    Social Media Links
-                  </label>
-                  <div className="space-y-3">
-                    {["facebook", "twitter", "youtube", "instagram", "linkedin"].map((platform) => (
-                      <div key={platform} className="flex items-center gap-3">
-                        <label className="w-24 text-xs font-medium text-gray-700 dark:text-gray-300 capitalize">
-                          {platform}
-                        </label>
-                        <input
-                          type="url"
-                          value={footerContent.socialLinks?.[platform] || ""}
-                          onChange={(e) => {
-                            setFooterContent((prev) => ({
-                              ...prev,
-                              socialLinks: {
-                                ...prev.socialLinks,
-                                [platform]: e.target.value,
-                              },
-                            }));
-                          }}
-                          className="flex-1 px-3 py-2 text-xs border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                          placeholder={`https://${platform}.com`}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="md:col-span-2">
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Tagline</label>
+                <input
+                  type="text"
+                  value={footerContent.tagline ?? ""}
+                  onChange={(e) => setFooterContent((p) => ({ ...p, tagline: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder="Empowering Maharashtra's startup ecosystem..."
+                />
               </div>
-            </div>
-
-            {/* Footer Links Sections */}
-            {[
-              { key: "resources", label: "Resources Links" },
-              { key: "company", label: "Company Links" },
-              { key: "legal", label: "Legal & Support Links" },
-              { key: "bottomLinks", label: "Bottom Bar Links" },
-            ].map(({ key, label }) => (
-              <div key={key} className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
-                <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {label}
-                    </h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Manage {label.toLowerCase()}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => addLink(key)}
-                    className="px-3 py-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors flex items-center gap-1.5"
-                  >
-                    <Plus size={12} />
-                    Add Link
-                  </button>
-                </div>
-
-                <div className="space-y-2">
-                  {(footerContent[key] || []).map((link, index) => (
-                    <div key={index} className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800/50 rounded border border-gray-200 dark:border-gray-700">
-                      <input
-                        type="text"
-                        value={link.title || ""}
-                        onChange={(e) => updateLink(key, index, "title", e.target.value)}
-                        className="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
-                        placeholder="Link Title"
-                      />
-                      <input
-                        type="text"
-                        value={link.url || ""}
-                        onChange={(e) => updateLink(key, index, "url", e.target.value)}
-                        className="flex-1 px-2 py-1.5 text-xs border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
-                        placeholder="/path or https://example.com"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeLink(key, index)}
-                        className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  ))}
-                  {(!footerContent[key] || footerContent[key].length === 0) && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 text-center py-4">
-                      No links added. Click "Add Link" to get started.
-                    </p>
-                  )}
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Address / Location</label>
+                <input
+                  type="text"
+                  value={footerContent.address ?? ""}
+                  onChange={(e) => setFooterContent((p) => ({ ...p, address: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder="Pune, Maharashtra, India"
+                />
               </div>
-            ))}
-
-            {/* Copyright Section */}
-            <div className="bg-white dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
-              <div className="mb-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">
-                  Copyright & Tagline
-                </h4>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Footer bottom text</p>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={footerContent.email ?? ""}
+                  onChange={(e) => setFooterContent((p) => ({ ...p, email: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder="hello@mso.in"
+                />
               </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Copyright Text (use {"{year}"} for current year)
-                  </label>
-                  <input
-                    type="text"
-                    value={footerContent.copyright || ""}
-                    onChange={(e) => {
-                      setFooterContent((prev) => ({
-                        ...prev,
-                        copyright: e.target.value,
-                      }));
-                    }}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    placeholder="© {year} Organization Name. All rights reserved."
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Tagline
-                  </label>
-                  <input
-                    type="text"
-                    value={footerContent.tagline || ""}
-                    onChange={(e) => {
-                      setFooterContent((prev) => ({
-                        ...prev,
-                        tagline: e.target.value,
-                      }));
-                    }}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-600"
-                    placeholder="Empowering Maharashtra's startup ecosystem since 2024"
-                  />
-                </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Phone (optional)</label>
+                <input
+                  type="text"
+                  value={footerContent.phone ?? ""}
+                  onChange={(e) => setFooterContent((p) => ({ ...p, phone: e.target.value }))}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder="+91 ..."
+                />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 px-5 pb-5">
+          {/* Brands */}
+          <div className="p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Brands column</h4>
+              <button
+                type="button"
+                onClick={() => addItem("brands", { label: "" })}
+                className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+              >
+                <Plus size={12} /> Add
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Labels shown in the Brands column. Optional URL makes it a link.</p>
+            <div className="space-y-2">
+              {(footerContent.brands || []).map((item, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={item.label ?? ""}
+                    onChange={(e) => updateItem("brands", i, "label", e.target.value)}
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                    placeholder="Label"
+                  />
+                  <input
+                    type="text"
+                    value={item.url ?? ""}
+                    onChange={(e) => updateItem("brands", i, "url", e.target.value)}
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                    placeholder="URL (optional)"
+                  />
+                  <button type="button" onClick={() => removeItem("brands", i)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Topics */}
+          <div className="p-5 space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Topics column</h4>
+              <button
+                type="button"
+                onClick={() => addItem("topics", { label: "" })}
+                className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+              >
+                <Plus size={12} /> Add
+              </button>
+            </div>
+            <div className="space-y-2">
+              {(footerContent.topics || []).map((item, i) => (
+                <div key={i} className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    value={item.label ?? ""}
+                    onChange={(e) => updateItem("topics", i, "label", e.target.value)}
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                    placeholder="Label"
+                  />
+                  <input
+                    type="text"
+                    value={item.url ?? ""}
+                    onChange={(e) => updateItem("topics", i, "url", e.target.value)}
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                    placeholder="URL (optional)"
+                  />
+                  <button type="button" onClick={() => removeItem("topics", i)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Newsletter CTA */}
+          <div className="p-5 space-y-4">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Newsletter strip (red bar)</h4>
+            {["title", "headline", "subtitle", "placeholder", "buttonText"].map((field) => (
+              <div key={field}>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{field}</label>
+                <input
+                  type="text"
+                  value={footerContent.newsletter?.[field] ?? ""}
+                  onChange={(e) => updateNewsletter(field, e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+                  placeholder={field}
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* Link sections */}
+          {linkSections.map(({ key, label }) => (
+            <div key={key} className="p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{label}</h4>
+                <button
+                  type="button"
+                  onClick={() => addItem(key)}
+                  className="text-xs font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+                >
+                  <Plus size={12} /> Add link
+                </button>
+              </div>
+              <div className="space-y-2">
+                {(footerContent[key] || []).map((link, i) => (
+                  <div key={i} className="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      value={link.title ?? ""}
+                      onChange={(e) => updateItem(key, i, "title", e.target.value)}
+                      className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                      placeholder="Title"
+                    />
+                    <input
+                      type="text"
+                      value={link.url ?? ""}
+                      onChange={(e) => updateItem(key, i, "url", e.target.value)}
+                      className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                      placeholder="URL"
+                    />
+                    <button type="button" onClick={() => removeItem(key, i)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+
+          {/* Copyright */}
+          <div className="p-5">
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Copyright (use {"{year}"} for current year)</label>
+            <input
+              type="text"
+              value={footerContent.copyright ?? ""}
+              onChange={(e) => setFooterContent((p) => ({ ...p, copyright: e.target.value }))}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded"
+              placeholder="© {year} Company. All rights reserved."
+            />
+          </div>
+
+          {/* Social (optional) */}
+          <div className="p-5 space-y-3">
+            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">Social links (optional)</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {["facebook", "twitter", "youtube", "instagram", "linkedin"].map((platform) => (
+                <div key={platform} className="flex items-center gap-2">
+                  <label className="w-20 text-xs text-gray-600 dark:text-gray-400 capitalize">{platform}</label>
+                  <input
+                    type="url"
+                    value={footerContent.socialLinks?.[platform] ?? ""}
+                    onChange={(e) =>
+                      setFooterContent((p) => ({
+                        ...p,
+                        socialLinks: { ...(p.socialLinks || {}), [platform]: e.target.value },
+                      }))
+                    }
+                    className="flex-1 px-2 py-1.5 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 rounded"
+                    placeholder={`https://${platform}.com/...`}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-5 flex justify-end border-t border-gray-200 dark:border-gray-800">
             <button
               type="submit"
               disabled={saving}
-              className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-xs rounded transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded disabled:opacity-50"
             >
-              {saving ? (
-                <>
-                  <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
-                  <span>Saving...</span>
-                </>
-              ) : (
-                <>
-                  <Save size={14} />
-                  <span>Save Changes</span>
-                </>
-              )}
+              <Save size={16} />
+              {saving ? "Saving..." : "Save footer"}
             </button>
           </div>
         </div>

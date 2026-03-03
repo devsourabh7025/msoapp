@@ -25,27 +25,8 @@ export async function GET() {
     const footerSettings = await Promise.race([dbOperation(), timeoutPromise]);
     
     if (!footerSettings || !footerSettings.value) {
-      // Return default footer settings
       return NextResponse.json({
-        footer: {
-          description: "Maharashtra Startup Organisation - Empowering entrepreneurs and startups across Maharashtra with resources, funding opportunities, mentorship, and a thriving ecosystem for innovation and growth.",
-          email: "contact@maharashtrastartup.org",
-          phone: "+91 123 456 7890",
-          address: "Mumbai, Maharashtra, India",
-          socialLinks: {
-            facebook: "https://facebook.com",
-            twitter: "https://twitter.com",
-            youtube: "https://youtube.com",
-            instagram: "https://instagram.com",
-            linkedin: "https://linkedin.com",
-          },
-          resources: [],
-          company: [],
-          legal: [],
-          bottomLinks: [],
-          copyright: "© {year} Maharashtra Startup Organisation. All rights reserved.",
-          tagline: "Empowering Maharashtra's startup ecosystem since 2024",
-        },
+        footer: getDefaultFooter(),
       }, {
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -66,31 +47,60 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching footer settings:", error);
-    
-    // Return default footer on error instead of failing
     return NextResponse.json({
-      footer: {
-        description: "Maharashtra Startup Organisation - Empowering entrepreneurs and startups across Maharashtra with resources, funding opportunities, mentorship, and a thriving ecosystem for innovation and growth.",
-        email: "contact@maharashtrastartup.org",
-        phone: "+91 123 456 7890",
-        address: "Mumbai, Maharashtra, India",
-        socialLinks: {
-          facebook: "https://facebook.com",
-          twitter: "https://twitter.com",
-          youtube: "https://youtube.com",
-          instagram: "https://instagram.com",
-          linkedin: "https://linkedin.com",
-        },
-        resources: [],
-        company: [],
-        legal: [],
-        bottomLinks: [],
-        copyright: "© {year} Maharashtra Startup Organisation. All rights reserved.",
-        tagline: "Empowering Maharashtra's startup ecosystem since 2024",
-      },
+      footer: getDefaultFooter(),
       error: error.message || "Failed to fetch footer settings",
-    }, { status: 200 }); // Return 200 with default data so UI doesn't break
+    }, { status: 200 });
   }
+}
+
+function getDefaultFooter() {
+  return {
+    brandName: "MSO",
+    tagline: "Empowering Maharashtra's startup ecosystem with news, insights, and stories that matter.",
+    address: "Pune, Maharashtra, India",
+    email: "hello@mso.in",
+    phone: "",
+    socialLinks: {
+      facebook: "",
+      twitter: "",
+      youtube: "",
+      instagram: "",
+      linkedin: "",
+    },
+    brands: [
+      { label: "Equity Intel" },
+      { label: "The AI Index" },
+      { label: "Start-Up Narrative" },
+      { label: "Fearless & Fabulous" },
+      { label: "Social Impact" },
+      { label: "Corporate Intel" },
+      { label: "Beyond Work" },
+      { label: "MSO Studio" },
+    ],
+    topics: [
+      { label: "Practo" },
+      { label: "Microsoft" },
+      { label: "Ola" },
+      { label: "Swiggy" },
+      { label: "Zomato" },
+      { label: "Uber" },
+      { label: "Amazon" },
+      { label: "Cred" },
+    ],
+    resources: [],
+    company: [],
+    legal: [],
+    bottomLinks: [],
+    copyright: "© {year} Maharashtra Startup Organisation. All rights reserved.",
+    newsletter: {
+      title: "Stay Informed",
+      headline: "Get the daily briefing that matters",
+      subtitle: "Startup breakthroughs, corporate strategy, and market moves — delivered in a five-minute read.",
+      placeholder: "Enter your email address",
+      buttonText: "Subscribe",
+    },
+  };
 }
 
 // PUT - Update footer settings (admin only)

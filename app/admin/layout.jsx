@@ -60,7 +60,7 @@ function AdminLayoutContent({ children }) {
     { id: "ads", name: "Ads Setup", href: "/admin/ads", icon: Megaphone },
     { id: "pages", name: "Pages", href: "/admin/pages", icon: FileStack },
     { id: "analytics", name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { id: "customise", name: "Customise", href: "/admin/customise", icon: Settings },
+    { id: "customise", name: "Customise", href: "/admin/customise/mso-narrative", icon: Settings },
   ];
 
   const canShowMenuItem = (item) => {
@@ -76,6 +76,7 @@ function AdminLayoutContent({ children }) {
   const isActive = (href) => {
     if (href === "/admin") return pathname === "/admin";
     if (href === "/admin/add-post") return pathname === "/admin/add-post";
+    if (href === "/admin/customise/mso-narrative") return pathname.startsWith("/admin/customise");
     return pathname === href || pathname.startsWith(href + "/");
   };
 

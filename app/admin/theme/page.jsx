@@ -7,7 +7,7 @@ export default function ThemeRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace("/admin/customise");
+    router.replace("/admin/customise/mso-narrative");
   }, [router]);
 
   return (

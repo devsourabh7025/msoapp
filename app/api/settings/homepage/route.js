@@ -193,8 +193,19 @@ export async function GET() {
       },
     });
     
+    // Migrate spotlight to mso-narrative in section order
+    let order = orderSettings?.value || null;
+    if (Array.isArray(order)) {
+      order = order.map((s) => {
+        if (s.id === "spotlight" || s.component === "SpotLight") {
+          return { ...s, id: "mso-narrative", name: "The MSO Narrative", component: "MSONarrative" };
+        }
+        return s;
+      });
+    }
+
     return NextResponse.json({
-      order: orderSettings?.value || null,
+      order,
       settings: settingsData?.value || null,
       content: optimizedContent,
       hero: optimizedHero,

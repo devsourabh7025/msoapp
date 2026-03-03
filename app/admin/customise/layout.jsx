@@ -6,20 +6,27 @@ import { usePathname } from "next/navigation";
 import {
   Layout,
   Sparkles,
-  Star,
-  TrendingUp,
-  ArrowUpDown,
+  MapPin,
   FileText,
   Type,
+  Video,
+  Award,
+  Users,
+  BookOpen,
+  Newspaper,
 } from "lucide-react";
 
 // section id -> permission key for manager
 const SECTION_PERMISSION = {
   hero: "customiseHero",
+  "mso-narrative": "customiseMSONarrative",
+  "regional-specials": "customiseRegionalSpecials",
+  "mso-studio": "customiseMSOStudio",
+  "mso-awards": "customiseMSOAwards",
+  "events-community": "customiseEventsCommunity",
+  "knowledge-lab": "customiseKnowledgeLab",
+  "news-intel": "customiseNewsIntel",
   spotlight: "customiseSpotlight",
-  featured: "customiseFeatured",
-  trending: "customiseTrending",
-  "homepage-order": "customiseHomepageOrder",
   header: "customiseHeader",
   footer: "customiseFooter",
   post: "customisePost",
@@ -28,14 +35,16 @@ const SECTION_PERMISSION = {
 };
 
 const homepageSections = [
-  { id: "hero", name: "Hero", icon: Layout },
-  { id: "spotlight", name: "Spotlight", icon: Sparkles },
-  { id: "featured", name: "Featured", icon: Star },
-  { id: "trending", name: "Trending", icon: TrendingUp },
+  { id: "mso-narrative", name: "The MSO Narrative", icon: Sparkles },
+  { id: "regional-specials", name: "Regional Specials", icon: MapPin },
+  { id: "mso-studio", name: "MSO Studio", icon: Video },
+  { id: "mso-awards", name: "MSO Awards", icon: Award },
+  { id: "events-community", name: "Events & Community", icon: Users },
+  { id: "knowledge-lab", name: "The Knowledge Lab", icon: BookOpen },
+  { id: "news-intel", name: "News & Intel", icon: Newspaper },
 ];
 
 const otherSections = [
-  { id: "homepage-order", name: "Homepage Order", icon: ArrowUpDown },
   { id: "header", name: "Header", icon: Layout },
   { id: "footer", name: "Footer", icon: Layout },
   { id: "post", name: "Post", icon: FileText },

@@ -40,6 +40,12 @@ const PostSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Indexes for common query patterns (prevents full collection scan + in-memory sort)
+PostSchema.index({ createdAt: -1 });
+PostSchema.index({ status: 1 });
+PostSchema.index({ status: 1, publishedAt: -1 });
+PostSchema.index({ author: 1 });
+
 // Generate slug from title before saving
 PostSchema.pre("save", async function () {
   try {

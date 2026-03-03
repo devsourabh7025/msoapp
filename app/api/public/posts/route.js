@@ -8,15 +8,21 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const limit = parseInt(searchParams.get("limit")) || 10;
     const category = searchParams.get("category");
+    const search = (searchParams.get("search") || "").trim();
     const sort = searchParams.get("sort") || "publishedAt";
-    
+
     // Build query
     const query = { status: "published" };
     if (category) {
-      // Case-insensitive category matching using regex
-      query.category = { $regex: new RegExp(`^${category}$`, "i") };
+      query.category = { $regex: new RegExp(`^${category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") };
     }
-    
+    if (search.length >= 3) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { excerpt: { $regex: search, $options: "i" } },
+      ];
+    }
+
     // Build sort object
     let sortObj = { publishedAt: -1, createdAt: -1 };
     if (sort === "publishedAt") {
@@ -33,24 +39,28 @@ export async function GET(request) {
     const dbOperation = async () => {
       await ensureConnected();
       
-      // Get published posts with timeout
       const posts = await Post.find(query)
         .populate("author", "name email")
         .sort(sortObj)
-        .limit(limit)
-        .select("title slug excerpt category featuredImage publishedAt author createdAt")
-        .maxTimeMS(5000);
+        .limit(Math.min(limit, 1000))
+        .select("_id title slug excerpt category featuredImage publishedAt author createdAt")
+        .maxTimeMS(15000)
+        .lean();
       
       return posts;
     };
 
     const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => reject(new Error("Database operation timeout")), 10000);
+      setTimeout(() => reject(new Error("Database operation timeout")), 30000);
     });
 
     const posts = await Promise.race([dbOperation(), timeoutPromise]);
 
-    return NextResponse.json({ posts: posts || [] });
+    const headers = { "Content-Type": "application/json" };
+    if (search.length >= 3 || category) {
+      headers["Cache-Control"] = "public, s-maxage=300, stale-while-revalidate=600";
+    }
+    return NextResponse.json({ posts: posts || [] }, { headers });
   } catch (error) {
     console.error("Error fetching public posts:", error);
     

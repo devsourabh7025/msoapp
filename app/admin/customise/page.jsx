@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Layout,
   Sparkles,
@@ -32,6 +32,24 @@ const sectionIcons = {
 
 export default function Customise() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Redirect /admin/customise to first section (mso-narrative) - skip hero
+  useEffect(() => {
+    if (pathname === "/admin/customise") {
+      router.replace("/admin/customise/mso-narrative");
+    }
+  }, [pathname, router]);
+
+  // Show loading while redirecting from index
+  if (pathname === "/admin/customise") {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <div className="w-8 h-8 border-2 border-gray-300 border-t-black animate-spin rounded-full" />
+      </div>
+    );
+  }
 
   // Default section order (header and footer are always fixed, not in order)
   // Recent section is not included here as it's always shown and not customizable
@@ -146,16 +164,20 @@ export default function Customise() {
     },
   });
 
-  // Posts list for selection
+  // Posts list for selection (paginated from API)
   const [allPosts, setAllPosts] = useState([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [postsPage, setPostsPage] = useState(1);
+  const [postsTotalPages, setPostsTotalPages] = useState(0);
+  const [postsHasMore, setPostsHasMore] = useState(false);
 
   const [editingItem, setEditingItem] = useState(null);
   const [editingSection, setEditingSection] = useState(null);
 
-  // Search state
+  // Search state (debounced for API)
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchDebounced, setSearchDebounced] = useState("");
 
   // Show post selection UI
   const [showPostSelector, setShowPostSelector] = useState({
@@ -167,17 +189,32 @@ export default function Customise() {
     trending: false,
   });
 
-  // Fetch all posts for selection
-  const fetchAllPosts = async () => {
+  // Debounce search for post selector
+  useEffect(() => {
+    const t = setTimeout(() => setSearchDebounced(searchQuery), 300);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
+  // Fetch posts for selection (paginated, 50 per page)
+  const fetchPostsForSelector = async (search, page = 1, append = false) => {
     try {
-      setLoadingPosts(true);
-      const response = await fetch("/api/superadmin/posts", { credentials: "include" });
-      if (response.ok) {
-        const data = await response.json();
-        setAllPosts(data.posts || []);
-      } else {
-        const err = await response.json().catch(() => ({}));
-        console.error("Failed to fetch posts:", err?.error || response.status);
+      if (!append) setLoadingPosts(true);
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: "50",
+        status: "all",
+        sort: "newest",
+      });
+      if (search.trim()) params.set("search", search.trim());
+      const response = await fetch(`/api/superadmin/posts?${params}`, { credentials: "include" });
+      const data = await response.json().catch(() => ({}));
+      const posts = data.posts || [];
+      setAllPosts((prev) => (append ? [...prev, ...posts] : posts));
+      setPostsPage(page);
+      setPostsTotalPages(data.totalPages ?? 0);
+      setPostsHasMore((data.totalPages ?? 0) > page);
+      if (!response.ok && (!data.posts || data.posts.length === 0)) {
+        console.error("Failed to fetch posts:", data?.error || response.status);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -185,6 +222,14 @@ export default function Customise() {
       setLoadingPosts(false);
     }
   };
+
+  // Fetch when selector opens or search changes
+  const anySelectorOpen = Object.values(showPostSelector).some(Boolean);
+  useEffect(() => {
+    if (anySelectorOpen) {
+      fetchPostsForSelector(searchDebounced, 1, false);
+    }
+  }, [anySelectorOpen, searchDebounced]);
 
   // Load saved order and settings on mount (from database only - no localStorage)
   useEffect(() => {
@@ -319,7 +364,6 @@ export default function Customise() {
     };
 
     loadHomepageSettings();
-    fetchAllPosts();
   }, []);
 
   // Debug: Log hero content changes
@@ -731,104 +775,55 @@ export default function Customise() {
                         </div>
 
                         <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                          {searchQuery ? (
+                          {loadingPosts ? (
+                            <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                          ) : allPosts.length === 0 ? (
+                            <div className="p-8 text-center">
+                              <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {searchQuery ? "No posts found" : "Start typing to search"}
+                              </p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                {searchQuery ? "Try a different search term" : "Search posts by title to find the perfect featured article"}
+                              </p>
+                            </div>
+                          ) : (
                             <>
-                              {allPosts
-                                .filter((post) => {
-                                  const matchesSearch = post.title
-                                    .toLowerCase()
-                                    .includes(searchQuery.toLowerCase());
-                                  return matchesSearch;
-                                })
-                                .slice(0, 10)
-                                .map((post) => {
-                                  const postDate =
-                                    post.publishedAt || post.createdAt;
-                                  const formattedDate = postDate
-                                    ? new Date(postDate).toLocaleDateString(
-                                        "en-US",
-                                        {
-                                          year: "numeric",
-                                          month: "short",
-                                          day: "numeric",
-                                        },
-                                      )
-                                    : "No date";
-                                  return (
-                                    <div
-                                      key={post._id}
-                                      onClick={() => {
-                                        setSectionContent((prev) => ({
-                                          ...prev,
-                                          hero: {
-                                            ...prev.hero,
-                                            mainArticle: post,
-                                          },
-                                        }));
-                                        setShowPostSelector((prev) => ({
-                                          ...prev,
-                                          heroMain: false,
-                                        }));
-                                      }}
-                                      className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                                    >
-                                      <div className="flex items-start gap-3">
-                                        <div className="w-1 h-12 bg-black shrink-0"></div>
-                                        <div className="flex-1 min-w-0">
-                                          <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
-                                            {post.title}
-                                          </div>
-                                          <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                            <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
-                                              {post.category || "Uncategorized"}
-                                            </span>
-                                            <span>•</span>
-                                            <span>
-                                              {post.author?.name || "Unknown"}
-                                            </span>
-                                            <span>•</span>
-                                            <span>{formattedDate}</span>
-                                          </div>
+                              {allPosts.map((post) => {
+                                const postDate = post.publishedAt || post.createdAt;
+                                const formattedDate = postDate ? new Date(postDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "No date";
+                                return (
+                                  <div
+                                    key={post._id}
+                                    onClick={() => {
+                                      setSectionContent((prev) => ({ ...prev, hero: { ...prev.hero, mainArticle: post } }));
+                                      setShowPostSelector((prev) => ({ ...prev, heroMain: false }));
+                                    }}
+                                    className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      <div className="w-1 h-12 bg-black shrink-0"></div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">{post.title}</div>
+                                        <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
+                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">{post.category || "Uncategorized"}</span>
+                                          <span>•</span>
+                                          <span>{post.author?.name || "Unknown"}</span>
+                                          <span>•</span>
+                                          <span>{formattedDate}</span>
                                         </div>
                                       </div>
                                     </div>
-                                  );
-                                })}
-                              {allPosts.filter((post) => {
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              }).length === 0 && (
-                                <div className="p-8 text-center">
-                                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    No posts found
-                                  </p>
-                                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                    Try a different search term
-                                  </p>
-                                </div>
-                              )}
-                              {allPosts.filter((post) => {
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              }).length > 10 && (
-                                <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                  Showing top 10 results. Refine your search for
-                                  more specific results.
+                                  </div>
+                                );
+                              })}
+                              {postsHasMore && (
+                                <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                  <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                    Load more
+                                  </button>
                                 </div>
                               )}
                             </>
-                          ) : (
-                            <div className="p-8 text-center">
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                Start typing to search
-                              </p>
-                              <p className="text-xs text-gray-400 dark:text-gray-500">
-                                Search posts by title to find the perfect
-                                featured article
-                              </p>
-                            </div>
                           )}
                         </div>
                       </div>
@@ -984,20 +979,17 @@ export default function Customise() {
                         </div>
 
                         <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                          {searchQuery ? (
+                          {loadingPosts ? (
+                            <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                          ) : allPosts.filter((p) => !sectionContent.hero?.topPicks?.some((s) => s._id === p._id)).length === 0 ? (
+                            <div className="p-8 text-center">
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{searchQuery ? "No posts found" : "Start typing to search"}</p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{searchQuery ? "Try a different search term" : "Search posts by title to add to top picks"}</p>
+                            </div>
+                          ) : (
                             <>
                               {allPosts
-                                .filter((post) => {
-                                  const isAlreadySelected =
-                                    sectionContent.hero?.topPicks?.some(
-                                      (p) => p._id === post._id,
-                                    );
-                                  if (isAlreadySelected) return false;
-                                  return post.title
-                                    .toLowerCase()
-                                    .includes(searchQuery.toLowerCase());
-                                })
-                                .slice(0, 10)
+                                .filter((post) => !sectionContent.hero?.topPicks?.some((p) => p._id === post._id))
                                 .map((post) => {
                                   const postDate =
                                     post.publishedAt || post.createdAt;
@@ -1057,50 +1049,14 @@ export default function Customise() {
                                     </div>
                                   );
                                 })}
-                              {allPosts.filter((post) => {
-                                const isAlreadySelected =
-                                  sectionContent.hero?.topPicks?.some(
-                                    (p) => p._id === post._id,
-                                  );
-                                if (isAlreadySelected) return false;
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              }).length === 0 && (
-                                <div className="p-8 text-center">
-                                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    No posts found
-                                  </p>
-                                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                    Try a different search term
-                                  </p>
-                                </div>
-                              )}
-                              {allPosts.filter((post) => {
-                                const isAlreadySelected =
-                                  sectionContent.hero?.topPicks?.some(
-                                    (p) => p._id === post._id,
-                                  );
-                                if (isAlreadySelected) return false;
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              }).length > 10 && (
-                                <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                  Showing top 10 results. Refine your search for
-                                  more specific results.
+                              {postsHasMore && (
+                                <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                  <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                    Load more
+                                  </button>
                                 </div>
                               )}
                             </>
-                          ) : (
-                            <div className="p-8 text-center">
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                Start typing to search
-                              </p>
-                              <p className="text-xs text-gray-400 dark:text-gray-500">
-                                Search posts by title to add to top picks
-                              </p>
-                            </div>
                           )}
                         </div>
                       </div>
@@ -1253,26 +1209,19 @@ export default function Customise() {
                       </div>
 
                       <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                        {searchQuery ? (
+                        {loadingPosts ? (
+                          <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                        ) : (sectionContent.hero?.discussionTable || []).length >= 4 ? (
+                          <div className="p-8 text-center text-sm text-gray-500">Maximum 4 posts allowed</div>
+                        ) : allPosts.filter((p) => !sectionContent.hero?.discussionTable?.some((s) => s._id === p._id)).length === 0 ? (
+                          <div className="p-8 text-center">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{searchQuery ? "No posts found" : "Start typing to search"}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{searchQuery ? "Try a different search term" : "Search posts by title to add to Discussion Table (max 4 posts)"}</p>
+                          </div>
+                        ) : (
                           <>
                             {allPosts
-                              .filter((post) => {
-                                const isAlreadySelected =
-                                  sectionContent.hero?.discussionTable?.some(
-                                    (p) => p._id === post._id,
-                                  );
-                                if (isAlreadySelected) return false;
-                                // Limit to 4 posts
-                                if (
-                                  (sectionContent.hero?.discussionTable || [])
-                                    .length >= 4
-                                )
-                                  return false;
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              })
-                              .slice(0, 10)
+                              .filter((post) => !sectionContent.hero?.discussionTable?.some((p) => p._id === post._id) && (sectionContent.hero?.discussionTable || []).length < 4)
                               .map((post) => {
                                 const postDate =
                                   post.publishedAt || post.createdAt;
@@ -1332,61 +1281,14 @@ export default function Customise() {
                                   </div>
                                 );
                               })}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.hero?.discussionTable?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              if (
-                                (sectionContent.hero?.discussionTable || [])
-                                  .length >= 4
-                              )
-                                return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length === 0 && (
-                              <div className="p-8 text-center">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  No posts found
-                                </p>
-                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                  Try a different search term
-                                </p>
-                              </div>
-                            )}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.hero?.discussionTable?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              if (
-                                (sectionContent.hero?.discussionTable || [])
-                                  .length >= 4
-                              )
-                                return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length > 10 && (
-                              <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                Showing top 10 results. Refine your search for
-                                more specific results.
+                            {postsHasMore && (
+                              <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                  Load more
+                                </button>
                               </div>
                             )}
                           </>
-                        ) : (
-                          <div className="p-8 text-center">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                              Start typing to search
-                            </p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">
-                              Search posts by title to add to Discussion Table
-                              (max 4 posts)
-                            </p>
-                          </div>
                         )}
                       </div>
                     </div>
@@ -1542,61 +1444,34 @@ export default function Customise() {
                       </div>
 
                       <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                        {searchQuery ? (
+                        {loadingPosts ? (
+                          <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                        ) : allPosts.filter((p) => !sectionContent.spotlight?.some((s) => s._id === p._id)).length === 0 ? (
+                          <div className="p-8 text-center">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{searchQuery ? "No posts found" : "Start typing to search"}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{searchQuery ? "Try a different search term" : "Search posts by title to add to spotlight"}</p>
+                          </div>
+                        ) : (
                           <>
                             {allPosts
-                              .filter((post) => {
-                                const isAlreadySelected =
-                                  sectionContent.spotlight?.some(
-                                    (p) => p._id === post._id,
-                                  );
-                                if (isAlreadySelected) return false;
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              })
-                              .slice(0, 10)
+                              .filter((post) => !sectionContent.spotlight?.some((p) => p._id === post._id))
                               .map((post) => {
-                                const postDate =
-                                  post.publishedAt || post.createdAt;
-                                const formattedDate = postDate
-                                  ? new Date(postDate).toLocaleDateString(
-                                      "en-US",
-                                      {
-                                        year: "numeric",
-                                        month: "short",
-                                        day: "numeric",
-                                      },
-                                    )
-                                  : "No date";
+                                const postDate = post.publishedAt || post.createdAt;
+                                const formattedDate = postDate ? new Date(postDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "No date";
                                 return (
                                   <div
                                     key={post._id}
-                                    onClick={() => {
-                                      setSectionContent((prev) => ({
-                                        ...prev,
-                                        spotlight: [
-                                          ...(prev.spotlight || []),
-                                          post,
-                                        ],
-                                      }));
-                                    }}
+                                    onClick={() => setSectionContent((prev) => ({ ...prev, spotlight: [...(prev.spotlight || []), post] }))}
                                     className="p-3 border-b border-gray-200 dark:border-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                                   >
                                     <div className="flex items-start gap-3">
                                       <div className="w-1 h-12 bg-black shrink-0"></div>
                                       <div className="flex-1 min-w-0">
-                                        <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">
-                                          {post.title}
-                                        </div>
+                                        <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-2 mb-1.5">{post.title}</div>
                                         <div className="flex items-center gap-2 flex-wrap text-xs text-gray-600 dark:text-gray-400">
-                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 ">
-                                            {post.category || "Uncategorized"}
-                                          </span>
+                                          <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">{post.category || "Uncategorized"}</span>
                                           <span>•</span>
-                                          <span>
-                                            {post.author?.name || "Unknown"}
-                                          </span>
+                                          <span>{post.author?.name || "Unknown"}</span>
                                           <span>•</span>
                                           <span>{formattedDate}</span>
                                         </div>
@@ -1605,50 +1480,14 @@ export default function Customise() {
                                   </div>
                                 );
                               })}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.spotlight?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length === 0 && (
-                              <div className="p-8 text-center">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  No posts found
-                                </p>
-                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                  Try a different search term
-                                </p>
-                              </div>
-                            )}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.spotlight?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length > 10 && (
-                              <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                Showing top 10 results. Refine your search for
-                                more specific results.
+                            {postsHasMore && (
+                              <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                  Load more
+                                </button>
                               </div>
                             )}
                           </>
-                        ) : (
-                          <div className="p-8 text-center">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                              Start typing to search
-                            </p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">
-                              Search posts by title to add to spotlight
-                            </p>
-                          </div>
                         )}
                       </div>
                     </div>
@@ -1835,30 +1674,23 @@ export default function Customise() {
                             </div>
 
                             <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                              {searchQuery ? (
-                                <>
-                                  {allPosts
-                                    .filter((post) => {
-                                      // Check if post is already selected in any featured subsection
-                                      const allFeaturedPosts = [
-                                        ...(sectionContent.featured
-                                          ?.smbStories || []),
-                                        ...(sectionContent.featured
-                                          ?.herStories || []),
-                                        ...(sectionContent.featured
-                                          ?.socialStories || []),
-                                      ];
-                                      const isAlreadySelected =
-                                        allFeaturedPosts.some(
-                                          (p) => p._id === post._id,
-                                        );
-                                      if (isAlreadySelected) return false;
-                                      return post.title
-                                        .toLowerCase()
-                                        .includes(searchQuery.toLowerCase());
-                                    })
-                                    .slice(0, 10)
-                                    .map((post) => {
+                              {loadingPosts ? (
+                                <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                              ) : (() => {
+                                const allFeaturedPosts = [
+                                  ...(sectionContent.featured?.smbStories || []),
+                                  ...(sectionContent.featured?.herStories || []),
+                                  ...(sectionContent.featured?.socialStories || []),
+                                ];
+                                const available = allPosts.filter((p) => !allFeaturedPosts.some((s) => s._id === p._id));
+                                return available.length === 0 ? (
+                                  <div className="p-8 text-center">
+                                    <p className="text-sm text-gray-500 dark:text-gray-400">{searchQuery ? "No posts found" : "Start typing to search"}</p>
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{searchQuery ? "Try a different search term" : `Search posts by title to add to ${subsectionName.toLowerCase()}`}</p>
+                                  </div>
+                                ) : (
+                                  <>
+                                    {available.map((post) => {
                                       const postDate =
                                         post.publishedAt || post.createdAt;
                                       const formattedDate = postDate
@@ -1918,68 +1750,16 @@ export default function Customise() {
                                         </div>
                                       );
                                     })}
-                                  {allPosts.filter((post) => {
-                                    const allFeaturedPosts = [
-                                      ...(sectionContent.featured?.smbStories ||
-                                        []),
-                                      ...(sectionContent.featured?.herStories ||
-                                        []),
-                                      ...(sectionContent.featured
-                                        ?.socialStories || []),
-                                    ];
-                                    const isAlreadySelected =
-                                      allFeaturedPosts.some(
-                                        (p) => p._id === post._id,
-                                      );
-                                    if (isAlreadySelected) return false;
-                                    return post.title
-                                      .toLowerCase()
-                                      .includes(searchQuery.toLowerCase());
-                                  }).length === 0 && (
-                                    <div className="p-8 text-center">
-                                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        No posts found
-                                      </p>
-                                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                        Try a different search term
-                                      </p>
-                                    </div>
-                                  )}
-                                  {allPosts.filter((post) => {
-                                    const allFeaturedPosts = [
-                                      ...(sectionContent.featured?.smbStories ||
-                                        []),
-                                      ...(sectionContent.featured?.herStories ||
-                                        []),
-                                      ...(sectionContent.featured
-                                        ?.socialStories || []),
-                                    ];
-                                    const isAlreadySelected =
-                                      allFeaturedPosts.some(
-                                        (p) => p._id === post._id,
-                                      );
-                                    if (isAlreadySelected) return false;
-                                    return post.title
-                                      .toLowerCase()
-                                      .includes(searchQuery.toLowerCase());
-                                  }).length > 10 && (
-                                    <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                      Showing top 10 results. Refine your search
-                                      for more specific results.
-                                    </div>
-                                  )}
-                                </>
-                              ) : (
-                                <div className="p-8 text-center">
-                                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                                    Start typing to search
-                                  </p>
-                                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                                    Search posts by title to add to{" "}
-                                    {subsectionName.toLowerCase()}
-                                  </p>
-                                </div>
-                              )}
+                                    {postsHasMore && (
+                                      <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                        <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                          Load more
+                                        </button>
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              })()}
                             </div>
                           </div>
                         )}
@@ -2157,20 +1937,17 @@ export default function Customise() {
                       </div>
 
                       <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-800  bg-white dark:bg-gray-900">
-                        {searchQuery ? (
+                        {loadingPosts ? (
+                          <div className="p-8 text-center text-sm text-gray-500">Loading posts...</div>
+                        ) : allPosts.filter((p) => !sectionContent.trending?.some((s) => s._id === p._id)).length === 0 ? (
+                          <div className="p-8 text-center">
+                            <p className="text-sm text-gray-500 dark:text-gray-400">{searchQuery ? "No posts found" : "Start typing to search"}</p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{searchQuery ? "Try a different search term" : "Search posts by title to add to trending"}</p>
+                          </div>
+                        ) : (
                           <>
                             {allPosts
-                              .filter((post) => {
-                                const isAlreadySelected =
-                                  sectionContent.trending?.some(
-                                    (p) => p._id === post._id,
-                                  );
-                                if (isAlreadySelected) return false;
-                                return post.title
-                                  .toLowerCase()
-                                  .includes(searchQuery.toLowerCase());
-                              })
-                              .slice(0, 10)
+                              .filter((post) => !sectionContent.trending?.some((p) => p._id === post._id))
                               .map((post) => {
                                 const postDate =
                                   post.publishedAt || post.createdAt;
@@ -2220,50 +1997,14 @@ export default function Customise() {
                                   </div>
                                 );
                               })}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.trending?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length === 0 && (
-                              <div className="p-8 text-center">
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
-                                  No posts found
-                                </p>
-                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                  Try a different search term
-                                </p>
-                              </div>
-                            )}
-                            {allPosts.filter((post) => {
-                              const isAlreadySelected =
-                                sectionContent.trending?.some(
-                                  (p) => p._id === post._id,
-                                );
-                              if (isAlreadySelected) return false;
-                              return post.title
-                                .toLowerCase()
-                                .includes(searchQuery.toLowerCase());
-                            }).length > 10 && (
-                              <div className="p-3 text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
-                                Showing top 10 results. Refine your search for
-                                more specific results.
+                            {postsHasMore && (
+                              <div className="p-3 text-center border-t border-gray-200 dark:border-gray-800">
+                                <button type="button" onClick={() => fetchPostsForSelector(searchDebounced, postsPage + 1, true)} className="text-xs font-medium text-black hover:underline">
+                                  Load more
+                                </button>
                               </div>
                             )}
                           </>
-                        ) : (
-                          <div className="p-8 text-center">
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
-                              Start typing to search
-                            </p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500">
-                              Search posts by title to add to trending
-                            </p>
-                          </div>
                         )}
                       </div>
                     </div>

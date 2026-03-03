@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import {
   Edit,
   Trash2,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 export default function AllPosts() {
   const [posts, setPosts] = useState([]);
@@ -28,18 +28,65 @@ export default function AllPosts() {
   const [sortOrder, setSortOrder] = useState("newest");
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [stats, setStats] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [authors, setAuthors] = useState([]);
 
-  useEffect(() => { fetchPosts(); }, []);
-  useEffect(() => { setPage(1); }, [statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = async (p = page) => {
     try {
       setLoading(true);
-      const response = await fetch("/api/superadmin/posts");
-      if (response.ok) { const data = await response.json(); setPosts(data.posts || []); }
-      else { setPosts([]); }
+      const params = new URLSearchParams({
+        page: String(p),
+        limit: String(PAGE_SIZE),
+        status: statusFilter,
+        sort: sortOrder,
+      });
+      if (categoryFilter !== "all") params.set("category", categoryFilter);
+      if (authorFilter !== "all") params.set("author", authorFilter);
+      if (searchQuery.trim()) params.set("search", searchQuery.trim());
+      const response = await fetch(`/api/superadmin/posts?${params}`);
+      if (response.ok) {
+        const data = await response.json();
+        setPosts(data.posts || []);
+        setTotalCount(data.totalCount ?? 0);
+        setTotalPages(data.totalPages ?? 0);
+      } else {
+        setPosts([]);
+      }
     } catch { setPosts([]); } finally { setLoading(false); }
   };
+
+  const fetchStatsAndMeta = async () => {
+    try {
+      const [statsRes, metaRes] = await Promise.all([
+        fetch("/api/superadmin/posts/stats", { credentials: "include" }),
+        fetch("/api/superadmin/posts/meta", { credentials: "include" }),
+      ]);
+      if (statsRes.ok) {
+        const s = await statsRes.json();
+        setStats(s);
+      }
+      if (metaRes.ok) {
+        const m = await metaRes.json();
+        setCategories(m.categories || []);
+        setAuthors(m.authors || []);
+      }
+    } catch (e) {
+      console.error("Error fetching stats/meta:", e);
+    }
+  };
+
+  const prevFiltersRef = useRef(null);
+  useEffect(() => { fetchStatsAndMeta(); }, []);
+  useEffect(() => {
+    const filters = [statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery];
+    const filtersChanged = prevFiltersRef.current && prevFiltersRef.current.some((f, i) => f !== filters[i]);
+    prevFiltersRef.current = filters;
+    fetchPosts(filtersChanged ? 1 : page);
+    if (filtersChanged) setPage(1);
+  }, [page, statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery]);
 
   const handleEdit = (post) => {
     setEditingPost(post._id);
@@ -76,37 +123,6 @@ export default function AllPosts() {
     } catch (error) { console.error("Error toggling auto-share:", error); }
   };
 
-  const categories = useMemo(() => [...new Set(posts.map((p) => p.category).filter(Boolean))].sort(), [posts]);
-  const authors = useMemo(() => {
-    const map = new Map();
-    posts.forEach((p) => {
-      if (p.author?._id) {
-        const isOrg = p.author.accountType === "startup" || p.author.accountType === "company";
-        map.set(p.author._id, isOrg ? (p.author.companyName || p.author.name) : p.author.name);
-      }
-    });
-    return [...map.entries()].sort((a, b) => a[1].localeCompare(b[1]));
-  }, [posts]);
-
-  const filtered = useMemo(() => {
-    let list = [...posts];
-    if (statusFilter !== "all") list = list.filter((p) => p.status === statusFilter);
-    if (categoryFilter !== "all") list = list.filter((p) => p.category === categoryFilter);
-    if (authorFilter !== "all") list = list.filter((p) => p.author?._id === authorFilter);
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      list = list.filter((p) => p.title?.toLowerCase().includes(q) || p.author?.name?.toLowerCase().includes(q) || p.author?.companyName?.toLowerCase().includes(q));
-    }
-    list.sort((a, b) => {
-      const dA = new Date(a.publishedAt || a.createdAt);
-      const dB = new Date(b.publishedAt || b.createdAt);
-      return sortOrder === "newest" ? dB - dA : dA - dB;
-    });
-    return list;
-  }, [posts, statusFilter, categoryFilter, authorFilter, sortOrder, searchQuery]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
   const hasFilters = statusFilter !== "all" || categoryFilter !== "all" || authorFilter !== "all" || searchQuery.trim();
   const clearFilters = () => { setStatusFilter("all"); setCategoryFilter("all"); setAuthorFilter("all"); setSearchQuery(""); };
 
@@ -134,19 +150,19 @@ export default function AllPosts() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="bg-white border border-gray-200 p-3">
           <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Total</div>
-          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.length}</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{stats?.total ?? totalCount}</div>
         </div>
         <div className="bg-white border border-gray-200 p-3">
           <div className="text-[10px] font-bold tracking-wider uppercase text-green-600">Published</div>
-          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.status === "published").length}</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{stats?.published ?? 0}</div>
         </div>
         <div className="bg-white border border-gray-200 p-3">
           <div className="text-[10px] font-bold tracking-wider uppercase text-amber-600">Draft / Pending</div>
-          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.status === "draft" || p.status === "pending").length}</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{(stats?.draft ?? 0) + (stats?.pending ?? 0)}</div>
         </div>
         <div className="bg-white border border-gray-200 p-3">
           <div className="text-[10px] font-bold tracking-wider uppercase text-gray-500">Auto-Share</div>
-          <div className="text-2xl font-extrabold text-gray-900 mt-1">{posts.filter((p) => p.autoShareEnabled).length}</div>
+          <div className="text-2xl font-extrabold text-gray-900 mt-1">{stats?.autoShare ?? 0}</div>
         </div>
       </div>
 
@@ -169,7 +185,7 @@ export default function AllPosts() {
         </select>
         <select value={authorFilter} onChange={(e) => setAuthorFilter(e.target.value)} className={sel}>
           <option value="all">All Authors</option>
-          {authors.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+          {authors.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
         </select>
         <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} className={sel}>
           <option value="newest">Newest First</option>
@@ -180,7 +196,7 @@ export default function AllPosts() {
             <X size={14} /> Clear
           </button>
         )}
-        <span className="text-[11px] text-gray-400 ml-auto">{filtered.length} of {posts.length}</span>
+        <span className="text-[11px] text-gray-400 ml-auto">{posts.length} of {totalCount} posts</span>
       </div>
 
       {/* Table */}
@@ -199,9 +215,9 @@ export default function AllPosts() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {paginated.length === 0 ? (
+              {posts.length === 0 ? (
                 <tr><td colSpan="7" className="px-3 py-8 text-center text-sm text-gray-400">{hasFilters ? "No posts match filters." : "No posts found."}</td></tr>
-              ) : paginated.map((post) => (
+              ) : posts.map((post) => (
                 <tr key={post._id} className="hover:bg-gray-50/50 transition-colors">
                   <td className="px-3 py-2.5">
                     {editingPost === post._id ? (

@@ -50,7 +50,7 @@ async function checkAdmin(request) {
   return { error: "Unauthorized - Admin access required", status: 403 };
 }
 
-// Get all posts (ADMIN or any MANAGER – dashboard loads for all managers)
+// Get posts with pagination (ADMIN or any MANAGER – dashboard loads for all managers)
 export async function GET(request) {
   const authCheck = await checkAdminOrManager(request, null);
   if (authCheck.error) {
@@ -63,16 +63,70 @@ export async function GET(request) {
   try {
     await ensureConnected();
 
-    const posts = await Post.find({})
-      .populate("author", "name email role accountType companyName")
-      .sort({ createdAt: -1 });
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get("page")) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit")) || 10));
+    const status = searchParams.get("status") || "all";
+    const category = searchParams.get("category") || "";
+    const author = searchParams.get("author") || "";
+    const search = (searchParams.get("search") || "").trim();
+    const sortOrder = searchParams.get("sort") || "newest";
 
-    return NextResponse.json({ posts });
+    const dbOperation = async () => {
+      const query = {};
+      if (status !== "all") query.status = status;
+      if (category) query.category = { $regex: new RegExp(`^${category.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") };
+      if (author) query.author = author;
+      if (search) {
+        query.$or = [
+          { title: { $regex: search, $options: "i" } },
+          { excerpt: { $regex: search, $options: "i" } },
+        ];
+      }
+
+      const sortObj = sortOrder === "oldest" ? { createdAt: 1 } : { createdAt: -1 };
+      const skip = (page - 1) * limit;
+
+      // Use estimatedDocumentCount when no filters (much faster for large collections)
+      const countPromise =
+        Object.keys(query).length === 0
+          ? Post.estimatedDocumentCount().maxTimeMS(3000)
+          : Post.countDocuments(query).maxTimeMS(5000);
+
+      // Minimal fields for admin list view only (exclude content, excerpt, featuredImage, etc.)
+      const [posts, totalCount] = await Promise.all([
+        Post.find(query)
+          .populate("author", "name companyName accountType")
+          .sort(sortObj)
+          .skip(skip)
+          .limit(limit)
+          .select("_id title slug category status publishedAt author createdAt autoShareEnabled")
+          .maxTimeMS(10000)
+          .lean(),
+        countPromise,
+      ]);
+
+      return {
+        posts: posts || [],
+        totalCount,
+        page,
+        limit,
+        totalPages: Math.max(1, Math.ceil(totalCount / limit)),
+      };
+    };
+
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error("Database operation timeout")), 30000);
+    });
+
+    const result = await Promise.race([dbOperation(), timeoutPromise]);
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching posts:", error);
     return NextResponse.json(
-      { error: "Failed to fetch posts" },
-      { status: 500 },
+      { error: "Failed to fetch posts", posts: [], totalCount: 0, page: 1, limit: 10, totalPages: 0 },
+      { status: 200 },
     );
   }
 }

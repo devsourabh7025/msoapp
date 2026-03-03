@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChevronDown, Menu, X, Search, Sun, Moon } from "lucide-react";
+import { ChevronDown, Menu, X, Sun, Moon } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 
 export default function Navbar() {
@@ -19,6 +19,7 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
 
   const [headerContent, setHeaderContent] = useState(null);
+  const [toolsSubsections, setToolsSubsections] = useState([]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -69,6 +70,23 @@ export default function Navbar() {
       }
     };
     loadHeaderContent();
+  }, []);
+
+  useEffect(() => {
+    const loadTools = async () => {
+      try {
+        const res = await fetch("/api/settings/tools-database");
+        if (!res.ok) return;
+        const data = await res.json();
+        const subs = data?.content?.subsections;
+        if (Array.isArray(subs)) {
+          setToolsSubsections(subs.filter((s) => s.enabled !== false));
+        }
+      } catch (err) {
+        console.error("Tools load failed:", err);
+      }
+    };
+    loadTools();
   }, []);
 
   const menuItems =
@@ -186,9 +204,6 @@ export default function Navbar() {
                   </>
                 )}
 
-                <button className="h-9 w-9 flex items-center justify-center bg-red-600 hover:bg-red-700 text-white transition-colors shrink-0" aria-label="Search">
-                  <Search size={16} />
-                </button>
               </div>
             </div>
           </div>
@@ -198,12 +213,23 @@ export default function Navbar() {
         <div className="border-b border-gray-100 dark:border-white/5 bg-white dark:bg-gray-950 hidden lg:block">
           <div className="max-w-[72rem] mx-auto px-6">
             <nav className="flex items-center gap-8 h-10">
-              <Link
-                href="/startups-organisations"
-                className="text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-              >
-                Startups & Organisations
-              </Link>
+              {toolsSubsections.length > 0 && (
+                <div className="relative group">
+                  <button className="flex items-center gap-1 text-[12px] font-bold tracking-wide uppercase text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors h-10">
+                    Tools & Database
+                    <ChevronDown size={12} />
+                  </button>
+                  <div className="absolute left-0 top-full pt-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 z-50">
+                    <div className="bg-white dark:bg-gray-900 shadow-xl border border-gray-200 dark:border-white/10 min-w-[200px] py-1">
+                      {toolsSubsections.map((sub) => (
+                        <Link key={sub.id} href={`/tools/${sub.id}`} className="block px-4 py-2.5 text-[13px] text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               {menuItems.map((item, index) => {
                   if (item.type === "link") {
                     return (
@@ -245,13 +271,34 @@ export default function Navbar() {
           <div className="absolute top-[calc(3px+3.5rem)] sm:top-[calc(3px+4rem)] left-0 right-0 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-white/10 max-h-[70vh] overflow-y-auto shadow-xl z-50">
             <div className="px-4 py-3">
               <div className="space-y-1">
-                <Link
-                  href="/startups-organisations"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block py-3 px-3 text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
-                >
-                  Startups & Organisations
-                </Link>
+                {toolsSubsections.length > 0 && (
+                  <>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => setMobileDropdownOpen((prev) => (prev === "tools-database" ? null : "tools-database"))}
+                        className="flex items-center justify-between w-full py-3 px-3 text-left text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                      >
+                        <span>Tools & Database</span>
+                        <ChevronDown size={16} className={`shrink-0 transition-transform ${mobileDropdownOpen === "tools-database" ? "rotate-180" : ""}`} />
+                      </button>
+                      {mobileDropdownOpen === "tools-database" && (
+                        <div className="pl-3 pb-2">
+                          {toolsSubsections.map((sub) => (
+                            <Link
+                              key={sub.id}
+                              href={`/tools/${sub.id}`}
+                              onClick={() => { setMobileMenuOpen(false); setMobileDropdownOpen(null); }}
+                              className="block py-2.5 px-3 pl-5 text-[13px] text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
                 {menuItems.length > 0 ? (
                 <>
                   {menuItems.map((item, index) => {

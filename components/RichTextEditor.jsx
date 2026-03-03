@@ -74,8 +74,9 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
   const updateFormattingState = () => {
     if (!editorRef.current) return;
     const selection = window.getSelection();
-    // Only update if selection is within editor
-    if (selection.rangeCount > 0 && editorRef.current.contains(selection.anchorNode)) {
+    if (!selection) return;
+    // Only update if selection is within editor (anchorNode can be null)
+    if (selection.rangeCount > 0 && selection.anchorNode && editorRef.current.contains(selection.anchorNode)) {
       setIsBold(document.queryCommandState("bold"));
       setIsItalic(document.queryCommandState("italic"));
       setIsUnderline(document.queryCommandState("underline"));
@@ -145,8 +146,9 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
       selection.addRange(range);
     } else {
       range = selection.getRangeAt(0);
-      // Ensure range is within editor
-      if (!editorRef.current.contains(range.commonAncestorContainer)) {
+      // Ensure range is within editor (commonAncestorContainer can be null)
+      const ancestor = range.commonAncestorContainer;
+      if (!ancestor || !editorRef.current.contains(ancestor)) {
         range = document.createRange();
         range.selectNodeContents(editorRef.current);
         range.collapse(false);
@@ -418,13 +420,14 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     editorRef.current.focus();
     
     const selection = window.getSelection();
-    if (selection.rangeCount === 0) return;
+    if (!selection || selection.rangeCount === 0) return;
     
     const range = selection.getRangeAt(0);
-    let node = range.commonAncestorContainer;
+    let node = range?.commonAncestorContainer;
     
     // Find the image element
     let img = null;
+    if (!node) return;
     if (node.nodeName === 'IMG') {
       img = node;
     } else if (node.nodeName === 'DIV' && node.querySelector('img')) {
@@ -536,6 +539,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     if (!editorRef.current) return;
     editorRef.current.focus();
     const selection = window.getSelection();
+    if (!selection) return;
     const selectedText = selection.toString();
     
     if (selectedText) {
@@ -576,6 +580,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     if (!editorRef.current) return;
     editorRef.current.focus();
     const selection = window.getSelection();
+    if (!selection) return;
     if (selection.rangeCount > 0 && selection.toString()) {
       execCommand("foreColor", color);
     } else {
@@ -604,6 +609,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     };
     
     const selection = window.getSelection();
+    if (!selection) return;
     if (selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const selectedText = selection.toString();
@@ -697,13 +703,14 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     try {
       editorRef.current.focus();
       const selection = window.getSelection();
+      if (!selection) return;
       
       if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         let blockquote = null;
         
         // Check if selection is inside a blockquote
-        let node = range.commonAncestorContainer;
+        let node = range?.commonAncestorContainer;
         while (node && node !== editorRef.current) {
           if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BLOCKQUOTE') {
             blockquote = node;
@@ -914,6 +921,7 @@ export default function RichTextEditor({ value, onChange, placeholder = "Start w
     editorRef.current.focus();
     
     const selection = window.getSelection();
+    if (!selection) return;
     if (selection.rangeCount > 0 && selection.toString()) {
       // Remove formatting from selected text
       execCommand("removeFormat");
