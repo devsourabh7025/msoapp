@@ -13,7 +13,8 @@ const defaultSubsections = [
   { id: "expert-columns", name: "Expert Columns", description: "Guest articles from industry veterans and researchers.", enabled: true, posts: [] },
 ];
 
-const POSTS_LIMIT = 1;
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_OTHERS = 3;
 
 const getAuthorLabel = (author) =>
   typeof author === "object" ? author?.name : author || "Unknown";
@@ -53,20 +54,40 @@ export default function KnowledgeLabCustomise() {
     load();
   }, []);
 
+  const getPostLimit = (subIndex) => (subIndex === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_OTHERS);
+
   const addPostToSubsection = (subIndex, post) => {
+    const limit = getPostLimit(subIndex);
     setContent((prev) => {
       const next = [...prev.subsections];
       const sub = next[subIndex];
-      next[subIndex] = { ...sub, posts: [post] };
+      if (!sub.posts) sub.posts = [];
+      if (sub.posts.length >= limit) return prev;
+      if (sub.posts.some((p) => p._id === post._id)) return prev;
+      next[subIndex] = { ...sub, posts: [...sub.posts, post] };
       return { subsections: next };
     });
     setOpenSelectorFor(null);
   };
 
-  const removePostFromSubsection = (subIndex) => {
+  const removePostFromSubsection = (subIndex, postId) => {
     setContent((prev) => {
       const next = [...prev.subsections];
-      next[subIndex] = { ...next[subIndex], posts: [] };
+      next[subIndex] = {
+        ...next[subIndex],
+        posts: (next[subIndex].posts || []).filter((p) => p._id !== postId),
+      };
+      return { subsections: next };
+    });
+  };
+
+  const movePostInSubsection = (subIndex, fromIdx, toIdx) => {
+    setContent((prev) => {
+      const next = [...prev.subsections];
+      const posts = [...(next[subIndex].posts || [])];
+      if (toIdx < 0 || toIdx >= posts.length) return prev;
+      [posts[fromIdx], posts[toIdx]] = [posts[toIdx], posts[fromIdx]];
+      next[subIndex] = { ...next[subIndex], posts };
       return { subsections: next };
     });
   };
@@ -115,7 +136,7 @@ export default function KnowledgeLabCustomise() {
       <div>
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">The Knowledge Lab</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Assign 1 post per category. Focus: Long-form educational content and playbooks.
+          Assign posts to each category. First category: max {POSTS_LIMIT_FIRST} posts. Others: max {POSTS_LIMIT_OTHERS} posts each.
         </p>
       </div>
 
@@ -144,7 +165,7 @@ export default function KnowledgeLabCustomise() {
             </div>
 
             <div className="space-y-6">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Categories (1 post each)</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Categories & Posts</h3>
               {subsections.map((sub, subIndex) => (
                 <div key={sub.id} className="bg-gray-50 dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-3">
@@ -157,27 +178,29 @@ export default function KnowledgeLabCustomise() {
                         className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                       />
                       <div className="flex-1">
-                        <input
-                          type="text"
-                          value={sub.name}
-                          onChange={(e) => updateSubsection(subIndex, "name", e.target.value)}
-                          placeholder="Category name"
-                          className="w-full px-3 py-2 text-sm font-bold border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-2"
-                        />
+                        <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                          {subIndex + 1}. {sub.name}
+                          {subIndex === 0 && (
+                            <span className="ml-2 text-[10px] font-normal text-gray-500 dark:text-gray-400">(max {POSTS_LIMIT_FIRST} posts)</span>
+                          )}
+                          {subIndex > 0 && (
+                            <span className="ml-2 text-[10px] font-normal text-gray-500 dark:text-gray-400">(max {POSTS_LIMIT_OTHERS} posts)</span>
+                          )}
+                        </h4>
                         <textarea
                           value={sub.description}
                           onChange={(e) => updateSubsection(subIndex, "description", e.target.value)}
-                          placeholder="Description"
+                          placeholder="Category description"
                           rows={2}
-                          className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          className="mt-2 w-full px-3 py-2 text-xs border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                       </div>
                     </div>
-                    {(sub.posts || []).length < POSTS_LIMIT && (
+                    {(sub.posts || []).length < getPostLimit(subIndex) && (
                       <button
                         type="button"
                         onClick={() => setOpenSelectorFor(openSelectorFor === subIndex ? null : subIndex)}
-                        className="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded shrink-0"
+                        className="px-3 py-1.5 text-xs font-medium bg-indigo-600 hover:bg-indigo-700 text-white rounded shrink-0 ml-4"
                       >
                         {openSelectorFor === subIndex ? "Cancel" : "Add Post"}
                       </button>
@@ -186,33 +209,52 @@ export default function KnowledgeLabCustomise() {
 
                   {(sub.posts || []).length > 0 ? (
                     <div className="space-y-2 mb-2">
-                      {sub.posts.map((post) => (
+                      {sub.posts.map((post, idx) => (
                         <div key={post._id} className="flex items-center justify-between gap-3 bg-white dark:bg-gray-800 p-2.5 rounded border">
                           <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <span className="text-xs font-mono text-gray-500 w-5">{idx + 1}</span>
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium text-gray-900 dark:text-white line-clamp-1">{post.title}</div>
                               <div className="text-[11px] text-gray-500 dark:text-gray-400">{getAuthorLabel(post.author)}</div>
                             </div>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => removePostFromSubsection(subIndex)}
-                            className="p-1 text-gray-500 hover:text-indigo-600 shrink-0"
-                          >
-                            <X size={14} />
-                          </button>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => movePostInSubsection(subIndex, idx, idx - 1)}
+                              disabled={idx === 0}
+                              className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-40"
+                            >
+                              ↑
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => movePostInSubsection(subIndex, idx, idx + 1)}
+                              disabled={idx === sub.posts.length - 1}
+                              className="p-1 text-gray-500 hover:text-gray-700 disabled:opacity-40"
+                            >
+                              ↓
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removePostFromSubsection(subIndex, post._id)}
+                              className="p-1 text-gray-500 hover:text-indigo-600"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">No post. Click &quot;Add Post&quot; to assign.</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">No posts. Click &quot;Add Post&quot; to assign.</p>
                   )}
 
                   {openSelectorFor === subIndex && (
                     <PostSelectorWithSearch
                       onSelect={(post) => addPostToSubsection(subIndex, post)}
                       excludeIds={(sub.posts || []).map((p) => p._id)}
-                      placeholder={`Search to add 1 post to ${sub.name}`}
+                      placeholder={`Search to add posts to ${sub.name}`}
                     />
                   )}
                 </div>

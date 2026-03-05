@@ -4,14 +4,13 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { Award, ChevronRight } from "lucide-react";
 
 const defaultSubsections = [
-  { id: "mso-maharashtra-50", name: "MSO Maharashtra 50", description: "The annual definitive list of the state's top startups.", enabled: true, posts: [] },
-  { id: "solapur-icons", name: "Solapur Icons", description: "Recognizing industrial and digital leaders in Solapur.", enabled: true, posts: [] },
-  { id: "impact-honors", name: "Impact Honors", description: "Celebrating founders driving major Social/ESG changes.", enabled: true, posts: [] },
-  { id: "emerging-leader", name: "Emerging Leader", description: "Highlighting student founders and young entrepreneurs.", enabled: true, posts: [] },
-  { id: "hall-of-fame", name: "The Hall of Fame", description: "A permanent archive of legendary Maharashtra business icons.", enabled: true, posts: [] },
+  { id: "mso-maharashtra-50", name: "MSO Maharashtra 50", slug: "mso-maharashtra-50", description: "The annual definitive list of the state's top startups.", enabled: true, posts: [] },
+  { id: "solapur-icons", name: "Solapur Icons", slug: "solapur-icons", description: "Recognizing industrial and digital leaders in Solapur.", enabled: true, posts: [] },
+  { id: "impact-honors", name: "Impact Honors", slug: "impact-honors", description: "Celebrating founders driving major Social/ESG changes.", enabled: true, posts: [] },
+  { id: "emerging-leader", name: "Emerging Leader", slug: "emerging-leader", description: "Highlighting student founders and young entrepreneurs.", enabled: true, posts: [] },
+  { id: "hall-of-fame", name: "The Hall of Fame", slug: "hall-of-fame", description: "A permanent archive of legendary Maharashtra business icons.", enabled: true, posts: [] },
 ];
 
 const getAuthorName = (author) => {
@@ -69,18 +68,24 @@ export default function MSOAwards({ initialContent, initialSettings }) {
 
   if (loading) {
     return (
-      <section className="bg-gradient-to-b from-amber-50/50 to-white dark:from-amber-950/20 dark:to-gray-950 border-b border-gray-200 dark:border-white/10">
-        <div className="home-container py-10">
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-white/10">
+        <div className="home-container py-8">
           <div className="animate-pulse">
-            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-32 mb-2" />
-            <div className="h-3 bg-gray-200 dark:bg-gray-800 w-64 mb-8" />
-            <div className="space-y-6">
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 w-28 mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="w-24 h-20 bg-gray-200 dark:bg-gray-800 rounded-lg shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-800 w-1/3" />
-                    <div className="h-3 bg-gray-200 dark:bg-gray-800 w-full" />
+                <div key={i}>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-800 w-32 mb-3" />
+                  <div className="space-y-2">
+                    {[1, 2, 3].map((j) => (
+                      <div key={j} className="flex gap-2">
+                        <div className="w-16 h-12 bg-gray-200 dark:bg-gray-800 shrink-0" />
+                        <div className="flex-1 space-y-1">
+                          <div className="h-3 bg-gray-200 dark:bg-gray-800 w-full" />
+                          <div className="h-2.5 bg-gray-200 dark:bg-gray-800 w-20" />
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ))}
@@ -93,22 +98,17 @@ export default function MSOAwards({ initialContent, initialSettings }) {
 
   if (subsectionsWithPosts.length === 0) {
     return (
-      <section className="bg-gradient-to-b from-amber-50/50 to-white dark:from-amber-950/20 dark:to-gray-950 border-b border-gray-100 dark:border-white/5">
-        <div className="home-container pt-8 pb-10">
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
+        <div className="home-container pt-6 pb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center">
-              <Award className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <h2 className="home-section-heading text-gray-900 dark:text-white text-lg">{sectionTitle}</h2>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{sectionSubtitle}</p>
-            </div>
+            <span className="inline-block w-8 h-[3px] bg-amber-500" />
+            <h2 className="home-section-heading text-gray-900 dark:text-white">{sectionTitle}</h2>
+            {sectionSubtitle && <p className="text-[11px] text-gray-500 dark:text-gray-400">{sectionSubtitle}</p>}
+            <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
           </div>
-          <div className="border border-dashed border-amber-300 dark:border-amber-700/50 rounded-xl p-8 text-center bg-amber-50/30 dark:bg-amber-950/10">
-            <p className="text-sm text-gray-600 dark:text-gray-400">No award posts yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              Add 1 post per award category in Admin → Customise → MSO Awards
-            </p>
+          <div className="border border-dashed border-gray-300 dark:border-white/10 rounded-lg p-6 text-center">
+            <p className="text-sm text-gray-500 dark:text-gray-400">No award posts yet</p>
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-0.5">Add posts in Admin → Customise → MSO Awards</p>
           </div>
         </div>
       </section>
@@ -116,74 +116,80 @@ export default function MSOAwards({ initialContent, initialSettings }) {
   }
 
   return (
-    <section className="bg-gradient-to-b from-amber-50/50 to-white dark:from-amber-950/20 dark:to-gray-950 border-b border-gray-100 dark:border-white/5">
-      <div className="home-container pt-8 pb-10">
+    <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
+      <div className="home-container py-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
-            <Award className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-          </div>
-          <div>
-            <h2 className="home-section-heading text-gray-900 dark:text-white text-xl">{sectionTitle}</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{sectionSubtitle}</p>
-          </div>
+          <span className="inline-block w-8 h-[3px] bg-amber-500" />
+          <h2 className="home-section-heading text-gray-900 dark:text-white">{sectionTitle}</h2>
+          {sectionSubtitle && <p className="text-[11px] text-gray-500 dark:text-gray-400">{sectionSubtitle}</p>}
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
         </div>
 
-        <div className="space-y-6">
-          {subsectionsWithPosts.map((sub, idx) => {
-            const post = sub.posts?.[0];
-            if (!post) return null;
-            const isEven = idx % 2 === 0;
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {subsectionsWithPosts.map((sub) => {
+            const posts = Array.isArray(sub.posts) ? sub.posts : [];
+            const slug = sub.slug || sub.id?.replace(/_/g, "-") || "";
+            const firstPost = posts[0];
+            const restPosts = posts.slice(1, 5);
 
             return (
-              <Link
-                key={sub.id}
-                href={`/post?slug=${post.slug}`}
-                className={`group block rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:border-amber-300/50 dark:hover:border-amber-600/30 transition-all duration-300 ${
-                  isEven ? "" : ""
-                }`}
-              >
-                <div className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}>
-                  <div className="md:w-2/5 relative aspect-[4/3] md:aspect-auto md:min-h-[180px] bg-gray-100 dark:bg-gray-800">
-                    {post.featuredImage ? (
-                      <Image
-                        src={post.featuredImage}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 40vw"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/20 flex items-center justify-center">
-                        <Award className="w-12 h-12 text-amber-400 dark:text-amber-500/50" />
-                      </div>
-                    )}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-amber-500 text-white text-[10px] font-bold tracking-wider uppercase rounded">
-                      {sub.name}
-                    </div>
-                  </div>
-                  <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-                    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">
-                      {sub.name}
-                    </p>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">{sub.description}</p>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors line-clamp-2 mb-2">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">{post.excerpt}</p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                        {getAuthorName(post.author)}
-                        {formatDate(post.publishedAt) && ` • ${formatDate(post.publishedAt)}`}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 group-hover:gap-2 transition-all">
-                        Read <ChevronRight size={14} />
-                      </span>
-                    </div>
-                  </div>
+              <div key={sub.id} className="border-b border-gray-100 dark:border-white/5 pb-6 last:border-b-0 last:pb-0 md:border-b-0 md:pb-0">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">{sub.name}</h3>
+                  {slug && (
+                    <Link href={`/explore/${slug}`} className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 hover:underline uppercase tracking-wide">
+                      View all
+                    </Link>
+                  )}
                 </div>
-              </Link>
+
+                <div className="space-y-3">
+                  {firstPost && (
+                    <Link
+                      href={`/post?slug=${firstPost.slug || (firstPost._id ? `post-${String(firstPost._id)}` : "")}`}
+                      className="group flex gap-3"
+                    >
+                      <div className="relative w-20 h-14 shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-800">
+                        {firstPost.featuredImage ? (
+                          <Image
+                            src={firstPost.featuredImage}
+                            alt={firstPost.title}
+                            fill
+                            className="object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                            sizes="80px"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                          {firstPost.title}
+                        </h4>
+                        <p className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                          {getAuthorName(firstPost.author)}
+                          {formatDate(firstPost.publishedAt) && ` · ${formatDate(firstPost.publishedAt)}`}
+                        </p>
+                      </div>
+                    </Link>
+                  )}
+
+                  {restPosts.map((post, idx) => (
+                    <Link
+                      key={post._id || idx}
+                      href={`/post?slug=${post.slug || (post._id ? `post-${String(post._id)}` : "")}`}
+                      className="group flex items-center gap-2 py-1.5 border-t border-gray-100 dark:border-white/5"
+                    >
+                      <span className="text-[10px] font-bold text-gray-300 dark:text-gray-600 tabular-nums w-4 shrink-0 group-hover:text-amber-400 dark:group-hover:text-amber-500 transition-colors">
+                        {String(idx + 2).padStart(2, "0")}
+                      </span>
+                      <span className="text-[12px] font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                        {post.title}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             );
           })}
         </div>

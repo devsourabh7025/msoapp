@@ -1,4 +1,5 @@
 import { getMSONarrativeContent } from "@/lib/getMSONarrativeContent";
+import { getNewsIntelContent } from "@/lib/getNewsIntelContent";
 import { getRegionalSpecialsContent } from "@/lib/getRegionalSpecialsContent";
 import { getMSOStudioContent } from "@/lib/getMSOStudioContent";
 import { getMSOAwardsContent } from "@/lib/getMSOAwardsContent";
@@ -19,9 +20,9 @@ async function safeFetch(fn, fallback) {
 export default async function Home() {
   const emptySection = { content: { subsections: [] }, settings: {} };
 
-  // News & Intel is loaded only on the client to avoid blocking the homepage on slow DB
-  const [msoNarrative, regionalSpecials, msoStudio, msoAwards, toolsDatabase, eventsCommunity, knowledgeLab] = await Promise.allSettled([
+  const [msoNarrative, newsIntel, regionalSpecials, msoStudio, msoAwards, toolsDatabase, eventsCommunity, knowledgeLab] = await Promise.allSettled([
     safeFetch(getMSONarrativeContent, emptySection),
+    safeFetch(getNewsIntelContent, emptySection),
     safeFetch(getRegionalSpecialsContent, emptySection),
     safeFetch(getMSOStudioContent, emptySection),
     safeFetch(getMSOAwardsContent, emptySection),
@@ -36,6 +37,8 @@ export default async function Home() {
     <HomeClient
       initialMSONarrativeContent={get(msoNarrative).content}
       initialMSONarrativeSettings={get(msoNarrative).settings}
+      initialNewsIntelContent={get(newsIntel).content}
+      initialNewsIntelSettings={get(newsIntel).settings}
       initialRegionalSpecialsContent={get(regionalSpecials).content}
       initialRegionalSpecialsSettings={get(regionalSpecials).settings}
       initialMSOStudioContent={get(msoStudio).content}
@@ -48,8 +51,6 @@ export default async function Home() {
       initialEventsCommunitySettings={get(eventsCommunity).settings}
       initialKnowledgeLabContent={get(knowledgeLab).content}
       initialKnowledgeLabSettings={get(knowledgeLab).settings}
-      initialNewsIntelContent={null}
-      initialNewsIntelSettings={null}
     />
   );
 }

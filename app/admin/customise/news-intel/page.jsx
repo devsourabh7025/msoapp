@@ -6,14 +6,15 @@ import axios from "axios";
 import PostSelectorWithSearch from "@/components/PostSelectorWithSearch";
 
 const defaultSubsections = [
-  { id: "ai-index", name: "The AI Index", description: "", enabled: true, posts: [] },
-  { id: "corporate-intel", name: "Corporate Intel", description: "", enabled: true, posts: [] },
-  { id: "equity-intel", name: "Equity Intel", description: "", enabled: true, posts: [] },
-  { id: "sector-deep-dives", name: "Sector Deep Dives", description: "", enabled: true, posts: [] },
-  { id: "policy-tracker", name: "Policy Tracker", description: "", enabled: true, posts: [] },
+  { id: "ai-index", name: "The AI Index", slug: "ai-index", enabled: true, posts: [] },
+  { id: "corporate-intel", name: "Corporate Intel", slug: "corporate-intel", enabled: true, posts: [] },
+  { id: "equity-intel", name: "Equity Intel", slug: "equity-intel", enabled: true, posts: [] },
+  { id: "sector-deep-dives", name: "Sector Deep Dives", slug: "sector-deep-dives", enabled: true, posts: [] },
+  { id: "policy-tracker", name: "Policy Tracker", slug: "policy-tracker", enabled: true, posts: [] },
 ];
 
-const POSTS_LIMIT = 3;
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_SIDEBAR = 3;
 
 const getAuthorLabel = (author) =>
   typeof author === "object" ? author?.name : author || "Unknown";
@@ -53,12 +54,15 @@ export default function NewsIntelCustomise() {
     load();
   }, []);
 
+  const getPostLimit = (subIndex) => (subIndex === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_SIDEBAR);
+
   const addPostToSubsection = (subIndex, post) => {
+    const limit = getPostLimit(subIndex);
     setContent((prev) => {
       const next = [...prev.subsections];
       const sub = next[subIndex];
       if (!sub.posts) sub.posts = [];
-      if (sub.posts.length >= POSTS_LIMIT) return prev;
+      if (sub.posts.length >= limit) return prev;
       if (sub.posts.some((p) => p._id === post._id)) return prev;
       next[subIndex] = { ...sub, posts: [...sub.posts, post] };
       return { subsections: next };
@@ -84,22 +88,6 @@ export default function NewsIntelCustomise() {
       if (toIdx < 0 || toIdx >= posts.length) return prev;
       [posts[fromIdx], posts[toIdx]] = [posts[toIdx], posts[fromIdx]];
       next[subIndex] = { ...next[subIndex], posts };
-      return { subsections: next };
-    });
-  };
-
-  const updateSubsection = (index, field, value) => {
-    setContent((prev) => {
-      const next = [...prev.subsections];
-      next[index] = { ...next[index], [field]: value };
-      return { subsections: next };
-    });
-  };
-
-  const toggleSubsection = (index) => {
-    setContent((prev) => {
-      const next = [...prev.subsections];
-      next[index] = { ...next[index], enabled: !next[index].enabled };
       return { subsections: next };
     });
   };
@@ -132,7 +120,7 @@ export default function NewsIntelCustomise() {
       <div>
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">News & Intel</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Assign up to 3 posts per subsection. First select a category, then choose posts from that category.
+          Assign posts to each subsection. 1. The AI Index = hero (first post featured). 2–3 = sidebar. 4–5 = below.
         </p>
       </div>
 
@@ -146,7 +134,7 @@ export default function NewsIntelCustomise() {
                 value={settings.title}
                 onChange={(e) => setSettings((p) => ({ ...p, title: e.target.value }))}
                 placeholder="News & Intel"
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
             <div>
@@ -156,36 +144,30 @@ export default function NewsIntelCustomise() {
                 value={settings.subtitle}
                 onChange={(e) => setSettings((p) => ({ ...p, subtitle: e.target.value }))}
                 placeholder=""
-                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-red-500"
               />
             </div>
 
+            {/* Subsections with posts */}
             <div className="space-y-6">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Subsections (3 posts each)</h3>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Subsections & Posts</h3>
               {subsections.map((sub, subIndex) => (
                 <div key={sub.id} className="bg-gray-50 dark:bg-gray-900 p-5 rounded-lg border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3 flex-1">
-                      <input
-                        type="checkbox"
-                        id={`enabled-${sub.id}`}
-                        checked={sub.enabled !== false}
-                        onChange={() => toggleSubsection(subIndex)}
-                        className="w-4 h-4 text-slate-600 border-gray-300 rounded focus:ring-slate-500"
-                      />
-                      <input
-                        type="text"
-                        value={sub.name}
-                        onChange={(e) => updateSubsection(subIndex, "name", e.target.value)}
-                        placeholder="Subsection name"
-                        className="px-3 py-2 text-sm font-bold border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-slate-500"
-                      />
-                    </div>
-                    {(sub.posts || []).length < POSTS_LIMIT && (
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">
+                      {subIndex + 1}. {sub.name}
+                      {subIndex === 0 && (
+                        <span className="ml-2 text-[10px] font-normal text-gray-500 dark:text-gray-400">(First post = hero, max {POSTS_LIMIT_FIRST})</span>
+                      )}
+                      {subIndex > 0 && (
+                        <span className="ml-2 text-[10px] font-normal text-gray-500 dark:text-gray-400">(max {POSTS_LIMIT_SIDEBAR})</span>
+                      )}
+                    </h4>
+                    {(sub.posts || []).length < getPostLimit(subIndex) && (
                       <button
                         type="button"
                         onClick={() => setOpenSelectorFor(openSelectorFor === subIndex ? null : subIndex)}
-                        className="px-3 py-1.5 text-xs font-medium bg-slate-600 hover:bg-slate-700 text-white rounded shrink-0"
+                        className="px-3 py-1.5 text-xs font-medium bg-red-600 hover:bg-red-700 text-white rounded"
                       >
                         {openSelectorFor === subIndex ? "Cancel" : "Add Post"}
                       </button>
@@ -223,7 +205,7 @@ export default function NewsIntelCustomise() {
                             <button
                               type="button"
                               onClick={() => removePostFromSubsection(subIndex, post._id)}
-                              className="p-1 text-gray-500 hover:text-slate-600"
+                              className="p-1 text-gray-500 hover:text-red-600"
                             >
                               <X size={14} />
                             </button>
@@ -232,15 +214,14 @@ export default function NewsIntelCustomise() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">No posts. Click &quot;Add Post&quot; to assign (select category first).</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">No posts. Click &quot;Add Post&quot; to assign.</p>
                   )}
 
                   {openSelectorFor === subIndex && (
                     <PostSelectorWithSearch
                       onSelect={(post) => addPostToSubsection(subIndex, post)}
                       excludeIds={(sub.posts || []).map((p) => p._id)}
-                      placeholder={`Select category first, then add posts to ${sub.name}`}
-                      requireCategoryFirst
+                      placeholder={`Search to add posts to ${sub.name}`}
                     />
                   )}
                 </div>
@@ -251,7 +232,7 @@ export default function NewsIntelCustomise() {
               <button
                 type="submit"
                 disabled={saving}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-600 hover:bg-slate-700 disabled:opacity-60 text-white text-sm font-bold rounded"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-bold rounded"
               >
                 <Save size={16} />
                 {saving ? "Saving..." : "Save"}

@@ -10,14 +10,15 @@ function getJWTSecret() {
 }
 
 const defaultSubsections = [
-  { id: "ai-index", name: "The AI Index", description: "", enabled: true, posts: [] },
-  { id: "corporate-intel", name: "Corporate Intel", description: "", enabled: true, posts: [] },
-  { id: "equity-intel", name: "Equity Intel", description: "", enabled: true, posts: [] },
-  { id: "sector-deep-dives", name: "Sector Deep Dives", description: "", enabled: true, posts: [] },
-  { id: "policy-tracker", name: "Policy Tracker", description: "", enabled: true, posts: [] },
+  { id: "ai-index", name: "The AI Index", slug: "ai-index", enabled: true, posts: [] },
+  { id: "corporate-intel", name: "Corporate Intel", slug: "corporate-intel", enabled: true, posts: [] },
+  { id: "equity-intel", name: "Equity Intel", slug: "equity-intel", enabled: true, posts: [] },
+  { id: "sector-deep-dives", name: "Sector Deep Dives", slug: "sector-deep-dives", enabled: true, posts: [] },
+  { id: "policy-tracker", name: "Policy Tracker", slug: "policy-tracker", enabled: true, posts: [] },
 ];
 
-const POSTS_LIMIT = 3;
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_SIDEBAR = 3;
 
 function optimizePost(post) {
   if (!post || typeof post !== "object") return null;
@@ -50,14 +51,16 @@ function optimizePost(post) {
 function normalizeSubsections(subsections) {
   if (!Array.isArray(subsections) || subsections.length === 0) return defaultSubsections;
   const ids = defaultSubsections.map((s) => s.id);
-  return ids.map((id) => {
+  return ids.map((id, idx) => {
     const existing = subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+    const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_SIDEBAR;
     const rawPosts = Array.isArray(existing?.posts) ? existing.posts : [];
-    const posts = rawPosts.slice(0, POSTS_LIMIT).map(optimizePost).filter(Boolean);
+    const posts = rawPosts.slice(0, limit).map(optimizePost).filter(Boolean);
+    const def = defaultSubsections.find((s) => s.id === id);
     return {
       id: existing?.id || id,
-      name: (existing?.name || defaultSubsections.find((s) => s.id === id)?.name || id).slice(0, 120),
-      description: (existing?.description || "").slice(0, 500),
+      name: (existing?.name || def?.name || id).slice(0, 120),
+      slug: existing?.slug || def?.slug || id.replace(/_/g, "-"),
       enabled: existing?.enabled !== false,
       posts,
     };
@@ -111,15 +114,19 @@ export async function PUT(request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (content !== undefined && content !== null && Array.isArray(content.subsections)) {
+      const ids = defaultSubsections.map((s) => s.id);
       const optimizedContent = {
-        subsections: content.subsections.map((sub) => {
-          const rawPosts = Array.isArray(sub.posts) ? sub.posts : [];
-          const posts = rawPosts.slice(0, POSTS_LIMIT).map(optimizePost).filter(Boolean);
+        subsections: ids.map((id, idx) => {
+          const sub = content.subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+          const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_SIDEBAR;
+          const rawPosts = Array.isArray(sub?.posts) ? sub.posts : [];
+          const posts = rawPosts.slice(0, limit).map(optimizePost).filter(Boolean);
+          const def = defaultSubsections.find((s) => s.id === id);
           return {
-            id: sub.id,
-            name: (sub.name || "").slice(0, 120),
-            description: (sub.description || "").slice(0, 500),
-            enabled: sub.enabled !== false,
+            id: sub?.id || id,
+            name: (sub?.name || def?.name || id).slice(0, 120),
+            slug: sub?.slug || def?.slug || id.replace(/_/g, "-"),
+            enabled: sub?.enabled !== false,
             posts,
           };
         }),

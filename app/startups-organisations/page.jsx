@@ -164,6 +164,17 @@ export default function StartupsOrganisationsPage() {
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                   Discover startups and organisations on MSO
                 </p>
+                <div className="flex flex-wrap gap-3 mt-3">
+                  <Link href="/tools/browse-startups" className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+                    Browse Startups →
+                  </Link>
+                  <Link href="/tools/funding-calculator" className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+                    Funding Calculator →
+                  </Link>
+                  <Link href="/tools/global-corporate-db" className="text-xs font-bold text-red-600 dark:text-red-400 hover:underline">
+                    Global Corporate DB →
+                  </Link>
+                </div>
               </div>
               {activeTab === "directory" && !loading && (
                 <span className="text-xs font-bold text-gray-500 dark:text-gray-400">

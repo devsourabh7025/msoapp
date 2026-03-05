@@ -4,14 +4,16 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { Users, ChevronRight } from "lucide-react";
+
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_OTHERS = 3;
 
 const defaultSubsections = [
-  { id: "mso-summits", name: "MSO Summits", description: "Flagship physical networking and award ceremonies.", enabled: true, posts: [] },
-  { id: "webinars", name: "Webinars", description: "Virtual learning sessions on scaling and fundraising.", enabled: true, posts: [] },
-  { id: "networking-meetups", name: "Networking Meetups", description: "Curated founder-only dinners and mixers.", enabled: true, posts: [] },
-  { id: "global-roadshows", name: "Global Roadshows", description: "Tracking Maharashtra startups at international stages.", enabled: true, posts: [] },
-  { id: "founder-forum", name: "The Founder Forum", description: "A gated community for MSO members to discuss challenges.", enabled: true, posts: [] },
+  { id: "mso-summits", name: "MSO Summits", slug: "mso-summits", description: "Flagship physical networking and award ceremonies.", enabled: true, posts: [] },
+  { id: "webinars", name: "Webinars", slug: "webinars", description: "Virtual learning sessions on scaling and fundraising.", enabled: true, posts: [] },
+  { id: "networking-meetups", name: "Networking Meetups", slug: "networking-meetups", description: "Curated founder-only dinners and mixers.", enabled: true, posts: [] },
+  { id: "global-roadshows", name: "Global Roadshows", slug: "global-roadshows", description: "Tracking Maharashtra startups at international stages.", enabled: true, posts: [] },
+  { id: "founder-forum", name: "The Founder Forum", slug: "founder-forum", description: "A gated community for MSO members to discuss challenges.", enabled: true, posts: [] },
 ];
 
 const getAuthorName = (author) => {
@@ -69,20 +71,19 @@ export default function EventsCommunity({ initialContent, initialSettings }) {
 
   if (loading) {
     return (
-      <section className="bg-gradient-to-b from-violet-50/50 to-white dark:from-violet-950/20 dark:to-gray-950 border-b border-gray-200 dark:border-white/10">
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-white/10">
         <div className="home-container py-10">
           <div className="animate-pulse">
-            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-40 mb-2" />
-            <div className="h-3 bg-gray-200 dark:bg-gray-800 w-72 mb-8" />
-            <div className="space-y-6">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex gap-4">
-                  <div className="w-24 h-20 bg-gray-200 dark:bg-gray-800 rounded-lg shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-800 w-1/3" />
-                    <div className="h-3 bg-gray-200 dark:bg-gray-800 w-full" />
-                  </div>
-                </div>
+            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-36 mb-6" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="md:col-span-2 md:row-span-2 aspect-[4/3] bg-gray-200 dark:bg-gray-800 rounded-lg" />
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="aspect-[3/2] bg-gray-200 dark:bg-gray-800 rounded-lg" />
+              ))}
+            </div>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="aspect-[3/2] bg-gray-200 dark:bg-gray-800 rounded-lg" />
               ))}
             </div>
           </div>
@@ -93,98 +94,161 @@ export default function EventsCommunity({ initialContent, initialSettings }) {
 
   if (subsectionsWithPosts.length === 0) {
     return (
-      <section className="bg-gradient-to-b from-violet-50/50 to-white dark:from-violet-950/20 dark:to-gray-950 border-b border-gray-100 dark:border-white/5">
+      <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
         <div className="home-container pt-8 pb-10">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-violet-500/20 flex items-center justify-center">
-              <Users className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-            </div>
-            <div>
-              <h2 className="home-section-heading text-gray-900 dark:text-white text-lg">{sectionTitle}</h2>
-              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{sectionSubtitle}</p>
-            </div>
+            <span className="inline-block w-8 h-[3px] bg-red-600" />
+            <h2 className="home-section-heading text-gray-900 dark:text-white">{sectionTitle}</h2>
+            {sectionSubtitle && <p className="text-[11px] text-gray-500 dark:text-gray-400">{sectionSubtitle}</p>}
+            <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
           </div>
-          <div className="border border-dashed border-violet-300 dark:border-violet-700/50 rounded-xl p-8 text-center bg-violet-50/30 dark:bg-violet-950/10">
+          <div className="border border-dashed border-red-200 dark:border-red-900/50 rounded-xl p-8 text-center bg-red-50/30 dark:bg-red-950/10">
             <p className="text-sm text-gray-600 dark:text-gray-400">No event posts yet</p>
-            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              Add 1 post per category in Admin → Customise → Events & Community
-            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">Add posts in Admin → Customise → Events & Community</p>
           </div>
         </div>
       </section>
     );
   }
 
+  const firstSub = subsectionsWithPosts[0];
+  const firstPosts = (firstSub?.posts || []).slice(0, POSTS_LIMIT_FIRST);
+  const otherSubsections = subsectionsWithPosts.slice(1);
+
   return (
-    <section className="bg-gradient-to-b from-violet-50/50 to-white dark:from-violet-950/20 dark:to-gray-950 border-b border-gray-100 dark:border-white/5">
+    <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
       <div className="home-container pt-8 pb-10">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-violet-500/20 flex items-center justify-center shrink-0">
-            <Users className="w-6 h-6 text-violet-600 dark:text-violet-400" />
-          </div>
-          <div>
-            <h2 className="home-section-heading text-gray-900 dark:text-white text-xl">{sectionTitle}</h2>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{sectionSubtitle}</p>
-          </div>
+          <span className="inline-block w-8 h-[3px] bg-red-600" />
+          <h2 className="home-section-heading text-gray-900 dark:text-white">{sectionTitle}</h2>
+          {sectionSubtitle && <p className="text-[11px] text-gray-500 dark:text-gray-400">{sectionSubtitle}</p>}
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
         </div>
 
-        <div className="space-y-6">
-          {subsectionsWithPosts.map((sub, idx) => {
-            const post = sub.posts?.[0];
-            if (!post) return null;
-            const isEven = idx % 2 === 0;
-
-            return (
-              <Link
-                key={sub.id}
-                href={`/post?slug=${post.slug}`}
-                className={`group block rounded-xl overflow-hidden border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900/50 hover:shadow-lg hover:border-violet-300/50 dark:hover:border-violet-600/30 transition-all duration-300`}
-              >
-                <div className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"}`}>
-                  <div className="md:w-2/5 relative aspect-[4/3] md:aspect-auto md:min-h-[180px] bg-gray-100 dark:bg-gray-800">
+        {/* First subsection: up to 5 posts — featured + grid */}
+        {firstPosts.length > 0 && (
+          <div className="mb-10">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{firstSub.name}</h3>
+              {(firstSub.slug || firstSub.id?.replace(/_/g, "-")) && (
+                <Link
+                  href={`/explore/${firstSub.slug || firstSub.id?.replace(/_/g, "-")}`}
+                  className="text-[10px] font-semibold text-red-600 dark:text-red-400 hover:underline"
+                >
+                  View all →
+                </Link>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {firstPosts[0] && (
+                <Link
+                  href={`/post?slug=${firstPosts[0].slug || (firstPosts[0]._id ? `post-${String(firstPosts[0]._id)}` : "")}`}
+                  className="group md:col-span-2 md:row-span-2"
+                >
+                  <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[280px] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-xl">
+                    {firstPosts[0].featuredImage ? (
+                      <Image
+                        src={firstPosts[0].featuredImage}
+                        alt={firstPosts[0].title}
+                        fill
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h4 className="text-base sm:text-lg font-bold text-white line-clamp-2 group-hover:text-red-300 transition-colors">
+                        {firstPosts[0].title}
+                      </h4>
+                      <p className="mt-1 text-[11px] text-white/80">
+                        {formatDate(firstPosts[0].publishedAt) || getAuthorName(firstPosts[0].author)}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )}
+              {firstPosts.slice(1, 5).map((post, idx) => (
+                <Link
+                  key={post._id || idx}
+                  href={`/post?slug=${post.slug || (post._id ? `post-${String(post._id)}` : "")}`}
+                  className="group"
+                >
+                  <div className="relative aspect-[3/2] overflow-hidden bg-gray-100 dark:bg-gray-800 rounded-lg">
                     {post.featuredImage ? (
                       <Image
                         src={post.featuredImage}
                         alt={post.title}
                         fill
-                        className="object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="object-cover group-hover:scale-[1.05] transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 25vw"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/30 dark:to-violet-800/20 flex items-center justify-center">
-                        <Users className="w-12 h-12 text-violet-400 dark:text-violet-500/50" />
-                      </div>
+                      <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
                     )}
-                    <div className="absolute top-3 left-3 px-2.5 py-1 bg-violet-500 text-white text-[10px] font-bold tracking-wider uppercase rounded">
-                      {sub.name}
-                    </div>
                   </div>
-                  <div className="flex-1 p-5 md:p-6 flex flex-col justify-center">
-                    <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider mb-1">
-                      {sub.name}
-                    </p>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">{sub.description}</p>
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors line-clamp-2 mb-2">
-                      {post.title}
-                    </h3>
-                    {post.excerpt && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">{post.excerpt}</p>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                        {getAuthorName(post.author)}
-                        {formatDate(post.publishedAt) && ` • ${formatDate(post.publishedAt)}`}
-                      </span>
-                      <span className="inline-flex items-center gap-1 text-xs font-bold text-violet-600 dark:text-violet-400 group-hover:gap-2 transition-all">
-                        Read <ChevronRight size={14} />
-                      </span>
+                  <h4 className="mt-2 text-[13px] font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                    {post.title}
+                  </h4>
+                  <p className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                    {formatDate(post.publishedAt) || getAuthorName(post.author)}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Other subsections: up to 3 posts each — compact 3-column grid */}
+        {otherSubsections.map((sub) => {
+          const posts = (sub.posts || []).slice(0, POSTS_LIMIT_OTHERS);
+          if (posts.length === 0) return null;
+          const slug = sub.slug || sub.id?.replace(/_/g, "-") || "";
+          return (
+            <div key={sub.id} className="mt-8 first:mt-0">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">{sub.name}</h3>
+                {slug && (
+                  <Link href={`/explore/${slug}`} className="text-[10px] font-semibold text-red-600 dark:text-red-400 hover:underline">
+                    View all →
+                  </Link>
+                )}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {posts.map((post, idx) => (
+                  <Link
+                    key={post._id || idx}
+                    href={`/post?slug=${post.slug || (post._id ? `post-${String(post._id)}` : "")}`}
+                    className="group flex gap-3 p-3 rounded-lg border border-gray-200 dark:border-white/10 hover:border-red-200 dark:hover:border-red-900/50 hover:bg-red-50/20 dark:hover:bg-red-950/10 transition-all"
+                  >
+                    <div className="relative w-20 h-16 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-gray-800">
+                      {post.featuredImage ? (
+                        <Image
+                          src={post.featuredImage}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-[1.05] transition-transform"
+                          sizes="80px"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700" />
+                      )}
                     </div>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-[13px] font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                        {post.title}
+                      </h4>
+                      <p className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                        {formatDate(post.publishedAt) || getAuthorName(post.author)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

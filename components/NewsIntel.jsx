@@ -4,14 +4,13 @@ import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import axios from "axios";
-import { Newspaper, ChevronRight } from "lucide-react";
 
 const defaultSubsections = [
-  { id: "ai-index", name: "The AI Index", description: "", enabled: true, posts: [] },
-  { id: "corporate-intel", name: "Corporate Intel", description: "", enabled: true, posts: [] },
-  { id: "equity-intel", name: "Equity Intel", description: "", enabled: true, posts: [] },
-  { id: "sector-deep-dives", name: "Sector Deep Dives", description: "", enabled: true, posts: [] },
-  { id: "policy-tracker", name: "Policy Tracker", description: "", enabled: true, posts: [] },
+  { id: "ai-index", name: "The AI Index", slug: "ai-index", enabled: true, posts: [] },
+  { id: "corporate-intel", name: "Corporate Intel", slug: "corporate-intel", enabled: true, posts: [] },
+  { id: "equity-intel", name: "Equity Intel", slug: "equity-intel", enabled: true, posts: [] },
+  { id: "sector-deep-dives", name: "Sector Deep Dives", slug: "sector-deep-dives", enabled: true, posts: [] },
+  { id: "policy-tracker", name: "Policy Tracker", slug: "policy-tracker", enabled: true, posts: [] },
 ];
 
 const getAuthorName = (author) => {
@@ -20,10 +19,21 @@ const getAuthorName = (author) => {
   return author;
 };
 
+const getCategoryName = (cat) => {
+  if (!cat) return null;
+  if (typeof cat === "object" && cat?.name) return cat.name;
+  if (typeof cat === "string") return cat;
+  return null;
+};
+
 const formatDate = (date) => {
   if (!date) return null;
   try {
-    return new Date(date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    return new Date(date).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   } catch {
     return null;
   }
@@ -63,7 +73,11 @@ export default function NewsIntel({ initialContent, initialSettings }) {
     return raw.filter((s) => s.enabled !== false);
   }, [content]);
 
-  const subsectionsWithPosts = subsections.filter((s) => Array.isArray(s.posts) && s.posts.length > 0);
+  const featuredSubsection = subsections[0];
+  const featuredPost = featuredSubsection?.posts?.[0];
+  const sidebarSubsections = subsections.slice(1, 3).filter((s) => Array.isArray(s.posts) && s.posts.length > 0);
+  const belowSubsections = subsections.slice(3, 5).filter((s) => Array.isArray(s.posts) && s.posts.length > 0);
+
   const sectionTitle = settings?.title || "News & Intel";
   const sectionSubtitle = settings?.subtitle || "";
 
@@ -72,19 +86,26 @@ export default function NewsIntel({ initialContent, initialSettings }) {
       <section className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-white/10">
         <div className="home-container py-10">
           <div className="animate-pulse">
-            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-36 mb-2" />
-            <div className="h-3 bg-gray-200 dark:bg-gray-800 w-48 mb-8" />
-            <div className="space-y-8">
-              {[1, 2, 3].map((i) => (
-                <div key={i}>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-800 w-32 mb-4" />
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {[1, 2, 3].map((j) => (
-                      <div key={j} className="aspect-[4/3] bg-gray-200 dark:bg-gray-800 rounded-lg" />
-                    ))}
-                  </div>
+            <div className="h-5 bg-gray-200 dark:bg-gray-800 w-32 mb-8" />
+            <div className="grid grid-cols-12 gap-6">
+              <div className="col-span-12 lg:col-span-8">
+                <div className="aspect-[16/9] bg-gray-200 dark:bg-gray-800" />
+                <div className="mt-4 space-y-2">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-800 w-3/4" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-800 w-1/2" />
                 </div>
-              ))}
+              </div>
+              <div className="col-span-12 lg:col-span-4 space-y-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="flex gap-3">
+                    <div className="w-20 h-14 shrink-0 bg-gray-200 dark:bg-gray-800" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 dark:bg-gray-800" />
+                      <div className="h-3 bg-gray-200 dark:bg-gray-800 w-20" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -92,7 +113,9 @@ export default function NewsIntel({ initialContent, initialSettings }) {
     );
   }
 
-  if (subsectionsWithPosts.length === 0) {
+  const hasContent = featuredPost || sidebarSubsections.length > 0 || belowSubsections.length > 0;
+
+  if (!hasContent) {
     return (
       <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
         <div className="home-container pt-8 pb-10">
@@ -109,7 +132,7 @@ export default function NewsIntel({ initialContent, initialSettings }) {
           <div className="border border-dashed border-red-200 dark:border-red-900/50 rounded-xl p-8 text-center bg-red-50/30 dark:bg-red-950/10">
             <p className="text-sm text-gray-600 dark:text-gray-400">No news and intel posts yet</p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              Add up to 3 posts per category in Admin → Customise → News & Intel
+              Add posts in Admin → Customise → News & Intel
             </p>
           </div>
         </div>
@@ -117,170 +140,175 @@ export default function NewsIntel({ initialContent, initialSettings }) {
     );
   }
 
-  const primarySubsection = subsectionsWithPosts[0];
-  const primaryPosts = (primarySubsection?.posts || []).filter((p) => p.slug || p._id);
-  const primaryLead = primaryPosts[0] || null;
-  const primaryRest = primaryPosts.slice(1, 3);
-
-  const sidebarItems = subsectionsWithPosts
-    .slice(1)
-    .flatMap((sub) => (sub.posts || []).map((p) => ({ ...p, subsectionName: sub.name })))
-    .filter((p) => p.slug || p._id)
-    .slice(0, 6);
-
   return (
     <section className="bg-white dark:bg-gray-950 border-b border-gray-100 dark:border-white/5">
       <div className="home-container pt-8 pb-10">
         <div className="flex items-center gap-3 mb-6">
           <span className="inline-block w-8 h-[3px] bg-red-600" />
-          <h2 className="home-section-heading text-gray-900 dark:text-white">
-            {sectionTitle}
-          </h2>
-          {sectionSubtitle && (
-            <span className="ml-2 text-[11px] text-gray-500 dark:text-gray-400">
-              {sectionSubtitle}
-            </span>
-          )}
+          <div>
+            <h2 className="home-section-heading text-gray-900 dark:text-white">
+              {sectionTitle}
+            </h2>
+            {sectionSubtitle && (
+              <p className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{sectionSubtitle}</p>
+            )}
+          </div>
           <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0 lg:gap-0">
-          <div className={`col-span-1 ${sidebarItems.length > 0 ? "lg:col-span-8 lg:pr-6 lg:border-r border-gray-200 dark:border-white/10" : "lg:col-span-12"}`}>
-            {primaryLead ? (
-              <Link
-                href={`/post?slug=${primaryLead.slug || (primaryLead._id ? `post-${String(primaryLead._id)}` : "")}`}
-                className="group block mb-6"
-              >
+          <div className={`col-span-1 ${sidebarSubsections.length > 0 ? "lg:col-span-8 lg:pr-6 lg:border-r border-gray-200 dark:border-white/10" : "lg:col-span-12"}`}>
+            {featuredPost ? (
+              <Link href={`/post?slug=${featuredPost.slug || (featuredPost._id ? `post-${String(featuredPost._id)}` : "")}`} className="group block">
                 <article>
                   <div className="relative w-full aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800">
-                    {primaryLead.featuredImage ? (
+                    {featuredPost.featuredImage ? (
                       <Image
-                        src={primaryLead.featuredImage}
-                        alt={primaryLead.title}
+                        src={featuredPost.featuredImage}
+                        alt={featuredPost.title}
                         fill
                         className="object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
                         sizes="(max-width: 1024px) 100vw, 66vw"
+                        priority
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
-                        <Newspaper className="w-10 h-10 text-slate-400 dark:text-slate-500/60" />
-                      </div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800" />
                     )}
-                    <span className="absolute top-4 left-4 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase rounded">
-                      {primarySubsection?.name || "Top Story"}
+                    <span className="absolute top-4 right-4 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase rounded">
+                      Trending
                     </span>
+                    {getCategoryName(featuredPost.category) && (
+                      <span className="absolute top-4 left-4 px-2.5 py-1 bg-red-600 text-white text-[10px] font-bold tracking-wider uppercase">
+                        {getCategoryName(featuredPost.category)}
+                      </span>
+                    )}
                   </div>
-
-                    <div className="mt-4">
-                    <h3 className="text-2xl sm:text-3xl font-extrabold leading-tight text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
-                      {primaryLead.title}
-                    </h3>
-                    {primaryLead.excerpt && (
+                  <div className="mt-4">
+                    <h1 className="text-2xl sm:text-3xl lg:text-[2rem] font-extrabold leading-[1.15] text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-200">
+                      <span className="text-red-600 dark:text-red-400">{featuredSubsection?.name}:</span>{" "}
+                      {featuredPost.title}
+                    </h1>
+                    {featuredPost.excerpt && (
                       <p className="mt-2.5 text-[15px] leading-relaxed text-gray-600 dark:text-gray-400 line-clamp-2">
-                        {primaryLead.excerpt}
+                        {featuredPost.excerpt}
                       </p>
                     )}
-                    <div className="mt-3 flex items-center gap-2 text-[11px] uppercase tracking-wide text-gray-500 dark:text-gray-500">
+                    <div className="mt-3 flex items-center gap-2 text-[11px] tracking-wide uppercase text-gray-500 dark:text-gray-500">
                       <span className="font-semibold text-gray-700 dark:text-gray-300">
-                        {getAuthorName(primaryLead.author)}
+                        {getAuthorName(featuredPost.author)}
                       </span>
-                      {formatDate(primaryLead.publishedAt) && (
+                      {formatDate(featuredPost.publishedAt) && (
                         <>
-                          <span className="w-1 h-1 bg-gray-400 dark:bg-gray-600 rounded-full" />
-                          <span>{formatDate(primaryLead.publishedAt)}</span>
+                          <span className="w-1 h-1 bg-gray-400 dark:bg-gray-600" />
+                          <span>{formatDate(featuredPost.publishedAt)}</span>
                         </>
                       )}
                     </div>
                   </div>
                 </article>
               </Link>
-            ) : null}
-
-            {primaryRest.length > 0 && (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {primaryRest.map((post) => {
-                  const slug = post.slug || (post._id ? `post-${String(post._id)}` : "");
-                  return (
-                    <Link
-                      key={post._id}
-                      href={`/post?slug=${slug}`}
-                      className="group flex gap-3 rounded-lg border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900/60 overflow-hidden hover:border-red-200 dark:hover:border-red-900/50 transition-colors"
-                    >
-                      <div className="relative w-24 sm:w-28 flex-shrink-0 aspect-[4/3] bg-gray-100 dark:bg-gray-800">
-                        {post.featuredImage ? (
-                          <Image
-                            src={post.featuredImage}
-                            alt={post.title}
-                            fill
-                            className="object-cover group-hover:scale-[1.05] transition-transform duration-500"
-                            sizes="96px"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                            <Newspaper className="w-6 h-6 text-gray-400 dark:text-gray-500/70" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="py-2 pr-3 flex-1 min-w-0">
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-0.5">
-                          {primarySubsection?.name || "News"}
-                        </p>
-                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
-                          {post.title}
-                        </h4>
-                        <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400 line-clamp-1">
-                          {getAuthorName(post.author)}
-                          {formatDate(post.publishedAt) && ` • ${formatDate(post.publishedAt)}`}
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
+            ) : (
+              <div className="border border-dashed border-gray-300 dark:border-white/10 p-12 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No featured post for {featuredSubsection?.name || "The AI Index"}
+                </p>
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  Add posts in Admin → Customise → News & Intel
+                </p>
               </div>
             )}
           </div>
 
-          {sidebarItems.length > 0 && (
-            <div className="col-span-1 lg:col-span-4 lg:pl-6 mt-8 lg:mt-0">
-              <div className="flex items-center gap-2 mb-4">
-                <span className="text-xs font-bold tracking-[0.15em] uppercase text-gray-900 dark:text-white">
-                  Quick Intel
-                </span>
-                <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
-              </div>
+          {sidebarSubsections.length > 0 && (
+            <div className="col-span-1 lg:col-span-4 lg:pl-6 mt-8 lg:mt-0 space-y-6">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-xs font-bold tracking-[0.2em] uppercase text-gray-900 dark:text-white">
+                    Latest Intel
+                  </span>
+                  <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+                </div>
 
-              <div className="space-y-3">
-                {sidebarItems.map((post) => {
-                  const slug = post.slug || (post._id ? `post-${String(post._id)}` : "");
-                  return (
-                    <Link
-                      key={`${post._id}-${post.subsectionName}`}
-                      href={`/post?slug=${slug}`}
-                      className="group flex gap-3 rounded-lg px-2.5 py-2 hover:bg-red-50/50 dark:hover:bg-red-950/20 transition-colors"
-                    >
-                      <div className="mt-1 w-1 h-8 rounded-full bg-red-500/70 dark:bg-red-500/60 group-hover:bg-red-600 dark:group-hover:bg-red-400" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-red-600 dark:text-red-400 mb-0.5">
-                          {post.subsectionName}
-                        </p>
-                        <h4 className="text-[13px] font-semibold leading-snug text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400">
-                          {post.title}
-                        </h4>
-                        <p className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400 line-clamp-1">
-                          {getAuthorName(post.author)}
-                        </p>
+                <div className="space-y-5">
+                  {sidebarSubsections.map((sub) => {
+                    const posts = Array.isArray(sub.posts) ? sub.posts : [];
+                    if (posts.length === 0) return null;
+                    const slug = sub.slug || sub.id?.replace(/_/g, "-") || "";
+                    return (
+                      <div key={sub.id}>
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-sm font-bold text-gray-900 dark:text-white">{sub.name}</h4>
+                          {slug && (
+                            <Link href={`/explore/${slug}`} className="text-[11px] font-bold text-red-600 dark:text-red-400 hover:underline">
+                              View all
+                            </Link>
+                          )}
+                        </div>
+                        <ul className="space-y-2">
+                          {posts.slice(0, 3).map((post, idx) => (
+                            <li key={post._id || idx}>
+                              <Link href={`/post?slug=${post.slug || (post._id ? `post-${String(post._id)}` : "")}`} className="group flex items-start gap-2 py-1">
+                                <span className="mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full bg-red-600 dark:bg-red-500" />
+                                <div className="min-w-0 flex-1">
+                                  <span className="text-[13px] font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                                    {post.title}
+                                  </span>
+                                  <span className="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                                    {getAuthorName(post.author)}
+                                  </span>
+                                </div>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       </div>
-                      <ChevronRight
-                        size={14}
-                        className="mt-1 text-red-500/80 group-hover:text-red-600 dark:group-hover:text-red-400 group-hover:translate-x-0.5 transition-transform"
-                      />
-                    </Link>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
         </div>
+
+        {belowSubsections.length > 0 && (
+          <div className="mt-10 pt-8 border-t border-gray-200 dark:border-white/10">
+            <div className={`grid gap-8 ${belowSubsections.length === 1 ? "grid-cols-1 max-w-2xl" : "grid-cols-1 md:grid-cols-2"}`}>
+              {belowSubsections.map((sub) => {
+                const posts = Array.isArray(sub.posts) ? sub.posts : [];
+                const slug = sub.slug || sub.id?.replace(/_/g, "-") || "";
+                return (
+                  <div key={sub.id}>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white">{sub.name}</h4>
+                      {slug && (
+                        <Link href={`/explore/${slug}`} className="text-[11px] font-bold text-red-600 dark:text-red-400 hover:underline">
+                          View all
+                        </Link>
+                      )}
+                    </div>
+                    <ul className="space-y-2">
+                      {posts.slice(0, 3).map((post, idx) => (
+                        <li key={post._id || idx}>
+                          <Link href={`/post?slug=${post.slug || (post._id ? `post-${String(post._id)}` : "")}`} className="group flex items-start gap-2 py-1">
+                            <span className="mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full bg-red-600 dark:bg-red-500" />
+                            <div className="min-w-0 flex-1">
+                              <span className="text-[13px] font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                                {post.title}
+                              </span>
+                              <span className="block text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">
+                                {getAuthorName(post.author)}
+                              </span>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

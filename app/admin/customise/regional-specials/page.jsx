@@ -126,7 +126,7 @@ export default function RegionalSpecialsCustomise() {
       <div>
         <h1 className="text-xl font-bold text-gray-900 dark:text-white">Regional Specials</h1>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-          Hyper-local coverage. Assign posts to each subsection. 1. Marathi Special = hero. 2–3 = sidebar. 4–5 = below.
+          Assign posts to each category. First category: max {POSTS_LIMIT_FIRST} posts. Others: max {POSTS_LIMIT_SIDEBAR} posts each.
         </p>
       </div>
 

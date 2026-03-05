@@ -34,13 +34,17 @@ function normalizePost(post) {
   };
 }
 
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_OTHERS = 3;
+
 function normalizeSubsections(subsections) {
   if (!Array.isArray(subsections) || subsections.length === 0) return defaultSubsections;
   const ids = defaultSubsections.map((s) => s.id);
-  return ids.map((id) => {
+  return ids.map((id, idx) => {
     const existing = subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+    const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_OTHERS;
     const rawPosts = Array.isArray(existing?.posts) ? existing.posts : [];
-    const posts = rawPosts.slice(0, 1).map(normalizePost).filter(Boolean);
+    const posts = rawPosts.slice(0, limit).map(normalizePost).filter(Boolean);
     return {
       id: existing?.id || id,
       name: (existing?.name || defaultSubsections.find((s) => s.id === id)?.name || id).slice(0, 120),
@@ -98,15 +102,19 @@ export async function PUT(request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (content !== undefined && content !== null && Array.isArray(content.subsections)) {
+      const ids = defaultSubsections.map((s) => s.id);
       const optimizedContent = {
-        subsections: content.subsections.map((sub) => {
-          const rawPosts = Array.isArray(sub.posts) ? sub.posts : [];
-          const posts = rawPosts.slice(0, 1).map(normalizePost).filter(Boolean);
+        subsections: ids.map((id, idx) => {
+          const sub = content.subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+          const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_OTHERS;
+          const rawPosts = Array.isArray(sub?.posts) ? sub.posts : [];
+          const posts = rawPosts.slice(0, limit).map(normalizePost).filter(Boolean);
+          const def = defaultSubsections.find((s) => s.id === id);
           return {
-            id: sub.id,
-            name: (sub.name || "").slice(0, 120),
-            description: (sub.description || "").slice(0, 500),
-            enabled: sub.enabled !== false,
+            id: sub?.id || id,
+            name: (sub?.name || def?.name || id).slice(0, 120),
+            description: (sub?.description || def?.description || "").slice(0, 500),
+            enabled: sub?.enabled !== false,
             posts,
           };
         }),

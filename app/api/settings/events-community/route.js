@@ -10,12 +10,15 @@ function getJWTSecret() {
 }
 
 const defaultSubsections = [
-  { id: "mso-summits", name: "MSO Summits", description: "Flagship physical networking and award ceremonies.", enabled: true, posts: [] },
-  { id: "webinars", name: "Webinars", description: "Virtual learning sessions on scaling and fundraising.", enabled: true, posts: [] },
-  { id: "networking-meetups", name: "Networking Meetups", description: "Curated founder-only dinners and mixers.", enabled: true, posts: [] },
-  { id: "global-roadshows", name: "Global Roadshows", description: "Tracking Maharashtra startups at international stages.", enabled: true, posts: [] },
-  { id: "founder-forum", name: "The Founder Forum", description: "A gated community for MSO members to discuss challenges.", enabled: true, posts: [] },
+  { id: "mso-summits", name: "MSO Summits", slug: "mso-summits", description: "Flagship physical networking and award ceremonies.", enabled: true, posts: [] },
+  { id: "webinars", name: "Webinars", slug: "webinars", description: "Virtual learning sessions on scaling and fundraising.", enabled: true, posts: [] },
+  { id: "networking-meetups", name: "Networking Meetups", slug: "networking-meetups", description: "Curated founder-only dinners and mixers.", enabled: true, posts: [] },
+  { id: "global-roadshows", name: "Global Roadshows", slug: "global-roadshows", description: "Tracking Maharashtra startups at international stages.", enabled: true, posts: [] },
+  { id: "founder-forum", name: "The Founder Forum", slug: "founder-forum", description: "A gated community for MSO members to discuss challenges.", enabled: true, posts: [] },
 ];
+
+const POSTS_LIMIT_FIRST = 5;
+const POSTS_LIMIT_SIDEBAR = 3;
 
 function normalizePost(post) {
   if (!post || typeof post !== "object") return null;
@@ -37,14 +40,17 @@ function normalizePost(post) {
 function normalizeSubsections(subsections) {
   if (!Array.isArray(subsections) || subsections.length === 0) return defaultSubsections;
   const ids = defaultSubsections.map((s) => s.id);
-  return ids.map((id) => {
+  return ids.map((id, idx) => {
     const existing = subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+    const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_SIDEBAR;
     const rawPosts = Array.isArray(existing?.posts) ? existing.posts : [];
-    const posts = rawPosts.slice(0, 1).map(normalizePost).filter(Boolean);
+    const posts = rawPosts.slice(0, limit).map(normalizePost).filter(Boolean);
+    const def = defaultSubsections.find((s) => s.id === id);
     return {
       id: existing?.id || id,
-      name: (existing?.name || defaultSubsections.find((s) => s.id === id)?.name || id).slice(0, 120),
-      description: (existing?.description || defaultSubsections.find((s) => s.id === id)?.description || "").slice(0, 500),
+      name: (existing?.name || def?.name || id).slice(0, 120),
+      slug: existing?.slug || def?.slug || id.replace(/_/g, "-"),
+      description: (existing?.description || def?.description || "").slice(0, 500),
       enabled: existing?.enabled !== false,
       posts,
     };
@@ -98,15 +104,20 @@ export async function PUT(request) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     if (content !== undefined && content !== null && Array.isArray(content.subsections)) {
+      const ids = defaultSubsections.map((s) => s.id);
       const optimizedContent = {
-        subsections: content.subsections.map((sub) => {
-          const rawPosts = Array.isArray(sub.posts) ? sub.posts : [];
-          const posts = rawPosts.slice(0, 1).map(normalizePost).filter(Boolean);
+        subsections: ids.map((id, idx) => {
+          const sub = content.subsections.find((s) => s.id === id) || defaultSubsections.find((s) => s.id === id);
+          const limit = idx === 0 ? POSTS_LIMIT_FIRST : POSTS_LIMIT_SIDEBAR;
+          const rawPosts = Array.isArray(sub?.posts) ? sub.posts : [];
+          const posts = rawPosts.slice(0, limit).map(normalizePost).filter(Boolean);
+          const def = defaultSubsections.find((s) => s.id === id);
           return {
-            id: sub.id,
-            name: (sub.name || "").slice(0, 120),
-            description: (sub.description || "").slice(0, 500),
-            enabled: sub.enabled !== false,
+            id: sub?.id || id,
+            name: (sub?.name || def?.name || id).slice(0, 120),
+            slug: sub?.slug || def?.slug || id.replace(/_/g, "-"),
+            description: (sub?.description || def?.description || "").slice(0, 500),
+            enabled: sub?.enabled !== false,
             posts,
           };
         }),
