@@ -60,7 +60,7 @@ function AdminLayoutContent({ children }) {
     { id: "ads", name: "Ads Setup", href: "/admin/ads", icon: Megaphone },
     { id: "pages", name: "Pages", href: "/admin/pages", icon: FileStack },
     { id: "analytics", name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { id: "customise", name: "Customise", href: "/admin/customise/mso-narrative", icon: Settings },
+    { id: "customise", name: "Customise", href: null, icon: Settings },
   ];
 
   const canShowMenuItem = (item) => {
@@ -68,15 +68,46 @@ function AdminLayoutContent({ children }) {
     if (user?.role === "MANAGER") {
       if (item.id === "allUsers") return false;
       const perms = user?.managerPermissions || [];
+      if (item.id === "customise") {
+        return perms.includes("customise") || perms.some((p) => p.startsWith("customise"));
+      }
       return perms.includes(item.id);
     }
     return false;
   };
 
+  const getCustomiseHref = () => {
+    if (user?.role === "ADMIN") return "/admin/customise/mso-narrative";
+    const perms = user?.managerPermissions || [];
+    const permToSection = {
+      customiseHero: "hero",
+      customiseMSONarrative: "mso-narrative",
+      customiseRegionalSpecials: "regional-specials",
+      customiseMSOStudio: "mso-studio",
+      customiseMSOAwards: "mso-awards",
+      customiseEventsCommunity: "events-community",
+      customiseKnowledgeLab: "knowledge-lab",
+      customiseNewsIntel: "news-intel",
+      customiseSpotlight: "spotlight",
+      customiseHeader: "header",
+      customiseFooter: "footer",
+      customiseTalentPortal: "talent-portal",
+      customisePost: "post",
+      customiseSidebar: "sidebar",
+      customiseSite: "site",
+    };
+    for (const p of perms) {
+      if (permToSection[p]) return `/admin/customise/${permToSection[p]}`;
+    }
+    return "/admin/customise/mso-narrative";
+  };
+
   const isActive = (href) => {
     if (href === "/admin") return pathname === "/admin";
     if (href === "/admin/add-post") return pathname === "/admin/add-post";
-    if (href === "/admin/customise/mso-narrative") return pathname.startsWith("/admin/customise");
+    if (href === "/admin/customise/mso-narrative" || href?.startsWith?.("/admin/customise/")) {
+      return pathname.startsWith("/admin/customise");
+    }
     return pathname === href || pathname.startsWith(href + "/");
   };
 
@@ -173,11 +204,12 @@ function AdminLayoutContent({ children }) {
                   )
                   .map((item) => {
                     const Icon = item.icon;
-                    const active = isActive(item.href);
+                    const href = item.id === "customise" ? getCustomiseHref() : item.href;
+                    const active = isActive(href);
                     return (
                       <Link
-                        key={item.href}
-                        href={item.href}
+                        key={item.id}
+                        href={href}
                         className={`flex items-center gap-2.5 px-3 py-2 text-[13px] font-medium transition-colors ${
                           active
                             ? "bg-white text-gray-950"

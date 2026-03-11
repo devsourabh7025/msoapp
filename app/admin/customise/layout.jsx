@@ -32,6 +32,7 @@ const SECTION_PERMISSION = {
   post: "customisePost",
   sidebar: "customiseSidebar",
   site: "customiseSite",
+  "talent-portal": "customiseTalentPortal",
 };
 
 const homepageSections = [
@@ -47,6 +48,7 @@ const homepageSections = [
 const otherSections = [
   { id: "header", name: "Header", icon: Layout },
   { id: "footer", name: "Footer", icon: Layout },
+  { id: "talent-portal", name: "Talent Portal (Jobs)", icon: Users },
   { id: "post", name: "Post", icon: FileText },
   { id: "sidebar", name: "Sidebar", icon: Layout },
   { id: "site", name: "Fonts", icon: Type },
