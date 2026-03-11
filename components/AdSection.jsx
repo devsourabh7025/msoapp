@@ -24,6 +24,7 @@ export default function AdSection({ space }) {
         src={space.imageUrl}
         alt={space.alt || "Advertisement"}
         fill
+        unoptimized
         className="object-contain hover:opacity-90 transition-opacity duration-300"
         onError={(e) => {
           e.target.src = "/demo.png";
@@ -33,14 +34,14 @@ export default function AdSection({ space }) {
   );
 
   return (
-    <div className="bg-white dark:bg-gray-950">
+    <div className="bg-gray-50 dark:bg-gray-950 border-y border-gray-200 dark:border-white/5">
       <div className="max-w-[72rem] mx-auto px-6 lg:px-8 py-4">
         <div className="flex items-center justify-center gap-3 mb-2">
-          <span className="flex-1 h-px bg-gray-100 dark:bg-white/5" />
-          <span className="text-[10px] tracking-wider uppercase text-gray-400 dark:text-gray-600">
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
+          <span className="text-[10px] font-bold tracking-widest uppercase text-red-600 dark:text-red-400">
             Advertisement
           </span>
-          <span className="flex-1 h-px bg-gray-100 dark:bg-white/5" />
+          <span className="flex-1 h-px bg-gray-200 dark:bg-white/10" />
         </div>
 
         {space.type === "image" ? (

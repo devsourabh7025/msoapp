@@ -42,7 +42,7 @@ export default function AdsManagement() {
 
   const loadPostAdSettings = async () => {
     try {
-      const response = await fetch("/api/settings/post-ads");
+      const response = await fetch("/api/settings/post-ads", { credentials: "include" });
       if (response.ok) {
         const data = await response.json();
         if (data.settings) {
@@ -60,7 +60,7 @@ export default function AdsManagement() {
   const loadHomepageAdSettings = async () => {
     try {
       setLoadingSettings(true);
-      const response = await fetch("/api/settings/homepage-ads");
+      const response = await fetch("/api/settings/homepage-ads", { credentials: "include" });
       if (response.ok) {
         const data = await response.json();
         if (data.settings) {
@@ -133,9 +133,8 @@ export default function AdsManagement() {
       setSavingSettings(true);
       const response = await fetch("/api/settings/homepage-ads", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ settings: homepageAdSettings }),
       });
 
@@ -267,6 +266,7 @@ export default function AdsManagement() {
       const response = await fetch("/api/settings/post-ads", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ settings: postAdSettings }),
       });
       if (!response.ok) {
@@ -342,13 +342,20 @@ export default function AdsManagement() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-xl font-bold text-gray-900 dark:text-white">Ads Setup</h1>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+          Manage homepage and post page advertisements. Add images or ad code (e.g. Google Ads).
+        </p>
+      </div>
+
       {/* Tabs */}
       <div className="flex gap-2 border-b border-gray-200 dark:border-gray-800 pb-4">
         <button
           onClick={() => setActiveTab("homepage")}
           className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
             activeTab === "homepage"
-              ? "bg-blue-600 text-white"
+              ? "bg-red-600 text-white"
               : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
           }`}
         >
@@ -358,7 +365,7 @@ export default function AdsManagement() {
           onClick={() => setActiveTab("post")}
           className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
             activeTab === "post"
-              ? "bg-blue-600 text-white"
+              ? "bg-red-600 text-white"
               : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
           }`}
         >
@@ -384,10 +391,10 @@ export default function AdsManagement() {
           <div className="flex items-center justify-between">
             <div>
               <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-1">
-                Maximum Ads to Show After Each Section
+                Number of Ad Positions
               </label>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Limit how many enabled ad spaces appear after each section (0-5)
+                How many of the 5 slots to use. Ad 1 → after News & Intel, Ad 2 → after MSO Narrative, etc. (0-5)
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -402,7 +409,7 @@ export default function AdsManagement() {
                     maxAds: parseInt(e.target.value) || 0,
                   })
                 }
-                className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 text-center font-semibold"
+                className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 text-center font-semibold"
               />
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 / {homepageAdSettings.adSpaces.filter((s) => s.enabled).length}{" "}
@@ -437,7 +444,7 @@ export default function AdsManagement() {
                   {/* Space Info */}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg font-bold text-sm">
+                      <span className="px-3 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg font-bold text-sm">
                         Ad Space {space.spaceNumber}
                       </span>
                       {hasContent(space) ? (
@@ -507,7 +514,7 @@ export default function AdsManagement() {
                     </button>
                     <button
                       onClick={() => handleEditContent(space)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors"
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                       title="Add/Edit Content (Image or Ad Code)"
                     >
                       <Edit2 size={18} />
@@ -530,7 +537,7 @@ export default function AdsManagement() {
               {homepageAdSettings.adSpaces.filter((s) => s.enabled).length}
             </span>{" "}
             | Max to Show:{" "}
-            <span className="font-semibold text-blue-600">
+                        <span className="font-semibold text-red-600">
               {homepageAdSettings.maxAds || 5}
             </span>
           </p>
@@ -580,7 +587,7 @@ export default function AdsManagement() {
                     </button>
                     <button
                       onClick={() => handleEditPostAd(adKey)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                       title="Edit"
                     >
                       <Edit2 size={18} />
@@ -594,7 +601,7 @@ export default function AdsManagement() {
             <button
               onClick={handleSavePostAdSettings}
               disabled={savingSettings}
-              className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg disabled:opacity-50"
+              className="flex items-center gap-2 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:opacity-50"
             >
               <Save size={16} />
               {savingSettings ? "Saving..." : "Save Post Ads"}
@@ -643,7 +650,7 @@ export default function AdsManagement() {
                       type: e.target.value,
                     })
                   }
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                 >
                   <option value="image">Image Advertisement</option>
                   <option value="code">Ad Code (Google Ads, HTML, JavaScript)</option>
@@ -666,7 +673,7 @@ export default function AdsManagement() {
                             imageUrl: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                         placeholder="https://example.com/image.jpg"
                       />
                       <div className="flex items-center gap-2">
@@ -736,7 +743,7 @@ export default function AdsManagement() {
                           alt: e.target.value,
                         })
                       }
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600"
                       placeholder="Advertisement"
                     />
                   </div>
@@ -746,11 +753,11 @@ export default function AdsManagement() {
                   <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
                     Ad Code (Google Ads, HTML, JavaScript) *
                   </label>
-                  <div className="mb-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                    <p className="text-xs text-blue-700 dark:text-blue-300 font-medium mb-1">
+                  <div className="mb-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                    <p className="text-xs text-red-700 dark:text-red-300 font-medium mb-1">
                       💡 How to add Google Ads or other ad codes:
                     </p>
-                    <ul className="text-xs text-blue-600 dark:text-blue-400 space-y-1 list-disc list-inside">
+                    <ul className="text-xs text-red-600 dark:text-red-400 space-y-1 list-disc list-inside">
                       <li>Copy the complete ad code from Google Ads, AdSense, or any ad network</li>
                       <li>Paste it directly into the textbox below</li>
                       <li>The code will be rendered exactly as provided</li>
@@ -764,7 +771,7 @@ export default function AdsManagement() {
                         code: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono text-sm"
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-red-600 font-mono text-sm"
                     rows={12}
                     placeholder='<!-- Paste your Google Ads code here -->&#10;&#10;<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>&#10;<ins class="adsbygoogle"&#10;     style="display:block"&#10;     data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"&#10;     data-ad-slot="1234567890"&#10;     data-ad-format="auto"></ins>&#10;<script>&#10;     (adsbygoogle = window.adsbygoogle || []).push({});&#10;</script>&#10;&#10;<!-- Or paste any other HTML/JavaScript ad code -->'
                     required
@@ -797,7 +804,7 @@ export default function AdsManagement() {
                 <button
                   type="button"
                   onClick={handleSaveContent}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
                 >
                   <Save size={16} />
                   Save Content

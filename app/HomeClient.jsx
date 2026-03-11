@@ -11,6 +11,7 @@ import KnowledgeLab from "@/components/KnowledgeLab";
 import NewsIntel from "@/components/NewsIntel";
 import Recent from "@/components/Recent";
 import Footer from "@/components/Footer";
+import HomepageAdsBlock from "@/components/HomepageAdsBlock";
 
 export default function HomeClient({ initialMSONarrativeContent, initialMSONarrativeSettings, initialRegionalSpecialsContent, initialRegionalSpecialsSettings, initialMSOStudioContent, initialMSOStudioSettings, initialMSOAwardsContent, initialMSOAwardsSettings, initialToolsDatabaseContent, initialToolsDatabaseSettings, initialEventsCommunityContent, initialEventsCommunitySettings, initialKnowledgeLabContent, initialKnowledgeLabSettings, initialNewsIntelContent, initialNewsIntelSettings }) {
   return (
@@ -20,22 +21,27 @@ export default function HomeClient({ initialMSONarrativeContent, initialMSONarra
         initialContent={initialNewsIntelContent}
         initialSettings={initialNewsIntelSettings}
       />
+      <HomepageAdsBlock sectionIndex={0} />
       <MSONarrative
         initialContent={initialMSONarrativeContent}
         initialSettings={initialMSONarrativeSettings}
       />
+      <HomepageAdsBlock sectionIndex={1} />
       <RegionalSpecials
         initialContent={initialRegionalSpecialsContent}
         initialSettings={initialRegionalSpecialsSettings}
       />
+      <HomepageAdsBlock sectionIndex={2} />
       <MSOStudio
         initialContent={initialMSOStudioContent}
         initialSettings={initialMSOStudioSettings}
       />
+      <HomepageAdsBlock sectionIndex={3} />
       <MSOAwards
         initialContent={initialMSOAwardsContent}
         initialSettings={initialMSOAwardsSettings}
       />
+      <HomepageAdsBlock />
       <ToolsDatabase
         initialContent={initialToolsDatabaseContent}
         initialSettings={initialToolsDatabaseSettings}
@@ -44,6 +50,7 @@ export default function HomeClient({ initialMSONarrativeContent, initialMSONarra
         initialContent={initialEventsCommunityContent}
         initialSettings={initialEventsCommunitySettings}
       />
+      <HomepageAdsBlock />
       <KnowledgeLab
         initialContent={initialKnowledgeLabContent}
         initialSettings={initialKnowledgeLabSettings}

@@ -39,7 +39,7 @@ export default function PostAdBlock({ position = "sidebar" }) {
   return (
     <div className={`border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden ${isTop ? "mb-6" : ""}`}>
       <div className={isTop ? "p-3" : "p-4"}>
-        <div className="text-[9px] font-bold text-gray-400 dark:text-gray-600 uppercase tracking-widest mb-2">
+        <div className="text-[9px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest mb-2">
           Sponsored
         </div>
         {ad.type === "image" ? (
